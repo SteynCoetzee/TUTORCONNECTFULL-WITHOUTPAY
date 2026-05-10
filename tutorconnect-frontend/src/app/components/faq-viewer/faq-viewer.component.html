@@ -1,0 +1,46 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons">help_outline</span>
+        Frequently Asked Questions
+      </h1>
+      <p class="page-subtitle">Find answers to common questions about TutorConnect.</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-msg"><span class="material-icons spin">hourglass_top</span> Loading...</div>
+  } @else if (categories.length === 0) {
+    <div class="empty-state">
+      <span class="material-icons">help_outline</span>
+      <p>No FAQs available yet. Check back soon.</p>
+    </div>
+  } @else {
+    @for (cat of categories; track cat.faq_Category_ID) {
+      @if (getFaqsByCategory(cat.faq_Category_ID).length > 0) {
+        <div class="faq-section">
+          <h2 class="faq-category-title">
+            <span class="material-icons">folder_open</span>
+            {{ cat.category_Name }}
+          </h2>
+          <div class="faq-list">
+            @for (faq of getFaqsByCategory(cat.faq_Category_ID); track faq.faq_ID) {
+              <div class="faq-item" [class.open]="expandedFaqId === faq.faq_ID">
+                <button class="faq-question" (click)="toggle(faq.faq_ID)">
+                  <span>{{ faq.question }}</span>
+                  <span class="material-icons chevron">
+                    {{ expandedFaqId === faq.faq_ID ? 'expand_less' : 'expand_more' }}
+                  </span>
+                </button>
+                @if (expandedFaqId === faq.faq_ID) {
+                  <div class="faq-answer">{{ faq.answer }}</div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  }
+</div>

@@ -1,0 +1,35 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.layout-content {
+  flex: 1;
+  background: var(--body-bg);
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Dashboard page transitions — only slides the content, not sidebar/topnav */
+@keyframes dashSlideFromRight {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes dashSlideFromLeft {
+  from { transform: translateX(-40px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+.layout-content.slide-from-right {
+  animation: dashSlideFromRight 0.32s cubic-bezier(0.25,0.46,0.45,0.94) both;
+}
+.layout-content.slide-from-left {
+  animation: dashSlideFromLeft 0.32s cubic-bezier(0.25,0.46,0.45,0.94) both;
+}

@@ -1,0 +1,294 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <span class="material-icons">person</span>
+      {{ roleName || 'User' }} Information
+    </h1>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success">
+    <span class="material-icons" style="font-size:18px">check_circle</span>
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-error">
+    <span class="material-icons" style="font-size:18px">error_outline</span>
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!profile" class="card">
+    <p style="color:var(--text-muted)">Loading profile...</p>
+  </div>
+
+  <ng-container *ngIf="profile">
+    <!-- Personal Information -->
+    <div class="card mb-16">
+      <div class="section-header">
+        <span class="material-icons section-icon">person</span>
+        <h3 class="section-title">Personal Information</h3>
+      </div>
+
+      <ng-container *ngIf="!editMode">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>First Name</label>
+            <input class="form-control" [value]="profile.firstName" disabled />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input class="form-control" [value]="profile.lastName" disabled />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Student ID</label>
+          <input class="form-control" [value]="getStudentId()" disabled />
+        </div>
+        <div class="form-group">
+          <label>Bio</label>
+          <textarea class="form-control" rows="3" [value]="profile.bio || ''" disabled></textarea>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="editMode">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>First Name</label>
+            <input class="form-control" [(ngModel)]="editData.firstName" name="firstName" />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input class="form-control" [(ngModel)]="editData.lastName" name="lastName" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Bio</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="editData.bio" name="bio" placeholder="Tell us about yourself..."></textarea>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- ── Student Profile ────────────────────────────────────────── -->
+    @if (roleName === 'Student') {
+      <div class="card mb-16">
+        <div class="section-header">
+          <span class="material-icons section-icon">school</span>
+          <h3 class="section-title">Academic Information</h3>
+        </div>
+        @if (!editMode) {
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Student Number</label>
+              <input class="form-control" [value]="roleProfile?.student_Number || ''" disabled />
+            </div>
+            <div class="form-group">
+              <label>Faculty</label>
+              <input class="form-control" [value]="roleProfile?.faculty || ''" disabled />
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Year of Study</label>
+              <input class="form-control" [value]="roleProfile?.year_Of_Study || ''" disabled />
+            </div>
+            <div class="form-group">
+              <label>Degree Programme</label>
+              <input class="form-control" [value]="roleProfile?.degree_Program || ''" disabled />
+            </div>
+          </div>
+        } @else {
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Student Number</label>
+              <input class="form-control" [(ngModel)]="editRoleProfile.student_Number" placeholder="e.g. u12345678" />
+            </div>
+            <div class="form-group">
+              <label>Faculty</label>
+              <input class="form-control" [(ngModel)]="editRoleProfile.faculty" placeholder="e.g. EMS, EBIT, BSc" />
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Year of Study</label>
+              <input type="number" class="form-control" [(ngModel)]="editRoleProfile.year_Of_Study" placeholder="e.g. 2" min="1" max="7" />
+            </div>
+            <div class="form-group">
+              <label>Degree Programme</label>
+              <input class="form-control" [(ngModel)]="editRoleProfile.degree_Program" placeholder="e.g. BSc Computer Science" />
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Tutor Profile ───────────────────────────────────────── -->
+    @if (roleName === 'Tutor' || roleName === 'AW-Tutor') {
+      <div class="card mb-16">
+        <div class="section-header">
+          <span class="material-icons section-icon">workspace_premium</span>
+          <h3 class="section-title">Professional Information</h3>
+        </div>
+        @if (!editMode) {
+          <div class="form-group">
+            <label>Qualifications</label>
+            <input class="form-control" [value]="roleProfile?.qualifications || ''" disabled />
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Specialization</label>
+              <input class="form-control" [value]="roleProfile?.specialization || ''" disabled />
+            </div>
+            <div class="form-group">
+              <label>Years of Experience</label>
+              <input class="form-control" [value]="roleProfile?.years_Of_Experience || ''" disabled />
+            </div>
+          </div>
+        } @else {
+          <div class="form-group">
+            <label>Qualifications</label>
+            <input class="form-control" [(ngModel)]="editRoleProfile.qualifications" placeholder="e.g. BSc Computer Science (Honours)" />
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Specialization</label>
+              <input class="form-control" [(ngModel)]="editRoleProfile.specialization" placeholder="e.g. Mathematics, Programming" />
+            </div>
+            <div class="form-group">
+              <label>Years of Experience</label>
+              <input type="number" class="form-control" [(ngModel)]="editRoleProfile.years_Of_Experience" placeholder="e.g. 3" min="0" />
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Admin Profile ───────────────────────────────────────── -->
+    @if (roleName === 'Admin') {
+      <div class="card mb-16">
+        <div class="section-header">
+          <span class="material-icons section-icon">admin_panel_settings</span>
+          <h3 class="section-title">Admin Information</h3>
+        </div>
+        @if (!editMode) {
+          <div class="form-group">
+            <label>Job Title</label>
+            <input class="form-control" [value]="roleProfile?.job_Title || ''" disabled />
+          </div>
+        } @else {
+          <div class="form-group">
+            <label>Job Title</label>
+            <input class="form-control" [(ngModel)]="editRoleProfile.job_Title" placeholder="e.g. Senior Administrator" />
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Contact Information -->
+    <div class="card">
+      <div class="section-header">
+        <span class="material-icons section-icon">email</span>
+        <h3 class="section-title">Contact Information</h3>
+      </div>
+
+      <ng-container *ngIf="!editMode">
+        <div class="form-group">
+          <label><span class="material-icons label-icon">email</span> Email</label>
+          <input class="form-control" [value]="profile.email" disabled />
+        </div>
+        <div class="form-group">
+          <label><span class="material-icons label-icon">phone</span> Phone Number</label>
+          <input class="form-control" [value]="profile.phone || ''" disabled />
+        </div>
+        <div class="form-group">
+          <label><span class="material-icons label-icon">location_on</span> Address</label>
+          <input class="form-control" [value]="profile.address || ''" disabled />
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="editMode">
+        <div class="form-group">
+          <label>Email</label>
+          <input class="form-control" [value]="profile.email" disabled />
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input class="form-control" [(ngModel)]="editData.phone" name="phone" placeholder="+1 (555) 000-0000" />
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <input class="form-control" [(ngModel)]="editData.address" name="address" placeholder="123 University Ave" />
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <ng-container *ngIf="!editMode">
+        <button class="btn btn-primary" (click)="startEdit()">
+          <span class="material-icons">edit</span> Edit Profile
+        </button>
+      </ng-container>
+      <ng-container *ngIf="editMode">
+        <button class="btn btn-primary" (click)="saveProfile()" [disabled]="saving">
+          <span *ngIf="saving" class="spinner-sm"></span>
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+        <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+      </ng-container>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card mt-16">
+      <div class="section-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="material-icons section-icon">lock</span>
+          <h3 class="section-title">Password</h3>
+        </div>
+        @if (!showPasswordForm) {
+          <button class="btn btn-outline-primary btn-sm" (click)="openPasswordForm()">
+            <span class="material-icons">lock_reset</span> Change Password
+          </button>
+        }
+      </div>
+
+      @if (!showPasswordForm) {
+        <p style="color:var(--text-muted);margin-top:10px;font-size:13px">
+          Use a strong password to keep your account secure.
+        </p>
+      }
+
+      @if (showPasswordForm) {
+        @if (passwordError) {
+          <div class="alert alert-error mt-12">
+            <span class="material-icons">error</span> {{ passwordError }}
+          </div>
+        }
+        @if (passwordSuccess) {
+          <div class="alert alert-success mt-12">
+            <span class="material-icons">check_circle</span> {{ passwordSuccess }}
+          </div>
+        }
+        <div class="form-group mt-12">
+          <label>Current Password *</label>
+          <input type="password" class="form-control" [(ngModel)]="currentPassword" placeholder="Enter your current password" />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>New Password *</label>
+            <input type="password" class="form-control" [(ngModel)]="newPassword" placeholder="At least 6 characters" />
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password *</label>
+            <input type="password" class="form-control" [(ngModel)]="confirmPassword" placeholder="Repeat new password" />
+          </div>
+        </div>
+        <div class="actions" style="margin-top:4px">
+          <button class="btn btn-primary" (click)="changePassword()" [disabled]="savingPassword">
+            @if (savingPassword) { <span class="spinner-sm"></span> }
+            {{ savingPassword ? 'Updating...' : 'Update Password' }}
+          </button>
+          <button class="btn btn-secondary" (click)="cancelPasswordForm()">Cancel</button>
+        </div>
+      }
+    </div>
+
+  </ng-container>
+</div>

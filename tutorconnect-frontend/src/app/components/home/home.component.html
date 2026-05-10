@@ -1,0 +1,113 @@
+<div class="page-container">
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div>
+      <h1 class="welcome-title">{{ getGreeting() }}, {{ userName }}!</h1>
+      <p class="welcome-sub">Welcome to your {{ role }} dashboard. Here's what's happening today.</p>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="material-icons stat-icon teal">menu_book</span>
+      <div>
+        <div class="stat-value">{{ modules.length }}</div>
+        <div class="stat-label">Modules</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon orange">campaign</span>
+      <div>
+        <div class="stat-value">{{ announcements.length }}</div>
+        <div class="stat-label">Announcements</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon blue">schedule</span>
+      <div>
+        <div class="stat-value">0</div>
+        <div class="stat-label">Upcoming Sessions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions + Recent Announcements -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+      <div class="quick-actions">
+        <a routerLink="/dashboard/booking" class="quick-action">
+          <span class="material-icons">add_circle</span>
+          Book a Session
+        </a>
+        <a routerLink="/dashboard/courses" class="quick-action">
+          <span class="material-icons">menu_book</span>
+          View Modules
+        </a>
+        <a routerLink="/dashboard/announcements" class="quick-action">
+          <span class="material-icons">campaign</span>
+          Announcements
+        </a>
+        <a routerLink="/dashboard/user-info" class="quick-action">
+          <span class="material-icons">person</span>
+          My Profile
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Recent Announcements</h3>
+      </div>
+      @if (recentAnnouncements.length === 0) {
+        <p style="color:var(--text-muted);font-size:13px">No announcements yet.</p>
+      }
+      @for (a of recentAnnouncements; track a.announcement_ID) {
+        <div class="annc-item">
+          <div class="annc-meta">
+            <span class="annc-module">{{ a.module_Code }}</span>
+            <span class="badge" [ngClass]="getBadgeClass(a.announcement_Type)">{{ a.announcement_Type }}</span>
+          </div>
+          <p class="annc-title">{{ a.announcement_Name }}</p>
+          <span class="annc-date">{{ a.date_Posted | date:'mediumDate' }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Media & Resources -->
+  @if (mediaItems.length > 0) {
+    <div class="card section-card">
+      <div class="card-header">
+        <h3 class="card-title"><span class="material-icons" style="vertical-align:middle;margin-right:6px;color:var(--primary)">perm_media</span>Media &amp; Resources</h3>
+      </div>
+      <div class="media-grid">
+        @for (m of mediaItems; track m.media_ID) {
+          <a [href]="m.media_Address" target="_blank" rel="noopener" class="media-card">
+            <span class="material-icons media-card-icon">play_circle_filled</span>
+            <span class="media-card-name">{{ m.media_Name }}</span>
+            <span class="material-icons media-card-link">open_in_new</span>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Testimonials -->
+  @if (testimonials.length > 0) {
+    <div class="card section-card">
+      <div class="card-header">
+        <h3 class="card-title"><span class="material-icons" style="vertical-align:middle;margin-right:6px;color:var(--warning)">star</span>What Students Say</h3>
+      </div>
+      <div class="testimonials-grid">
+        @for (t of testimonials; track t.testimonial_ID) {
+          <div class="testimonial-card">
+            <span class="material-icons quote-icon">format_quote</span>
+            <p class="testimonial-text">{{ t.testimonial_Description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,1107 @@
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="goBack()">
+        <span class="material-icons">arrow_back</span> Back to Courses
+      </button>
+      @if (module) {
+        <div>
+          <h1 class="page-title">
+            <span class="badge badge-teal code-badge">{{ module.module_Code }}</span>
+            {{ module.module_Name }}
+          </h1>
+          <p class="page-subtitle">{{ module.module_Description }}</p>
+        </div>
+      }
+    </div>
+    @if (role === 'Tutor' && !isAssigned) {
+      <div class="not-assigned-banner">
+        <span class="material-icons">lock</span>
+        You are not assigned to this module. Contact an admin to get access.
+      </div>
+    }
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+  }
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading...</p></div>
+  } @else {
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn" [class.active]="activeTab === 'resources'" (click)="activeTab = 'resources'">
+        <span class="material-icons">description</span> Resources
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'quizzes'" (click)="activeTab = 'quizzes'">
+        <span class="material-icons">quiz</span> Quizzes
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'assignments'" (click)="activeTab = 'assignments'">
+        <span class="material-icons">assignment</span> Assignments
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'announcements'" (click)="activeTab = 'announcements'">
+        <span class="material-icons">campaign</span> Announcements
+      </button>
+      @if (role === 'Admin') {
+        <button class="tab-btn" [class.active]="activeTab === 'tutors'" (click)="activeTab = 'tutors'">
+          <span class="material-icons">people</span> Tutors
+        </button>
+      }
+    </div>
+
+    <!-- Resources Tab -->
+    @if (activeTab === 'resources') {
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2 class="tab-title">Study Materials</h2>
+          @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
+            @if (!showResourceForm) {
+              <button class="btn btn-primary btn-sm" (click)="openResourceForm()">
+                <span class="material-icons">add</span> Add Resource
+              </button>
+            }
+          }
+        </div>
+
+        <!-- ── Inline Add Form ───────────────────────────────────────────────── -->
+        @if (showResourceForm) {
+          <div class="res-form-card">
+            <div class="res-form-title">
+              <span class="material-icons">add_circle_outline</span> New Resource
+            </div>
+            <div class="res-form-grid">
+
+              <!-- Type selector -->
+              <div class="res-form-group full-width">
+                <label class="res-label">Type *</label>
+                <div class="res-type-group">
+                  <button class="res-type-btn" [class.active]="resType === 'PDF'" (click)="resType = 'PDF'; resFile = null; resUrl = ''">
+                    <span class="material-icons" style="color:#ef4444">picture_as_pdf</span> PDF
+                  </button>
+                  <button class="res-type-btn" [class.active]="resType === 'Link'" (click)="resType = 'Link'; resFile = null">
+                    <span class="material-icons" style="color:#3b82f6">link</span> Link
+                  </button>
+                  <button class="res-type-btn" [class.active]="resType === 'Video'" (click)="resType = 'Video'; resFile = null; resUrl = ''">
+                    <span class="material-icons" style="color:#8b5cf6">smart_display</span> Video
+                  </button>
+                </div>
+              </div>
+
+              <!-- Title -->
+              <div class="res-form-group">
+                <label class="res-label">Title *</label>
+                <input class="form-control" [(ngModel)]="resTitle" placeholder="e.g. Week 3 Lecture Notes" />
+              </div>
+
+              <!-- Folder -->
+              <div class="res-form-group">
+                <label class="res-label">Folder <span class="res-optional">(optional)</span></label>
+                <input class="form-control" [(ngModel)]="resFolder" placeholder="e.g. Week 1, Chapter 4..." />
+              </div>
+
+              <!-- URL / File upload -->
+              @if (resType === 'PDF') {
+                <div class="res-form-group full-width">
+                  <label class="res-label">Upload PDF or paste URL *</label>
+                  <div class="res-upload-row">
+                    <label class="res-file-btn">
+                      <span class="material-icons">upload_file</span>
+                      {{ resFile ? resFile.name : 'Choose file' }}
+                      <input type="file" accept=".pdf,.doc,.docx" hidden (change)="onFileSelected($event)" />
+                    </label>
+                    <span class="res-or">or</span>
+                    <input class="form-control" [(ngModel)]="resUrl" placeholder="Paste a URL..." [disabled]="!!resFile" />
+                  </div>
+                  @if (resFile) {
+                    <button class="res-clear-file" (click)="resFile = null">
+                      <span class="material-icons">close</span> Remove file
+                    </button>
+                  }
+                </div>
+              }
+              @if (resType === 'Link') {
+                <div class="res-form-group full-width">
+                  <label class="res-label">URL *</label>
+                  <input class="form-control" [(ngModel)]="resUrl" placeholder="https://..." />
+                </div>
+              }
+              @if (resType === 'Video') {
+                <div class="res-form-group full-width">
+                  <label class="res-label">Upload Video * <span class="res-optional">(.mp4, .webm — session recordings)</span></label>
+                  <div class="res-upload-row">
+                    <label class="res-file-btn">
+                      <span class="material-icons">upload_file</span>
+                      {{ resFile ? resFile.name : 'Choose video file' }}
+                      <input type="file" accept=".mp4,.webm,.mov" hidden (change)="onFileSelected($event)" />
+                    </label>
+                  </div>
+                  @if (resFile) {
+                    <button class="res-clear-file" (click)="resFile = null">
+                      <span class="material-icons">close</span> Remove file
+                    </button>
+                  }
+                </div>
+              }
+
+            </div>
+            <div class="res-form-actions">
+              <button class="btn btn-secondary" (click)="cancelResourceForm()">Cancel</button>
+              <button class="btn btn-primary" (click)="submitResource()"
+                      [disabled]="savingResource || resUploading">
+                @if (resUploading) { <span class="spinner-sm"></span> Uploading... }
+                @else if (savingResource) { <span class="spinner-sm"></span> Saving... }
+                @else { <span class="material-icons">save</span> Save Resource }
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ── Search bar ─────────────────────────────────────────────────────── -->
+        @if (resources.length > 0) {
+          <div class="res-search-row">
+            <span class="material-icons res-search-icon">search</span>
+            <input class="form-control res-search-input" [(ngModel)]="resourceSearch"
+                   placeholder="Search by title or folder..." />
+            @if (resourceSearch) {
+              <button class="res-search-clear" (click)="resourceSearch = ''">
+                <span class="material-icons">close</span>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- ── Empty state ────────────────────────────────────────────────────── -->
+        @if (filteredResources.length === 0 && !showResourceForm) {
+          <div class="empty-state">
+            <span class="material-icons">folder_open</span>
+            <p>{{ resourceSearch ? 'No resources match your search.' : 'No resources uploaded yet.' }}</p>
+          </div>
+        }
+
+        <!-- ── Folders ────────────────────────────────────────────────────────── -->
+        @for (folder of resourceFolders; track folder) {
+          <div class="res-folder">
+            <button class="res-folder-header" (click)="toggleFolder(folder)">
+              <span class="material-icons res-folder-icon">
+                {{ isFolderCollapsed(folder) ? 'folder' : 'folder_open' }}
+              </span>
+              <span class="res-folder-name">{{ folder }}</span>
+              <span class="res-folder-count">{{ getResourcesByFolder(folder).length }}</span>
+              @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
+                <button class="btn-folder-vis" [title]="isFolderVisible(folder) ? 'Hide all in folder' : 'Show all in folder'"
+                        (click)="toggleFolderVisibility(folder, $event)">
+                  <span class="material-icons">{{ isFolderVisible(folder) ? 'visibility' : 'visibility_off' }}</span>
+                </button>
+              }
+              <span class="material-icons res-chevron" [class.open]="!isFolderCollapsed(folder)">
+                chevron_right
+              </span>
+            </button>
+            @if (!isFolderCollapsed(folder)) {
+            <div class="res-items">
+              @for (r of getResourcesByFolder(folder); track r.module_Resource_ID) {
+
+                @if (deleteResourceId === r.module_Resource_ID) {
+                  <div class="res-item res-item-confirming">
+                    <div class="tr-confirm-inner">
+                      <span class="material-icons">delete_forever</span>
+                      <div class="tr-confirm-text">
+                        <strong>Delete "{{ r.module_Resource_Name }}"?</strong>
+                        <span>This cannot be undone.</span>
+                      </div>
+                      <div class="tr-confirm-btns">
+                        <button class="btn btn-secondary btn-sm" (click)="deleteResourceId = null">Cancel</button>
+                        <button class="btn btn-danger btn-sm" (click)="deleteResource()">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                } @else if (editingResourceId === r.module_Resource_ID) {
+                  <!-- Inline edit form -->
+                  <div class="res-edit-form">
+                    <div class="res-edit-title">
+                      <span class="material-icons">edit</span> Edit Resource
+                    </div>
+                    <div class="res-form-grid">
+                      <div class="res-form-group full-width">
+                        <label class="res-label">Type *</label>
+                        <div class="res-type-group">
+                          <button class="res-type-btn" [class.active]="editResType === 'PDF'" (click)="editResType = 'PDF'; editResFile = null">
+                            <span class="material-icons" style="color:#ef4444">picture_as_pdf</span> PDF
+                          </button>
+                          <button class="res-type-btn" [class.active]="editResType === 'Link'" (click)="editResType = 'Link'; editResFile = null">
+                            <span class="material-icons" style="color:#3b82f6">link</span> Link
+                          </button>
+                          <button class="res-type-btn" [class.active]="editResType === 'Video'" (click)="editResType = 'Video'; editResFile = null; editResUrl = ''">
+                            <span class="material-icons" style="color:#8b5cf6">smart_display</span> Video
+                          </button>
+                        </div>
+                      </div>
+                      <div class="res-form-group">
+                        <label class="res-label">Title *</label>
+                        <input class="form-control" [(ngModel)]="editResTitle" />
+                      </div>
+                      <div class="res-form-group">
+                        <label class="res-label">Folder <span class="res-optional">(optional)</span></label>
+                        <input class="form-control" [(ngModel)]="editResFolder" placeholder="e.g. Week 1" />
+                      </div>
+                      @if (editResType === 'PDF') {
+                        <div class="res-form-group full-width">
+                          <label class="res-label">Upload new file <span class="res-optional">(leave blank to keep current)</span></label>
+                          <div class="res-upload-row">
+                            <label class="res-file-btn">
+                              <span class="material-icons">upload_file</span>
+                              {{ editResFile ? editResFile.name : 'Choose file' }}
+                              <input type="file" accept=".pdf,.doc,.docx" hidden (change)="onEditFileSelected($event)" />
+                            </label>
+                            <span class="res-or">or URL</span>
+                            <input class="form-control" [(ngModel)]="editResUrl" placeholder="Paste URL..." [disabled]="!!editResFile" />
+                          </div>
+                          @if (editResFile) {
+                            <button class="res-clear-file" (click)="editResFile = null">
+                              <span class="material-icons">close</span> Remove file
+                            </button>
+                          }
+                        </div>
+                      }
+                      @if (editResType === 'Link') {
+                        <div class="res-form-group full-width">
+                          <label class="res-label">URL *</label>
+                          <input class="form-control" [(ngModel)]="editResUrl" placeholder="https://..." />
+                        </div>
+                      }
+                      @if (editResType === 'Video') {
+                        <div class="res-form-group full-width">
+                          <label class="res-label">Upload new video <span class="res-optional">(leave blank to keep current)</span></label>
+                          <div class="res-upload-row">
+                            <label class="res-file-btn">
+                              <span class="material-icons">upload_file</span>
+                              {{ editResFile ? editResFile.name : 'Choose video file' }}
+                              <input type="file" accept=".mp4,.webm,.mov" hidden (change)="onEditFileSelected($event)" />
+                            </label>
+                          </div>
+                          @if (editResFile) {
+                            <button class="res-clear-file" (click)="editResFile = null">
+                              <span class="material-icons">close</span> Remove file
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                    <div class="res-form-actions">
+                      <button class="btn btn-secondary" (click)="cancelEditResource()">Cancel</button>
+                      <button class="btn btn-primary" (click)="submitEditResource()"
+                              [disabled]="savingEditResource || editResUploading">
+                        @if (editResUploading) { <span class="spinner-sm"></span> Uploading... }
+                        @else if (savingEditResource) { <span class="spinner-sm"></span> Saving... }
+                        @else { <span class="material-icons">save</span> Save }
+                      </button>
+                    </div>
+                  </div>
+
+                } @else {
+                  <div class="res-item" [class.res-hidden]="!r.is_Visible">
+                    <div class="res-item-icon" [style.color]="resColor(r.module_Resource_Type_ID)">
+                      <span class="material-icons">{{ resIcon(r.module_Resource_Type_ID) }}</span>
+                    </div>
+                    <div class="res-item-info">
+                      <span class="res-item-name">{{ r.module_Resource_Name }}</span>
+                      <span class="res-item-type">{{ r.module_Resource_Type_ID }}
+                        @if (!r.is_Visible) { <span class="res-hidden-tag">· hidden</span> }
+                      </span>
+                    </div>
+                    <div class="res-item-actions">
+                      @if (r.resource_URL) {
+                        <a [href]="r.resource_URL" target="_blank" rel="noopener"
+                           class="btn-res-open" [title]="r.module_Resource_Type_ID === 'PDF' ? 'Download' : 'Open'">
+                          <span class="material-icons">
+                            {{ r.module_Resource_Type_ID === 'PDF' ? 'download' : r.module_Resource_Type_ID === 'Video' ? 'play_circle' : 'open_in_new' }}
+                          </span>
+                        </a>
+                      }
+                      @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
+                        <button class="btn-res-edit" title="Edit" (click)="openEditResource(r, $event)">
+                          <span class="material-icons">edit</span>
+                        </button>
+                        <button class="btn-res-vis"
+                                [title]="r.is_Visible ? 'Hide from students' : 'Show to students'"
+                                (click)="toggleVisibility(r)"
+                                [disabled]="togglingVisId === r.module_Resource_ID">
+                          <span class="material-icons">{{ r.is_Visible ? 'visibility' : 'visibility_off' }}</span>
+                        </button>
+                        <button class="btn-res-del" title="Delete" (click)="confirmDeleteResource(r.module_Resource_ID)">
+                          <span class="material-icons">delete</span>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+
+              }
+            </div>
+            } <!-- end @if !collapsed -->
+          </div>
+        }
+
+      </div>
+    }
+
+    <!-- Quizzes Tab -->
+    @if (activeTab === 'quizzes') {
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2 class="tab-title">Quizzes</h2>
+          @if (((role === 'Tutor' && isAssigned) || role === 'Admin') && !showQuizForm && !builderQuizId) {
+            <button class="btn btn-primary btn-sm" (click)="openQuizForm()">
+              <span class="material-icons">add</span> New Quiz
+            </button>
+          }
+        </div>
+
+        <!-- Quiz result banner -->
+        @if (quizResult) {
+          <div class="quiz-result-banner">
+            <span class="material-icons">{{ quizResult.score >= 50 ? 'emoji_events' : 'sentiment_neutral' }}</span>
+            <div>
+              <strong>Quiz submitted!</strong>
+              <span>You scored {{ quizResult.score }}% — {{ quizResult.correct }} out of {{ quizResult.total }} correct.</span>
+            </div>
+            <button class="btn-icon" (click)="quizResult = null"><span class="material-icons">close</span></button>
+          </div>
+        }
+
+        <!-- Inline create form (tutor/admin) -->
+        @if (showQuizForm) {
+          <div class="inline-form-card">
+            <p class="inline-edit-title">New Quiz</p>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Quiz Name *</label>
+                <input class="form-control" [(ngModel)]="quizName" placeholder="e.g. Chapter 3 Quiz" />
+              </div>
+              <div class="form-group">
+                <label>Date *</label>
+                <input type="date" class="form-control" [(ngModel)]="quizDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Details <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+              <input class="form-control" [(ngModel)]="quizDetails" placeholder="Brief description..." />
+            </div>
+            <div class="ic-btns" style="justify-content:flex-end;margin-top:0.75rem">
+              <button class="btn btn-secondary btn-sm" (click)="showQuizForm = false">Cancel</button>
+              <button class="btn btn-primary btn-sm" (click)="saveQuiz()" [disabled]="savingQuiz">
+                @if (savingQuiz) { <span class="spinner-sm"></span> } Create Quiz
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ── Quiz builder ──────────────────────────────────────────── -->
+        @if (builderQuizId) {
+          <div class="quiz-builder">
+            <div class="quiz-builder-header">
+              <span class="material-icons">edit_note</span>
+              <span>Quiz Builder</span>
+              <button class="btn btn-secondary btn-sm" style="margin-left:auto" (click)="closeBuilder()">
+                <span class="material-icons">close</span> Close
+              </button>
+            </div>
+            <p class="quiz-builder-hint">Select the radio button next to the correct answer for each question.</p>
+            @for (q of builderQuestions; track $index; let qi = $index) {
+              <div class="quiz-question-card">
+                <div class="quiz-q-header">
+                  <span class="quiz-q-num">Q{{ qi + 1 }}</span>
+                  <input class="form-control quiz-q-input" [(ngModel)]="q.question_Text"
+                         placeholder="Type your question here..." />
+                  <button class="btn-icon-danger" [disabled]="builderQuestions.length <= 1"
+                          (click)="removeBuilderQuestion(qi)" title="Remove question">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </div>
+                <div class="quiz-options">
+                  @for (opt of q.options; track $index; let oi = $index) {
+                    <div class="quiz-option-row">
+                      <input type="radio" [name]="'correct_' + qi"
+                             [checked]="opt.is_Correct"
+                             (change)="setCorrectOption(qi, oi)"
+                             title="Mark as correct answer" />
+                      <input class="form-control quiz-opt-input" [(ngModel)]="opt.option_Text"
+                             [placeholder]="'Option ' + (oi + 1)" />
+                      <button class="btn-icon-sm" [disabled]="q.options.length <= 2"
+                              (click)="removeBuilderOption(qi, oi)">
+                        <span class="material-icons">remove_circle_outline</span>
+                      </button>
+                    </div>
+                  }
+                  @if (q.options.length < 5) {
+                    <button class="btn-add-option" (click)="addBuilderOption(qi)">
+                      <span class="material-icons">add_circle_outline</span> Add option
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+            <div class="quiz-builder-actions">
+              <button class="btn btn-secondary" (click)="addBuilderQuestion()">
+                <span class="material-icons">add</span> Add Question
+              </button>
+              <button class="btn btn-primary" (click)="saveQuestions()" [disabled]="savingQuestions">
+                @if (savingQuestions) { <span class="spinner-sm"></span> } Save Questions
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ── Student: taking a quiz ────────────────────────────────── -->
+        @if (takingQuizId && takingQuiz) {
+          <div class="quiz-taking-card">
+            <div class="quiz-taking-header">
+              <span class="material-icons">quiz</span>
+              <div>
+                <div class="quiz-taking-name">{{ takingQuiz.quiz_Name }}</div>
+                <div class="quiz-taking-sub">{{ takingQuiz.questions?.length || 0 }} questions · answer all before submitting</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" style="margin-left:auto" (click)="cancelTakingQuiz()">Cancel</button>
+            </div>
+            @for (q of takingQuiz.questions; track q.question_ID; let qi = $index) {
+              <div class="quiz-take-question">
+                <p class="quiz-take-q-text">
+                  <span class="quiz-q-num">{{ qi + 1 }}</span>
+                  {{ q.question_Text }}
+                </p>
+                <div class="quiz-take-options">
+                  @for (opt of q.options; track opt.option_ID) {
+                    <label class="quiz-take-option" [class.selected]="takingAnswers[q.question_ID] === opt.option_ID">
+                      <input type="radio" [name]="'q_' + q.question_ID"
+                             (change)="selectAnswer(q.question_ID, opt.option_ID)" />
+                      <span>{{ opt.option_Text }}</span>
+                    </label>
+                  }
+                </div>
+              </div>
+            }
+            <div class="quiz-taking-footer">
+              <span class="quiz-answered-count">
+                {{ objectKeys(takingAnswers).length }} / {{ takingQuiz.questions?.length || 0 }} answered
+              </span>
+              <button class="btn btn-primary" (click)="submitQuizAnswers()" [disabled]="submittingQuiz">
+                @if (submittingQuiz) { <span class="spinner-sm"></span> } Submit Quiz
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ── Quiz list ──────────────────────────────────────────────── -->
+        @if (visibleQuizzes.length === 0 && !showQuizForm && !builderQuizId && !takingQuizId) {
+          <div class="empty-state">
+            <span class="material-icons">quiz</span>
+            <p>No quizzes yet.</p>
+          </div>
+        }
+
+        <!-- ── Submissions panel (tutor) ─────────────────────────── -->
+        @if (submissionsQuizId) {
+          <div class="submissions-panel">
+            <div class="submissions-header">
+              <span class="material-icons">grading</span>
+              <span>Student Submissions</span>
+              <button class="btn btn-secondary btn-sm" style="margin-left:auto" (click)="closeSubmissions()">
+                <span class="material-icons">close</span> Close
+              </button>
+            </div>
+            @if (loadingSubmissions) {
+              <div class="loading-state" style="padding:1.5rem">
+                <div class="spinner"></div><p>Loading submissions...</p>
+              </div>
+            } @else if (submissions.length === 0) {
+              <div class="empty-state" style="padding:1.5rem">
+                <span class="material-icons">inbox</span>
+                <p>No submissions yet.</p>
+              </div>
+            } @else {
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Score</th>
+                    <th>Duration</th>
+                    <th>Submitted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (s of submissions; track s.student_Quiz_ID) {
+                    <tr>
+                      <td>{{ s.studentName }}</td>
+                      <td>
+                        <span class="score-badge" [ngClass]="getScoreClass(s.quiz_Score)">
+                          {{ s.quiz_Score }}%
+                        </span>
+                      </td>
+                      <td style="font-size:0.82rem;color:var(--text-muted)">
+                        {{ formatDuration(s.durationSeconds) }}
+                      </td>
+                      <td style="font-size:0.82rem;color:var(--text-muted)">
+                        {{ s.submission_Date | date:'d MMM yyyy, HH:mm' }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+              <div class="submissions-summary">
+                <span>{{ submissions.length }} submission{{ submissions.length !== 1 ? 's' : '' }}</span>
+                <span>Class average: <strong>{{ submissionsAverage }}%</strong></span>
+                <span>Highest: <strong>{{ submissionsHighest }}%</strong></span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (!takingQuizId) {
+          <div class="items-list">
+            @for (q of visibleQuizzes; track q.quiz_ID) {
+              @if (deleteQuizId === q.quiz_ID) {
+                <div class="item-card inline-confirm">
+                  <span class="material-icons ic-icon">delete_forever</span>
+                  <p class="ic-title">Delete Quiz?</p>
+                  <p class="ic-msg"><strong>{{ q.quiz_Name }}</strong></p>
+                  <p class="ic-warn">This cannot be undone.</p>
+                  <div class="ic-btns">
+                    <button class="btn btn-secondary btn-sm" (click)="deleteQuizId = null">Cancel</button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteQuiz()">
+                      <span class="material-icons">delete</span> Delete
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div class="item-card" [class.item-hidden]="!q.is_Visible">
+                  <div class="item-icon quiz-icon">
+                    <span class="material-icons">quiz</span>
+                  </div>
+                  <div class="item-info">
+                    <div class="item-name-row">
+                      <span class="item-name">{{ q.quiz_Name }}</span>
+                      @if (!q.is_Visible && ((role === 'Tutor' && isAssigned) || role === 'Admin')) {
+                        <span class="hidden-tag">hidden</span>
+                      }
+                      @if (role === 'Student' && !q.hasSubmitted) {
+                        <span class="quiz-tag unsubmitted">Unsubmitted</span>
+                      }
+                      @if (role === 'Student' && q.hasSubmitted) {
+                        <span class="quiz-tag submitted">
+                          Best: {{ q.bestScore }}%
+                        </span>
+                      }
+                    </div>
+                    @if (q.quiz_Details) { <span class="item-meta">{{ q.quiz_Details }}</span> }
+                    <span class="item-meta">{{ formatDate(q.quiz_Date) }}</span>
+                  </div>
+                  @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
+                    <div class="item-actions">
+                      <button class="btn btn-secondary btn-sm"
+                              (click)="submissionsQuizId === q.quiz_ID ? closeSubmissions() : openSubmissions(q)"
+                              title="View student submissions">
+                        <span class="material-icons">grading</span> Submissions
+                      </button>
+                      <button class="btn btn-secondary btn-sm" (click)="openBuilder(q)"
+                              [disabled]="!!builderQuizId" title="Add/edit questions">
+                        <span class="material-icons">edit_note</span> Questions
+                      </button>
+                      <button class="btn-icon"
+                              [title]="q.is_Visible ? 'Hide from students' : 'Show to students'"
+                              (click)="toggleQuizVisibility(q)"
+                              [disabled]="togglingQuizVisId === q.quiz_ID">
+                        <span class="material-icons">{{ q.is_Visible ? 'visibility' : 'visibility_off' }}</span>
+                      </button>
+                      <button class="btn-icon-danger" (click)="confirmDeleteQuiz(q.quiz_ID)">
+                        <span class="material-icons">delete</span>
+                      </button>
+                    </div>
+                  }
+                  @if (role === 'Student' && !q.hasSubmitted) {
+                    <button class="btn btn-primary btn-sm" (click)="startQuiz(q)"
+                            [disabled]="startingQuiz || !!takingQuizId">
+                      @if (startingQuiz) { <span class="spinner-sm dark"></span> }
+                      Take Quiz
+                    </button>
+                  }
+                  @if (role === 'Student' && q.hasSubmitted) {
+                    <span class="quiz-done-badge">
+                      <span class="material-icons">check_circle</span> Done
+                    </span>
+                  }
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Assignments Tab -->
+    @if (activeTab === 'assignments') {
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2 class="tab-title">Assignments</h2>
+          @if (((role === 'Tutor' && isAssigned) || role === 'Admin') && !showAssignmentForm) {
+            <button class="btn btn-primary btn-sm" (click)="openAssignmentForm()">
+              <span class="material-icons">add</span> New Assignment
+            </button>
+          }
+        </div>
+
+        <!-- ── Tutor: inline create form ──────────────────────────────── -->
+        @if (showAssignmentForm) {
+          <div class="inline-form-card">
+            <p class="inline-edit-title">New Assignment</p>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Assignment Name *</label>
+                <input class="form-control" [(ngModel)]="assignmentName" placeholder="e.g. Project Proposal" />
+              </div>
+              <div class="form-group">
+                <label>Due Date *</label>
+                <input type="date" class="form-control" [(ngModel)]="assignmentDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Assignment Brief PDF <span style="font-weight:400;color:var(--text-muted)">(optional — students view &amp; download this)</span></label>
+              <label class="res-file-btn" style="display:inline-flex">
+                <span class="material-icons">upload_file</span>
+                {{ assignmentBriefFile ? assignmentBriefFile.name : 'Choose PDF...' }}
+                <input type="file" accept=".pdf" hidden (change)="onBriefFileSelected($event)" />
+              </label>
+              @if (assignmentBriefFile) {
+                <button class="res-clear-file" (click)="assignmentBriefFile = null">
+                  <span class="material-icons">close</span> Remove
+                </button>
+              }
+            </div>
+            <div class="ic-btns" style="justify-content:flex-end;margin-top:0.75rem">
+              <button class="btn btn-secondary btn-sm" (click)="showAssignmentForm = false">Cancel</button>
+              <button class="btn btn-primary btn-sm" (click)="saveAssignment()"
+                      [disabled]="savingAssignment || uploadingBrief">
+                @if (uploadingBrief) { <span class="spinner-sm"></span> Uploading... }
+                @else if (savingAssignment) { <span class="spinner-sm"></span> Saving... }
+                @else { Create Assignment }
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ── Tutor: submissions panel ───────────────────────────────── -->
+        @if (assignmentSubmissionsId) {
+          <div class="submissions-panel" style="border-color:#f59e0b">
+            <div class="submissions-header" style="color:#b45309">
+              <span class="material-icons">grading</span>
+              <span>Student Submissions</span>
+              <button class="btn btn-secondary btn-sm" style="margin-left:auto" (click)="closeAssignmentSubmissions()">
+                <span class="material-icons">close</span> Close
+              </button>
+            </div>
+            @if (loadingAssignmentSubmissions) {
+              <div class="loading-state" style="padding:1.5rem"><div class="spinner"></div><p>Loading...</p></div>
+            } @else if (assignmentSubmissions.length === 0) {
+              <div class="empty-state" style="padding:1.5rem">
+                <span class="material-icons">inbox</span><p>No submissions yet.</p>
+              </div>
+            } @else {
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>File</th>
+                    <th>Submitted</th>
+                    <th>Grade</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (s of assignmentSubmissions; track s.submission_ID) {
+                    @if (gradingSubmissionId === s.submission_ID) {
+                      <tr>
+                        <td colspan="5">
+                          <div class="grade-row">
+                            <strong>{{ s.studentName }}</strong>
+                            <input type="number" class="form-control" style="max-width:90px"
+                                   [(ngModel)]="gradeValue" placeholder="%" min="0" max="100" />
+                            <input class="form-control" style="flex:1;min-width:160px"
+                                   [(ngModel)]="feedbackValue" placeholder="Feedback (optional)" />
+                            <button class="btn btn-secondary btn-sm" (click)="gradingSubmissionId = null">Cancel</button>
+                            <button class="btn btn-primary btn-sm" (click)="saveGrade(assignmentSubmissionsId!)"
+                                    [disabled]="savingGrade">
+                              @if (savingGrade) { <span class="spinner-sm"></span> } Save Grade
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    } @else {
+                      <tr>
+                        <td><strong>{{ s.studentName }}</strong></td>
+                        <td>
+                          <div style="display:flex;align-items:center;gap:6px">
+                            @if (s.submission_ID) {
+                              <button class="btn-res-open"
+                                      (click)="downloadSubmission(s.submission_ID, s.file_Name)"
+                                      title="Download submission">
+                                <span class="material-icons">download</span>
+                              </button>
+                            }
+                            <span style="font-size:0.78rem;color:var(--text-muted)">{{ s.file_Name }}</span>
+                          </div>
+                        </td>
+                        <td style="font-size:0.8rem;color:var(--text-muted)">{{ s.submission_Date | date:'d MMM yyyy' }}</td>
+                        <td>
+                          @if (s.grade != null) {
+                            <span class="score-badge" [ngClass]="getScoreClass(s.grade)">{{ s.grade }}%</span>
+                            @if (s.feedback) {
+                              <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px">{{ s.feedback }}</div>
+                            }
+                          } @else {
+                            <span style="font-size:0.78rem;color:var(--text-muted)">Not graded</span>
+                          }
+                        </td>
+                        <td>
+                          <button class="btn btn-secondary btn-sm"
+                                  (click)="openGrade(s.submission_ID, s.grade, s.feedback)">
+                            <span class="material-icons">grade</span>
+                            {{ s.grade != null ? 'Re-grade' : 'Grade' }}
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+        }
+
+        <!-- ── Empty state ─────────────────────────────────────────────── -->
+        @if (visibleAssignments.length === 0 && !showAssignmentForm) {
+          <div class="empty-state">
+            <span class="material-icons">assignment</span>
+            <p>No assignments yet.</p>
+          </div>
+        }
+
+        <!-- ── Assignment cards ────────────────────────────────────────── -->
+        <div class="assignment-list">
+          @for (a of visibleAssignments; track a.assignment_ID) {
+
+            @if (deleteAssignmentId === a.assignment_ID) {
+              <div class="item-card inline-confirm">
+                <span class="material-icons ic-icon">delete_forever</span>
+                <p class="ic-title">Delete Assignment?</p>
+                <p class="ic-msg"><strong>{{ a.assignment_Name }}</strong></p>
+                <p class="ic-warn">This cannot be undone.</p>
+                <div class="ic-btns">
+                  <button class="btn btn-secondary btn-sm" (click)="deleteAssignmentId = null">Cancel</button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteAssignment()">
+                    <span class="material-icons">delete</span> Delete
+                  </button>
+                </div>
+              </div>
+
+            } @else {
+              <div class="assignment-card" [class.item-hidden]="!a.is_Visible">
+
+                <!-- Card header row -->
+                <div class="assignment-card-header">
+                  <div class="item-icon assign-icon">
+                    <span class="material-icons">assignment</span>
+                  </div>
+                  <div class="item-info">
+                    <div class="item-name-row">
+                      <span class="item-name">{{ a.assignment_Name }}</span>
+                      @if (!a.is_Visible && ((role === 'Tutor' && isAssigned) || role === 'Admin')) {
+                        <span class="hidden-tag">hidden</span>
+                      }
+                      @if (role === 'Student' && a.hasSubmitted && a.grade != null) {
+                        <span class="quiz-tag submitted">{{ a.grade }}%</span>
+                      } @else if (role === 'Student' && a.hasSubmitted) {
+                        <span class="quiz-tag submitted">Submitted</span>
+                      } @else if (role === 'Student') {
+                        <span class="quiz-tag unsubmitted">Unsubmitted</span>
+                      }
+                    </div>
+                    <span class="item-meta">Due: {{ formatDate(a.assignment_Date) }}</span>
+                    @if (role === 'Student' && a.grade != null && a.feedback) {
+                      <span class="item-meta assign-feedback">
+                        <span class="material-icons" style="font-size:13px">feedback</span>
+                        {{ a.feedback }}
+                      </span>
+                    }
+                  </div>
+
+                  <!-- Tutor/Admin actions -->
+                  @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
+                    <div class="item-actions">
+                      <button class="btn btn-secondary btn-sm"
+                              (click)="assignmentSubmissionsId === a.assignment_ID ? closeAssignmentSubmissions() : openAssignmentSubmissions(a)">
+                        <span class="material-icons">grading</span> Submissions
+                      </button>
+                      <button class="btn-icon"
+                              [title]="a.is_Visible ? 'Hide from students' : 'Show to students'"
+                              (click)="toggleAssignmentVisibility(a)"
+                              [disabled]="togglingAssignmentVisId === a.assignment_ID">
+                        <span class="material-icons">{{ a.is_Visible ? 'visibility' : 'visibility_off' }}</span>
+                      </button>
+                      <button class="btn-icon-danger" (click)="confirmDeleteAssignment(a.assignment_ID)">
+                        <span class="material-icons">delete</span>
+                      </button>
+                    </div>
+                  }
+
+                  <!-- Student actions row -->
+                  @if (role === 'Student') {
+                    <div class="item-actions">
+                      @if (a.assignment_URL) {
+                        <button class="btn btn-secondary btn-sm"
+                                (click)="downloadBrief(a.assignment_ID, a.assignment_Name)"
+                                title="Download assignment brief">
+                          <span class="material-icons">download</span> Brief
+                        </button>
+                      }
+                      <button class="btn btn-primary btn-sm"
+                              (click)="openStudentSubmitForm(a)"
+                              [disabled]="!!studentSubmitAssignmentId">
+                        <span class="material-icons">upload_file</span>
+                        {{ a.hasSubmitted ? 'Re-submit' : 'Submit Work' }}
+                      </button>
+                    </div>
+                  }
+                </div>
+
+
+<!-- Student submission form -->
+                @if (role === 'Student' && studentSubmitAssignmentId === a.assignment_ID) {
+                  <div class="student-submit-form">
+                    <p class="inline-edit-title" style="color:#2563eb">
+                      <span class="material-icons">upload_file</span>
+                      Submit Your Work
+                    </p>
+                    <p class="submit-hint">
+                      <span class="material-icons">info</span>
+                      @if (a.assignment_URL) {
+                        First view or download the brief above, complete your work, then upload your PDF here.
+                      } @else {
+                        Upload your completed assignment as a PDF below.
+                      }
+                    </p>
+                    <div class="form-group">
+                      <label>Submission Title *</label>
+                      <input class="form-control" [(ngModel)]="studentSubmitTitle"
+                             placeholder="e.g. {{ a.assignment_Name }} — Final Submission" />
+                    </div>
+                    <div class="form-group">
+                      <label>Your PDF *</label>
+                      <label class="res-file-btn" style="display:inline-flex">
+                        <span class="material-icons">upload_file</span>
+                        {{ studentSubmitFile ? studentSubmitFile.name : 'Choose PDF...' }}
+                        <input type="file" accept=".pdf,.doc,.docx,.zip" hidden
+                               (change)="onStudentSubmitFileSelected($event)" />
+                      </label>
+                      @if (studentSubmitFile) {
+                        <span style="font-size:0.78rem;color:var(--text-muted);margin-left:8px">
+                          {{ studentSubmitFile.name }}
+                        </span>
+                      }
+                    </div>
+                    <div class="ic-btns" style="justify-content:flex-end;margin-top:0.75rem">
+                      <button class="btn btn-secondary btn-sm" (click)="cancelStudentSubmit()">Cancel</button>
+                      <button class="btn btn-primary btn-sm"
+                              (click)="submitAssignment(a.assignment_ID)"
+                              [disabled]="!studentSubmitFile || !studentSubmitTitle.trim() || submittingAssignmentId === a.assignment_ID">
+                        @if (submittingAssignmentId === a.assignment_ID) {
+                          <span class="spinner-sm"></span> Uploading...
+                        } @else {
+                          <span class="material-icons">send</span> Submit
+                        }
+                      </button>
+                    </div>
+                  </div>
+                }
+
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Announcements Tab -->
+    @if (activeTab === 'announcements') {
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2 class="tab-title">Module Announcements</h2>
+          @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
+            <button class="btn btn-primary btn-sm" (click)="openAnnouncementCreateForm()">
+              <span class="material-icons">add</span> New Announcement
+            </button>
+          }
+        </div>
+
+        <!-- Inline create form -->
+        @if (showAnnouncementCreateForm) {
+          <div class="announcement-card inline-edit">
+            <p class="inline-edit-title">New Announcement</p>
+            <div class="form-group">
+              <label>Title *</label>
+              <input class="form-control" [(ngModel)]="announcementName" placeholder="e.g. Quiz postponed" />
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <select class="form-control" [(ngModel)]="announcementType">
+                @for (t of announcementTypes; track t) { <option [value]="t">{{ t }}</option> }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Details</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="announcementDetails" placeholder="Announcement details..."></textarea>
+            </div>
+            <div class="ic-btns" style="justify-content:flex-end;width:100%">
+              <button class="btn btn-secondary btn-sm" (click)="showAnnouncementCreateForm = false">Cancel</button>
+              <button class="btn btn-primary btn-sm" (click)="saveAnnouncement()" [disabled]="savingAnnouncement">
+                @if (savingAnnouncement) { <span class="spinner-sm"></span> } Post
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (announcements.length === 0 && !showAnnouncementCreateForm) {
+          <div class="empty-state">
+            <span class="material-icons">campaign</span>
+            <p>No announcements for this module yet.</p>
+          </div>
+        }
+
+        <div class="items-list">
+          @for (a of announcements; track a.announcement_ID) {
+
+            @if (deleteAnnouncementId === a.announcement_ID) {
+              <div class="item-card inline-confirm">
+                <span class="material-icons ic-icon">delete_forever</span>
+                <p class="ic-title">Delete Announcement?</p>
+                <p class="ic-msg"><strong>{{ a.announcement_Name }}</strong></p>
+                <p class="ic-warn">This cannot be undone.</p>
+                <div class="ic-btns">
+                  <button class="btn btn-secondary btn-sm" (click)="deleteAnnouncementId = null">Cancel</button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteAnnouncement()" [disabled]="deletingAnnouncement">
+                    <span class="material-icons">delete</span> {{ deletingAnnouncement ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </div>
+
+            } @else if (editingAnnouncement?.announcement_ID === a.announcement_ID) {
+              <div class="item-card inline-edit" style="flex-direction:column;align-items:stretch">
+                <p class="inline-edit-title">Edit Announcement</p>
+                <div class="form-group">
+                  <label>Title</label>
+                  <input class="form-control" [(ngModel)]="editAnnouncementName" />
+                </div>
+                <div class="form-group">
+                  <label>Type</label>
+                  <select class="form-control" [(ngModel)]="editAnnouncementType">
+                    @for (t of announcementTypes; track t) { <option [value]="t">{{ t }}</option> }
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Details</label>
+                  <textarea class="form-control" rows="3" [(ngModel)]="editAnnouncementDetails"></textarea>
+                </div>
+                <div class="ic-btns" style="justify-content:flex-end;width:100%">
+                  <button class="btn btn-secondary btn-sm" (click)="cancelEditAnnouncement()">Cancel</button>
+                  <button class="btn btn-primary btn-sm" (click)="saveEditAnnouncement()" [disabled]="updatingAnnouncement">
+                    @if (updatingAnnouncement) { <span class="spinner-sm"></span> } Save
+                  </button>
+                </div>
+              </div>
+
+            } @else {
+              <div class="item-card">
+                <div class="item-icon annc-icon">
+                  <span class="material-icons">campaign</span>
+                </div>
+                <div class="item-info">
+                  <span class="item-name">{{ a.announcement_Name }}</span>
+                  @if (a.announcement_Details) {
+                    <span class="item-meta">{{ a.announcement_Details }}</span>
+                  }
+                  <span class="item-meta">{{ a.date_Posted | date:'yyyy-MM-dd' }}</span>
+                </div>
+                <span [ngClass]="getBadgeClass(a.announcement_Type)" style="margin-right:8px">{{ a.announcement_Type }}</span>
+                @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
+                  <button class="btn-icon" title="Edit" (click)="openEditAnnouncement(a)">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="btn-icon-danger" title="Delete" (click)="confirmDeleteAnnouncement(a.announcement_ID)">
+                    <span class="material-icons">delete</span>
+                  </button>
+                }
+              </div>
+            }
+
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Admin: Tutors Tab -->
+    @if (activeTab === 'tutors' && role === 'Admin') {
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2 class="tab-title">Assigned Tutors</h2>
+        </div>
+
+        <!-- Assign new tutor -->
+        <div class="assign-tutor-row">
+          <select class="form-control assign-select" [(ngModel)]="selectedTutorId">
+            <option [ngValue]="null">Select a tutor to assign...</option>
+            @for (t of getUnassignedTutors(); track t.user_ID) {
+              <option [ngValue]="t.user_ID">{{ t.firstName }} {{ t.lastName }}</option>
+            }
+          </select>
+          <button class="btn btn-primary" (click)="assignTutor()" [disabled]="!selectedTutorId || assigningTutor">
+            @if (assigningTutor) { <span class="spinner-sm"></span> }
+            Assign
+          </button>
+        </div>
+
+        @if (assignedTutors.length === 0) {
+          <div class="empty-state">
+            <span class="material-icons">people</span>
+            <p>No tutors assigned to this module yet.</p>
+          </div>
+        } @else {
+          <div class="items-list">
+            @for (t of assignedTutors; track t.tutor_Module_ID) {
+              <div class="item-card">
+                <div class="item-icon tutor-icon">
+                  <span class="material-icons">person</span>
+                </div>
+                <div class="item-info">
+                  <span class="item-name">{{ t.tutor_Name }}</span>
+                  <span class="item-meta">Assigned {{ formatDate(t.assigned_Date) }}</span>
+                </div>
+                <button class="btn-icon-danger" (click)="unassignTutor(t.tutor_ID)">
+                  <span class="material-icons">person_remove</span>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+
+
+

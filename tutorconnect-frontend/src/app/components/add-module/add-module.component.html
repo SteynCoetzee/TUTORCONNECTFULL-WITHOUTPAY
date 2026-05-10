@@ -1,0 +1,124 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <button class="back-button" (click)="goBack()">
+        <span class="material-icons">arrow_back</span>
+        Back to Modules
+      </button>
+      <h1 class="page-title">{{ isEditMode ? 'Edit Module' : 'Add New Module' }}</h1>
+      <p class="page-subtitle">{{ isEditMode ? 'Update module details' : 'Create a new programme module' }}</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading module details...</p>
+    </div>
+  } @else {
+    <div class="form-container">
+      @if (errorMessage) {
+        <div class="alert alert-error">
+          <span class="material-icons">error</span>
+          <div>
+            <strong>Error</strong>
+            <p>{{ errorMessage }}</p>
+          </div>
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="alert alert-success">
+          <span class="material-icons">check_circle</span>
+          <div>
+            <strong>Success</strong>
+            <p>{{ successMessage }}</p>
+          </div>
+        </div>
+      }
+
+      <div class="form-card">
+        <div class="form-header">
+          <h2>{{ isEditMode ? 'Edit Module Details' : 'New Module Information' }}</h2>
+        </div>
+
+        <div class="form-content">
+          <div class="form-section">
+            <h3 class="section-title">Module Identification</h3>
+            
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="code" class="form-label required">Module Code</label>
+                <input 
+                  type="text" 
+                  id="code"
+                  class="form-control" 
+                  [(ngModel)]="formCode" 
+                  placeholder="e.g., CS101, MATH201"
+                  [disabled]="isEditMode"
+                />
+                <small class="form-hint">{{ isEditMode ? 'Module code cannot be changed' : 'Unique identifier for this module' }}</small>
+              </div>
+
+              <div class="form-group">
+                <label for="price" class="form-label required">Monthly Price (R)</label>
+                <input 
+                  type="number" 
+                  id="price"
+                  class="form-control" 
+                  [(ngModel)]="formPrice" 
+                  placeholder="e.g., 250"
+                  min="0"
+                  step="50"
+                />
+                <small class="form-hint">Monthly price for this module</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Module Details</h3>
+            
+            <div class="form-group">
+              <label for="name" class="form-label required">Module Name</label>
+              <input 
+                type="text" 
+                id="name"
+                class="form-control" 
+                [(ngModel)]="formName" 
+                placeholder="e.g., Introduction to Computer Science"
+              />
+              <small class="form-hint">Display name of the module</small>
+            </div>
+
+            <div class="form-group">
+              <label for="description" class="form-label required">Description</label>
+              <textarea 
+                id="description"
+                class="form-control" 
+                [(ngModel)]="formDescription" 
+                rows="5"
+                placeholder="Provide a comprehensive description of what this module covers..."
+              ></textarea>
+              <small class="form-hint">Brief overview and learning objectives</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button class="btn btn-secondary" (click)="goBack()" [disabled]="saving">
+            <span class="material-icons">close</span> Cancel
+          </button>
+          <button class="btn btn-primary" (click)="saveModule()" [disabled]="saving || !formCode || !formName || !formDescription || formPrice === null">
+            @if (saving) {
+              <span class="spinner-sm"></span>
+            } @else {
+              <span class="material-icons">{{ isEditMode ? 'save' : 'add' }}</span>
+            }
+            {{ isEditMode ? 'Update Module' : 'Create Module' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

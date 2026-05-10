@@ -1,0 +1,2814 @@
+[
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "GetFAQCategories",
+    "RelativePath": "api/AdminContent/faq-categories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "CreateFAQCategory",
+    "RelativePath": "api/AdminContent/faq-categories",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.FAQCategoryCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "UpdateFAQCategory",
+    "RelativePath": "api/AdminContent/faq-categories/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.FAQCategoryCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "DeleteFAQCategory",
+    "RelativePath": "api/AdminContent/faq-categories/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration4Controller",
+    "Method": "GetFAQs",
+    "RelativePath": "api/AdminContent/faqs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration4Controller",
+    "Method": "CreateFAQ",
+    "RelativePath": "api/AdminContent/faqs",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.FAQCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration4Controller",
+    "Method": "UpdateFAQ",
+    "RelativePath": "api/AdminContent/faqs/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.FAQUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration4Controller",
+    "Method": "DeleteFAQ",
+    "RelativePath": "api/AdminContent/faqs/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration4Controller",
+    "Method": "GetHelpPages",
+    "RelativePath": "api/AdminContent/help-pages",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration4Controller",
+    "Method": "CreateHelpPage",
+    "RelativePath": "api/AdminContent/help-pages",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.HelpPageCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration4Controller",
+    "Method": "UpdateHelpPage",
+    "RelativePath": "api/AdminContent/help-pages/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.HelpPageCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration4Controller",
+    "Method": "DeleteHelpPage",
+    "RelativePath": "api/AdminContent/help-pages/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "GetHelpResources",
+    "RelativePath": "api/AdminContent/help-resources",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "CreateHelpResource",
+    "RelativePath": "api/AdminContent/help-resources",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.HelpResourceCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "UpdateHelpResource",
+    "RelativePath": "api/AdminContent/help-resources/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.HelpResourceCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "DeleteHelpResource",
+    "RelativePath": "api/AdminContent/help-resources/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "GetMedia",
+    "RelativePath": "api/AdminContent/media",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "CreateMedia",
+    "RelativePath": "api/AdminContent/media",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.MediaCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "UpdateMedia",
+    "RelativePath": "api/AdminContent/media/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.MediaCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "DeleteMedia",
+    "RelativePath": "api/AdminContent/media/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "UploadMediaFile",
+    "RelativePath": "api/AdminContent/media/upload",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "GetTestimonialCategories",
+    "RelativePath": "api/AdminContent/testimonial-categories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "CreateTestimonialCategory",
+    "RelativePath": "api/AdminContent/testimonial-categories",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.TestimonialCategoryCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "UpdateTestimonialCategory",
+    "RelativePath": "api/AdminContent/testimonial-categories/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.TestimonialCategoryCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AdminContentIteration5Controller",
+    "Method": "DeleteTestimonialCategory",
+    "RelativePath": "api/AdminContent/testimonial-categories/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AnnouncementsController",
+    "Method": "GetAnnouncements",
+    "RelativePath": "api/Announcements",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Announcement, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AnnouncementsController",
+    "Method": "CreateAnnouncement",
+    "RelativePath": "api/Announcements",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.AnnouncementCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AnnouncementsController",
+    "Method": "GetAnnouncement",
+    "RelativePath": "api/Announcements/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TutorConnect.API.Models.Announcement",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AnnouncementsController",
+    "Method": "UpdateAnnouncement",
+    "RelativePath": "api/Announcements/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.AnnouncementUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AnnouncementsController",
+    "Method": "DeleteAnnouncement",
+    "RelativePath": "api/Announcements/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AnnouncementsController",
+    "Method": "GetModuleAnnouncements",
+    "RelativePath": "api/Announcements/module/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Announcement, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AnnouncementsController",
+    "Method": "GetStudentAnnouncements",
+    "RelativePath": "api/Announcements/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Announcement, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AnnouncementsController",
+    "Method": "GetWebsiteAnnouncements",
+    "RelativePath": "api/Announcements/website",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Announcement, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "GetAssignments",
+    "RelativePath": "api/Assignments",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Assignment, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "CreateAssignment",
+    "RelativePath": "api/Assignments",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.AssignmentCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "GradeSubmission",
+    "RelativePath": "api/Assignments/{assignmentId}/submissions/{submissionId}/grade",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "assignmentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "submissionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "gradeRequest",
+        "Type": "TutorConnect.API.DTOs.GradeSubmissionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "UpdateAssignment",
+    "RelativePath": "api/Assignments/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.AssignmentCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "DeleteAssignment",
+    "RelativePath": "api/Assignments/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "DownloadBrief",
+    "RelativePath": "api/Assignments/{id}/download-brief",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "GetAssignmentSubmissions",
+    "RelativePath": "api/Assignments/{id}/submissions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "SubmitAssignment",
+    "RelativePath": "api/Assignments/{id}/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "ContentType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ContentDisposition",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Headers",
+        "Type": "Microsoft.AspNetCore.Http.IHeaderDictionary",
+        "IsRequired": false
+      },
+      {
+        "Name": "Length",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FileName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "ToggleVisibility",
+    "RelativePath": "api/Assignments/{id}/visibility",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ResourceVisibilityDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "GetModuleAssignments",
+    "RelativePath": "api/Assignments/module/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "studentId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "DownloadSubmission",
+    "RelativePath": "api/Assignments/submissions/{submissionId}/download",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "submissionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AssignmentsController",
+    "Method": "UploadBrief",
+    "RelativePath": "api/Assignments/upload-brief",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AttendanceController",
+    "Method": "MarkAttendance",
+    "RelativePath": "api/Attendance",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.AttendanceCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AttendanceController",
+    "Method": "GetAttendance",
+    "RelativePath": "api/Attendance/session/{sessionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AuditLogsController",
+    "Method": "GetAll",
+    "RelativePath": "api/AuditLogs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "type",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AuthController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/Auth/change-password/{userId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ChangePasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AuthController",
+    "Method": "ForgotPassword",
+    "RelativePath": "api/Auth/forgot-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ForgotPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/Auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.UserLoginDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AuthController",
+    "Method": "Register",
+    "RelativePath": "api/Auth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.UserRegisterDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.AuthController",
+    "Method": "ResetPassword",
+    "RelativePath": "api/Auth/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ResetPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingsController",
+    "Method": "GetBookings",
+    "RelativePath": "api/Bookings",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Booking, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingsController",
+    "Method": "BookSession",
+    "RelativePath": "api/Bookings",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.BookingCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingsController",
+    "Method": "CancelBooking",
+    "RelativePath": "api/Bookings/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingsController",
+    "Method": "GetStudentBookings",
+    "RelativePath": "api/Bookings/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingSlotsController",
+    "Method": "GetSlots",
+    "RelativePath": "api/BookingSlots",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingSlotsController",
+    "Method": "CreateSlot",
+    "RelativePath": "api/BookingSlots",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.BookingSlotCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingSlotsController",
+    "Method": "UpdateSlot",
+    "RelativePath": "api/BookingSlots/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.BookingSlotCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingSlotsController",
+    "Method": "DeleteSlot",
+    "RelativePath": "api/BookingSlots/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingSlotsController",
+    "Method": "GetAvailableSlots",
+    "RelativePath": "api/BookingSlots/available",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Booking_Slot, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingSlotsController",
+    "Method": "GetAvailableSlotsByModule",
+    "RelativePath": "api/BookingSlots/available/module/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingSlotsController",
+    "Method": "GetAvailableSlotsForStudent",
+    "RelativePath": "api/BookingSlots/available/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.BookingSlotsController",
+    "Method": "GetSlotsByTutor",
+    "RelativePath": "api/BookingSlots/tutor/{tutorId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tutorId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.EnrollmentController",
+    "Method": "CheckEnrollment",
+    "RelativePath": "api/Enrollment/check/{studentId}/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.EnrollmentController",
+    "Method": "EnrollInModule",
+    "RelativePath": "api/Enrollment/enroll",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.EnrollmentCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.EnrollmentController",
+    "Method": "GetModuleStudents",
+    "RelativePath": "api/Enrollment/module/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[TutorConnect.API.DTOs.EnrollmentViewDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.EnrollmentController",
+    "Method": "GetStudentModules",
+    "RelativePath": "api/Enrollment/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[TutorConnect.API.DTOs.EnrollmentViewDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.EnrollmentController",
+    "Method": "UnenrollFromModule",
+    "RelativePath": "api/Enrollment/unenroll/{moduleCode}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.EnrollmentUnenrollDto",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.GradesController",
+    "Method": "GetStudentAverageGrade",
+    "RelativePath": "api/Grades/average/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.GradesController",
+    "Method": "GetQuizGrade",
+    "RelativePath": "api/Grades/quiz/{quizId}/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TutorConnect.API.DTOs.GradeViewDto",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.GradesController",
+    "Method": "GetStudentGrades",
+    "RelativePath": "api/Grades/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[TutorConnect.API.DTOs.GradeViewDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.GradesController",
+    "Method": "GetStudentModuleGrades",
+    "RelativePath": "api/Grades/student/{studentId}/module/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[TutorConnect.API.DTOs.GradeViewDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.LogHoursController",
+    "Method": "GetLoggedHours",
+    "RelativePath": "api/LogHours",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.LogHoursController",
+    "Method": "LogTime",
+    "RelativePath": "api/LogHours",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.LogHoursCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TutorConnect.API.Models.Log_Hours",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.LogHoursController",
+    "Method": "UpdateLogHours",
+    "RelativePath": "api/LogHours/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.LogHoursCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.LogHoursController",
+    "Method": "DeleteLogHours",
+    "RelativePath": "api/LogHours/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.LogHoursController",
+    "Method": "ApproveLogHours",
+    "RelativePath": "api/LogHours/{id}/approve",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "adminId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.LogHoursController",
+    "Method": "RejectLogHours",
+    "RelativePath": "api/LogHours/{id}/reject",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.LogHoursController",
+    "Method": "GetPendingHours",
+    "RelativePath": "api/LogHours/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.LogHoursController",
+    "Method": "GetTutorHours",
+    "RelativePath": "api/LogHours/tutor/{tutorId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tutorId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Log_Hours, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleResourcesController",
+    "Method": "GetResources",
+    "RelativePath": "api/ModuleResources",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Module_Resource, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleResourcesController",
+    "Method": "CreateResource",
+    "RelativePath": "api/ModuleResources",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ResourceCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleResourcesController",
+    "Method": "UpdateResource",
+    "RelativePath": "api/ModuleResources/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ResourceCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleResourcesController",
+    "Method": "DeleteResource",
+    "RelativePath": "api/ModuleResources/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleResourcesController",
+    "Method": "ToggleVisibility",
+    "RelativePath": "api/ModuleResources/{id}/visibility",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ResourceVisibilityDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleResourcesController",
+    "Method": "SetFolderVisibility",
+    "RelativePath": "api/ModuleResources/folder-visibility",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.FolderVisibilityDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleResourcesController",
+    "Method": "GetResourcesByModule",
+    "RelativePath": "api/ModuleResources/module/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleResourcesController",
+    "Method": "UploadFile",
+    "RelativePath": "api/ModuleResources/upload",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModulesController",
+    "Method": "GetModules",
+    "RelativePath": "api/Modules",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.DTOs.ModuleReturnDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModulesController",
+    "Method": "CreateModule",
+    "RelativePath": "api/Modules",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ModuleCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TutorConnect.API.Models.Module",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModulesController",
+    "Method": "UpdateModule",
+    "RelativePath": "api/Modules/{code}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "code",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ModuleCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModulesController",
+    "Method": "DeleteModule",
+    "RelativePath": "api/Modules/{code}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "code",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleWishlistController",
+    "Method": "GetAll",
+    "RelativePath": "api/ModuleWishlist",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleWishlistController",
+    "Method": "Create",
+    "RelativePath": "api/ModuleWishlist",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.Models.Module_Wishlist",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleWishlistController",
+    "Method": "Delete",
+    "RelativePath": "api/ModuleWishlist/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ModuleWishlistController",
+    "Method": "GetByStudent",
+    "RelativePath": "api/ModuleWishlist/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.NotificationsController",
+    "Method": "MarkAsRead",
+    "RelativePath": "api/Notifications/{id}/read",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.NotificationsController",
+    "Method": "GetUserNotifications",
+    "RelativePath": "api/Notifications/user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.DTOs.NotificationReturnDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.NotificationsController",
+    "Method": "MarkAllRead",
+    "RelativePath": "api/Notifications/user/{userId}/read-all",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.PaymentsController",
+    "Method": "MakePayment",
+    "RelativePath": "api/Payments",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.PaymentCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TutorConnect.API.Models.Payment",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.PaymentsController",
+    "Method": "GetStudentPayments",
+    "RelativePath": "api/Payments/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.DTOs.PaymentReturnDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "GetQuizzes",
+    "RelativePath": "api/Quizzes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.Models.Quiz, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "CreateQuiz",
+    "RelativePath": "api/Quizzes",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.QuizCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "UpdateQuiz",
+    "RelativePath": "api/Quizzes/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.QuizCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "DeleteQuiz",
+    "RelativePath": "api/Quizzes/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "GetQuizWithQuestions",
+    "RelativePath": "api/Quizzes/{id}/questions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "SaveQuizQuestions",
+    "RelativePath": "api/Quizzes/{id}/questions",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "questions",
+        "Type": "System.Collections.Generic.List\u00601[[TutorConnect.API.DTOs.QuizQuestionSaveDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "StartQuiz",
+    "RelativePath": "api/Quizzes/{id}/start",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "GetQuizResult",
+    "RelativePath": "api/Quizzes/{id}/student/{studentId}/result",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "GetSubmissions",
+    "RelativePath": "api/Quizzes/{id}/submissions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "SubmitQuiz",
+    "RelativePath": "api/Quizzes/{id}/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.QuizSubmitDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "ToggleVisibility",
+    "RelativePath": "api/Quizzes/{id}/visibility",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ResourceVisibilityDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.QuizzesController",
+    "Method": "GetModuleQuizzes",
+    "RelativePath": "api/Quizzes/module/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "studentId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReportsController",
+    "Method": "GetMonthlyIncome",
+    "RelativePath": "api/Reports/monthly-income",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReportsController",
+    "Method": "GetMonthlyStudentsReport",
+    "RelativePath": "api/Reports/monthly-students",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReportsController",
+    "Method": "GetPopularModulesReport",
+    "RelativePath": "api/Reports/popular-modules",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReportsController",
+    "Method": "GetSessionsReport",
+    "RelativePath": "api/Reports/sessions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReportsController",
+    "Method": "GetTutorHoursReport",
+    "RelativePath": "api/Reports/tutor-hours",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReportsController",
+    "Method": "GetTutorRatingsReport",
+    "RelativePath": "api/Reports/tutor-ratings",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "CreateSessionReview",
+    "RelativePath": "api/Reviews/session",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.SessionReviewCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "DeleteSessionReview",
+    "RelativePath": "api/Reviews/session/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "GetSessionReviews",
+    "RelativePath": "api/Reviews/session/{sessionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "GetStudentSessionReviews",
+    "RelativePath": "api/Reviews/session/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "GetTutorSessionReviews",
+    "RelativePath": "api/Reviews/session/tutor/{tutorId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tutorId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "CreateTutorReview",
+    "RelativePath": "api/Reviews/tutor",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.TutorReviewCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "DeleteTutorReview",
+    "RelativePath": "api/Reviews/tutor/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "GetTutorReviews",
+    "RelativePath": "api/Reviews/tutor/{tutorId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tutorId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "GetTutorReviewsByStudent",
+    "RelativePath": "api/Reviews/tutor/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.ReviewsController",
+    "Method": "GetTutorsForStudent",
+    "RelativePath": "api/Reviews/tutors-for-student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TestimonialsController",
+    "Method": "CreateTestimonial",
+    "RelativePath": "api/Testimonials",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.TestimonialCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TestimonialsController",
+    "Method": "UpdateTestimonial",
+    "RelativePath": "api/Testimonials/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.TestimonialUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TestimonialsController",
+    "Method": "DeleteTestimonial",
+    "RelativePath": "api/Testimonials/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TestimonialsController",
+    "Method": "ApproveTestimonial",
+    "RelativePath": "api/Testimonials/{id}/approve",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TestimonialsController",
+    "Method": "GetApprovedTestimonials",
+    "RelativePath": "api/Testimonials/approved",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TestimonialsController",
+    "Method": "GetCategories",
+    "RelativePath": "api/Testimonials/categories",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TestimonialsController",
+    "Method": "GetPendingTestimonials",
+    "RelativePath": "api/Testimonials/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TestimonialsController",
+    "Method": "GetStudentTestimonials",
+    "RelativePath": "api/Testimonials/student/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TutorModuleController",
+    "Method": "AssignTutorToModule",
+    "RelativePath": "api/TutorModule/assign",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.TutorModuleAssignDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TutorModuleController",
+    "Method": "CheckAssignment",
+    "RelativePath": "api/TutorModule/check/{tutorId}/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tutorId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TutorModuleController",
+    "Method": "GetTutorsForModule",
+    "RelativePath": "api/TutorModule/module/{moduleCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[TutorConnect.API.DTOs.TutorModuleViewDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TutorModuleController",
+    "Method": "GetModulesForTutor",
+    "RelativePath": "api/TutorModule/tutor/{tutorId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tutorId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[TutorConnect.API.DTOs.TutorModuleViewDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.TutorModuleController",
+    "Method": "UnassignTutorFromModule",
+    "RelativePath": "api/TutorModule/unassign/{tutorId}/{moduleCode}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tutorId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "moduleCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "GetAllUsers",
+    "RelativePath": "api/Users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TutorConnect.API.DTOs.UserProfileDto, TutorConnect.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "GetUser",
+    "RelativePath": "api/Users/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TutorConnect.API.DTOs.UserProfileDto",
+        "MediaTypes": [
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "UpdateUser",
+    "RelativePath": "api/Users/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.UserProfileUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "DeleteUser",
+    "RelativePath": "api/Users/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "AdminUpdateUser",
+    "RelativePath": "api/Users/{id}/admin",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.AdminUserUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "UpdateAdminProfile",
+    "RelativePath": "api/Users/{id}/admin-profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "TutorConnect.API.DTOs.AdminProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "ChangeUserRole",
+    "RelativePath": "api/Users/{id}/role",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.ChangeRoleDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "GetRoleProfile",
+    "RelativePath": "api/Users/{id}/role-profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "UpdateStudentProfile",
+    "RelativePath": "api/Users/{id}/student-profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "TutorConnect.API.DTOs.StudentProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.UsersController",
+    "Method": "UpdateTutorProfile",
+    "RelativePath": "api/Users/{id}/tutor-profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "TutorConnect.API.DTOs.TutorProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

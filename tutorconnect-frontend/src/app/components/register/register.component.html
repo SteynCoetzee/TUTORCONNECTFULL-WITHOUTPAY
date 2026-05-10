@@ -1,0 +1,121 @@
+<div class="register-page">
+  <div class="brand">
+    <div class="brand-avatar">ST</div>
+    <span class="brand-name">Smiths<br><small>Tutoring</small></span>
+  </div>
+
+  <div class="register-card">
+    <h2 class="register-title">Create an Account</h2>
+    <p class="register-subtitle">Join TutorConnect and start learning today</p>
+
+    @if (errorMessage) {
+      <div class="alert alert-error">
+        <span class="material-icons" style="font-size:18px">error_outline</span>
+        {{ errorMessage }}
+      </div>
+    }
+    @if (successMessage) {
+      <div class="alert alert-success">
+        <span class="material-icons" style="font-size:18px">check_circle</span>
+        {{ successMessage }}
+      </div>
+    }
+
+    <form (ngSubmit)="onRegister()" #regForm="ngForm">
+
+      <!-- Name row -->
+      <div class="grid-2">
+        <div class="form-group">
+          <label><span class="material-icons label-icon">person</span> First Name <span class="req">*</span></label>
+          <input type="text" class="form-control" placeholder="John" name="firstName" [(ngModel)]="firstName" required />
+        </div>
+        <div class="form-group">
+          <label><span class="material-icons label-icon">person</span> Last Name <span class="req">*</span></label>
+          <input type="text" class="form-control" placeholder="Doe" name="lastName" [(ngModel)]="lastName" required />
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label><span class="material-icons label-icon">email</span> Email Address <span class="req">*</span></label>
+        <input type="email" class="form-control" placeholder="you@university.edu" name="email" [(ngModel)]="email" required />
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label><span class="material-icons label-icon">lock</span> Password <span class="req">*</span></label>
+        <div class="input-wrapper">
+          <input [type]="showPassword ? 'text' : 'password'" class="form-control"
+            placeholder="Min. 6 characters" name="password" [(ngModel)]="password" required minlength="6" />
+          <button type="button" class="toggle-pw" (click)="showPassword = !showPassword">
+            <span class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label><span class="material-icons label-icon">phone</span> Phone Number</label>
+        <input type="tel" class="form-control" placeholder="+27 82 000 0000" name="phone" [(ngModel)]="phone" />
+      </div>
+
+      <!-- Address -->
+      <div class="form-group">
+        <label><span class="material-icons label-icon">home</span> Address</label>
+        <input type="text" class="form-control" placeholder="123 Main Street, City" name="address" [(ngModel)]="address" />
+      </div>
+
+      <!-- Bio -->
+      <div class="form-group">
+        <label><span class="material-icons label-icon">notes</span> Bio</label>
+        <textarea class="form-control" rows="2" placeholder="Tell us a little about yourself..." name="bio" [(ngModel)]="bio"></textarea>
+      </div>
+
+      <!-- Role -->
+      <div class="form-group">
+        <label><span class="material-icons label-icon">badge</span> I want to register as a... <span class="req">*</span></label>
+        <div class="role-options">
+          <label class="role-option" [class.selected]="selectedRole === 'Student'">
+            <input type="radio" name="role" value="Student" [(ngModel)]="selectedRole" />
+            <span class="material-icons role-icon">school</span>
+            <span class="role-label">Student</span>
+          </label>
+          <label class="role-option" [class.selected]="selectedRole === 'Tutor'">
+            <input type="radio" name="role" value="Tutor" [(ngModel)]="selectedRole" />
+            <span class="material-icons role-icon">cast_for_education</span>
+            <span class="role-label">Tutor</span>
+          </label>
+        </div>
+      </div>
+
+      @if (selectedRole === 'Tutor') {
+        <div class="pending-notice">
+          <span class="material-icons">info</span>
+          <div>
+            <strong>Tutor access requires admin approval.</strong>
+            <p>Your account will start with student access. An admin must promote your role to Tutor before you can manage slots and materials.</p>
+          </div>
+        </div>
+      }
+
+      <button type="submit" class="btn btn-primary btn-full mt-16" [disabled]="loading">
+        @if (loading) { <span class="spinner-sm"></span> }
+        {{ loading ? 'Creating account...' : 'Create Account' }}
+      </button>
+    </form>
+
+    <div class="divider">OR</div>
+
+    <p class="signin-row">
+      Already have an account? <a routerLink="/login"><strong>Sign in</strong></a>
+    </p>
+    <p class="back-home">
+      <a routerLink="/home">
+        <span class="material-icons" style="font-size:14px;vertical-align:middle">arrow_back</span>
+        Back to home
+      </a>
+    </p>
+  </div>
+
+  <p class="footer-legal">By creating an account, you agree to our Terms of Service and Privacy Policy</p>
+</div>

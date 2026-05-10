@@ -1,0 +1,238 @@
+:host { display: block; min-height: 100vh; background: #fff; }
+
+/* ── Hero load animations (play immediately on page load) ─────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideFromRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.hero-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards;
+}
+.hero-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.9s ease forwards;
+}
+.slide-from-right {
+  opacity: 0;
+  animation: slideFromRight 0.55s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+}
+
+/* ── Scroll-triggered animations (start hidden, .visible triggers them) ── */
+.reveal,
+.reveal-left,
+.reveal-right,
+.reveal-up {
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+/* Initial positions before animation */
+.reveal      { transform: translateY(40px); }
+.reveal-left { transform: translateX(-60px); }
+.reveal-right{ transform: translateX(60px); }
+.reveal-up   { transform: translateY(50px); }
+
+/* When .visible is added by Intersection Observer */
+.reveal.visible,
+.reveal-left.visible,
+.reveal-right.visible,
+.reveal-up.visible {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* ── Nav ─────────────────────────────────────────────────────── */
+.landing-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: var(--topnav-height);
+  background: var(--dark-bg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-brand { display: flex; align-items: center; gap: 12px; }
+.nav-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 16px;
+}
+.brand-text { display: flex; flex-direction: column; }
+.brand-title { color: #fff; font-weight: 700; font-size: 16px; line-height: 1.2; }
+.brand-sub { color: rgba(255,255,255,0.65); font-size: 12px; }
+
+.nav-links { display: flex; gap: 4px; margin-left: auto; margin-right: 16px; }
+.nav-auth { display: flex; gap: 8px; }
+.nav-link {
+  padding: 7px 16px;
+  border-radius: var(--radius);
+  color: rgba(255,255,255,0.75);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-link:hover { color: #fff; background: rgba(255,255,255,0.1); text-decoration: none; }
+
+.btn-outline-primary {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.6);
+  padding: 8px 20px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-outline-primary:hover { background: rgba(255,255,255,0.1); text-decoration: none; }
+
+/* ── Hero ────────────────────────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+  padding: 80px 80px 60px;
+  min-height: calc(100vh - var(--topnav-height));
+  background: var(--primary);
+  width: 100%;
+  box-sizing: border-box;
+}
+.hero-content { color: #fff; }
+.hero-title { font-size: 52px; font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 20px; }
+.hero-text { font-size: 16px; color: rgba(255,255,255,0.85); line-height: 1.7; margin-bottom: 32px; }
+.hero-actions { display: flex; gap: 14px; }
+.hero-actions .btn { padding: 12px 26px; font-size: 15px; text-decoration: none; }
+.hero-actions .btn-secondary {
+  background: transparent; color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.6);
+  cursor: pointer;
+}
+.hero-actions .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+.hero-image img {
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* ── About the Owner ─────────────────────────────────────────── */
+.about-section {
+  background: #fff;
+  padding: 100px 80px;
+}
+.about-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(280px, 400px) 1fr;
+  gap: 70px;
+  align-items: center;
+}
+.about-image-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.about-photo {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  max-height: 540px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  display: block;
+}
+.about-tag {
+  display: inline-block;
+  background: var(--primary-light, #e0f2fe);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 1.25rem;
+}
+.about-name {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--dark-bg, #1e293b);
+  margin: 0 0 1.5rem;
+  line-height: 1.15;
+}
+.about-role {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 1.25rem;
+}
+.about-desc {
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+/* ── Development Team ───────────────────────────────────────── */
+.team-section {
+  background: #f8fafc;
+  padding: 100px 80px;
+  border-top: 1px solid #e2e8f0;
+}
+.team-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+.team-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--dark-bg, #1e293b);
+  margin: 0.5rem 0 2.5rem;
+}
+.team-photo-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+}
+.team-photo {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; padding: 40px 20px; }
+  .hero-title { font-size: 36px; }
+  .hero-image { display: none; }
+
+  .about-section, .team-section { padding: 60px 24px; }
+  .about-container { grid-template-columns: 1fr; gap: 40px; }
+  .about-photo { height: 320px; }
+}

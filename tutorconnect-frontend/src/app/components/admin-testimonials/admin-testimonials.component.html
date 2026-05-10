@@ -1,0 +1,268 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <span class="material-icons">star_border</span>
+      Testimonials
+    </h1>
+    <p class="page-subtitle">
+      @if (userRole === 'Admin') { Review, approve, and manage student testimonials. }
+      @else { Read testimonials and share your experience. }
+    </p>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success">
+      <span class="material-icons" style="font-size:18px">check_circle</span>
+      {{ successMessage }}
+    </div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">
+      <span class="material-icons" style="font-size:18px">error_outline</span>
+      {{ errorMessage }}
+    </div>
+  }
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'approved'" (click)="activeTab = 'approved'">
+      <span class="material-icons">star</span> Approved
+      <span class="badge badge-teal ml-4">{{ approvedTestimonials.length }}</span>
+    </button>
+    @if (userRole === 'Admin') {
+      <button class="tab-btn" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+        <span class="material-icons">pending</span> Pending Review
+        <span class="badge badge-orange ml-4">{{ pendingTestimonials.length }}</span>
+      </button>
+    }
+    @if (userRole !== 'Admin') {
+      <button class="tab-btn" [class.active]="activeTab === 'submit'" (click)="activeTab = 'submit'">
+        <span class="material-icons">rate_review</span> Submit Testimonial
+      </button>
+    }
+    @if (userRole === 'Admin') {
+      <button class="tab-btn" [class.active]="activeTab === 'categories'" (click)="activeTab = 'categories'">
+        <span class="material-icons">label</span> Categories
+      </button>
+    }
+  </div>
+
+  <!-- ── APPROVED ────────────────────────────────────────────────────── -->
+  @if (activeTab === 'approved') {
+    @if (loading) { <div class="loading-msg">Loading...</div> }
+    @if (!loading && approvedTestimonials.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">star_outline</span>
+        <p>No approved testimonials yet.</p>
+      </div>
+    }
+    <div class="testimonial-grid">
+      @for (t of approvedTestimonials; track t.testimonial_ID) {
+
+        @if (deleteTargetId === t.testimonial_ID) {
+          <div class="testimonial-card inline-confirm">
+            <span class="material-icons ic-icon">delete_forever</span>
+            <p class="ic-title">Delete Testimonial?</p>
+            <p class="ic-msg">"{{ t.testimonial_Description | slice:0:60 }}..."</p>
+            <p class="ic-warn">This cannot be undone.</p>
+            <div class="ic-btns">
+              <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+              <button class="btn btn-danger btn-sm" (click)="deleteTestimonial()">
+                <span class="material-icons">delete</span> Delete
+              </button>
+            </div>
+          </div>
+
+        } @else if (editingTestimonial?.testimonial_ID === t.testimonial_ID) {
+          <div class="testimonial-card inline-edit">
+            <p class="inline-edit-title">Edit Testimonial</p>
+            <div class="form-group" style="width:100%">
+              <label>Category</label>
+              <select class="form-control" [(ngModel)]="editCategoryId" name="editCat">
+                @for (c of categories; track c.testimonial_Category_ID) {
+                  <option [ngValue]="c.testimonial_Category_ID">{{ c.test_Category_Name }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group" style="width:100%">
+              <label>Testimonial</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="editDescription" name="editDesc"></textarea>
+            </div>
+            <div class="ic-btns">
+              <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">Cancel</button>
+              <button class="btn btn-primary btn-sm" (click)="saveEdit()" [disabled]="saving">
+                @if (saving) { <span class="spinner-sm"></span> } Save
+              </button>
+            </div>
+          </div>
+
+        } @else {
+          <div class="testimonial-card">
+            <div class="t-header">
+              <span class="badge badge-success">Approved</span>
+              <span class="t-category">{{ getCategoryName(t.testimonial_Category_ID) }}</span>
+            </div>
+            <p class="t-body">"{{ t.testimonial_Description }}"</p>
+            <div class="t-footer">
+              <span class="t-meta">Student #{{ t.student_ID }}</span>
+              @if (userRole === 'Admin') {
+                <div class="t-actions">
+                  <button class="btn btn-secondary btn-sm" (click)="openEdit(t)">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="confirmDelete(t.testimonial_ID)">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+      }
+    </div>
+  }
+
+  <!-- ── PENDING (ADMIN) ──────────────────────────────────────────────── -->
+  @if (activeTab === 'pending' && userRole === 'Admin') {
+    @if (loading) { <div class="loading-msg">Loading...</div> }
+    @if (!loading && pendingTestimonials.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">pending_actions</span>
+        <p>No testimonials awaiting review.</p>
+      </div>
+    }
+    @for (t of pendingTestimonials; track t.testimonial_ID) {
+
+      @if (deleteTargetId === t.testimonial_ID) {
+        <div class="card inline-confirm" style="margin-bottom:12px">
+          <span class="material-icons ic-icon">delete_forever</span>
+          <p class="ic-title">Delete Testimonial?</p>
+          <p class="ic-msg">"{{ t.testimonial_Description | slice:0:60 }}..."</p>
+          <p class="ic-warn">This cannot be undone.</p>
+          <div class="ic-btns">
+            <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteTestimonial()">
+              <span class="material-icons">delete</span> Delete
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="card" style="margin-bottom:12px">
+          <div class="pending-row">
+            <div class="pending-info">
+              <div class="pending-meta">
+                <span class="badge badge-orange">Pending</span>
+                <span class="t-category">{{ getCategoryName(t.testimonial_Category_ID) }}</span>
+                <span class="t-meta">Student #{{ t.student_ID }}</span>
+              </div>
+              <p class="t-body mt-8">"{{ t.testimonial_Description }}"</p>
+            </div>
+            <div class="pending-actions">
+              <button class="btn btn-primary btn-sm" (click)="approve(t.testimonial_ID)">
+                <span class="material-icons">check</span> Approve
+              </button>
+              <button class="btn btn-danger btn-sm" (click)="confirmDelete(t.testimonial_ID)">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+    }
+  }
+
+  <!-- ── SUBMIT (STUDENT / TUTOR) ────────────────────────────────────── -->
+  @if (activeTab === 'submit' && userRole !== 'Admin') {
+    <div class="card form-card">
+      <h3 class="section-title mb-16">Share Your Experience</h3>
+      <div class="form-group">
+        <label>Category</label>
+        <select class="form-control" [(ngModel)]="submitCategoryId" name="submitCat">
+          <option [ngValue]="null" disabled>Select a category</option>
+          @for (c of categories; track c.testimonial_Category_ID) {
+            <option [ngValue]="c.testimonial_Category_ID">{{ c.test_Category_Name }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group mt-12">
+        <label>Your Testimonial</label>
+        <textarea class="form-control" rows="4" [(ngModel)]="submitDescription" name="submitDesc"
+                  placeholder="Share your experience with TutorConnect..."></textarea>
+      </div>
+      <button class="btn btn-primary mt-16" (click)="submitTestimonial()" [disabled]="submitting">
+        <span class="material-icons">send</span>
+        {{ submitting ? 'Submitting...' : 'Submit Testimonial' }}
+      </button>
+      <p class="form-hint">Your testimonial will be visible once approved by an admin.</p>
+    </div>
+  }
+
+  <!-- ── CATEGORIES (ADMIN) ─────────────────────────────────────────── -->
+  @if (activeTab === 'categories' && userRole === 'Admin') {
+    <div class="card">
+      <div class="section-header">
+        <h3 class="section-title">Testimonial Categories</h3>
+        <button class="btn btn-primary btn-sm" (click)="openCatForm()">
+          <span class="material-icons">add</span> Add Category
+        </button>
+      </div>
+
+      @if (showCatForm) {
+        <div class="inline-form mt-12">
+          <div class="form-group">
+            <label>Category Name</label>
+            <input class="form-control" [(ngModel)]="catName" name="catName" placeholder="e.g. Tutor Experience" />
+          </div>
+          <div class="form-actions mt-12">
+            <button class="btn btn-secondary" (click)="showCatForm = false">Cancel</button>
+            <button class="btn btn-primary" (click)="saveCat()" [disabled]="savingCat">
+              {{ savingCat ? 'Saving...' : (editingCat ? 'Update' : 'Create') }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (categories.length === 0 && !showCatForm) {
+        <div class="empty-state">
+          <span class="material-icons">label_off</span>
+          <p>No categories yet. Add one above.</p>
+        </div>
+      }
+
+      <div class="cat-list mt-12">
+        @for (c of categories; track c.testimonial_Category_ID) {
+
+          @if (deleteCatId === c.testimonial_Category_ID) {
+            <div class="cat-row inline-confirm" style="min-height:80px">
+              <span class="material-icons ic-icon">delete_forever</span>
+              <p class="ic-title">Delete Category?</p>
+              <p class="ic-msg"><strong>{{ c.test_Category_Name }}</strong></p>
+              <div class="ic-btns">
+                <button class="btn btn-secondary btn-sm" (click)="cancelDeleteCat()">Cancel</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteCat()">
+                  <span class="material-icons">delete</span> Delete
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="cat-row">
+              <span class="material-icons" style="color:var(--primary);font-size:18px">label</span>
+              <span class="cat-name">{{ c.test_Category_Name }}</span>
+              <div class="cat-actions">
+                <button class="btn btn-secondary btn-sm" (click)="openCatForm(c)">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="confirmDeleteCat(c.testimonial_Category_ID)">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          }
+
+        }
+      </div>
+    </div>
+  }
+</div>

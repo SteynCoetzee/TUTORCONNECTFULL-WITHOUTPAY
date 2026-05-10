@@ -1,0 +1,421 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      @if (role === 'Admin') {
+        <h1 class="page-title"><span class="material-icons">menu_book</span> Module Management</h1>
+        <p class="page-subtitle">Add, edit, and remove modules. Click Manage to view tutors and materials.</p>
+      } @else if (role === 'Tutor') {
+        <h1 class="page-title"><span class="material-icons">menu_book</span> Modules</h1>
+        <p class="page-subtitle">Click an assigned module to add materials, quizzes, and assignments.</p>
+      } @else {
+        <h1 class="page-title"><span class="material-icons">menu_book</span> Modules</h1>
+        <p class="page-subtitle">Browse and enrol in modules. Click an enrolled module to view materials.</p>
+      }
+    </div>
+    @if (role === 'Admin') {
+      @if (adminTab === 'modules') {
+        <button class="btn btn-primary" (click)="addNewModule()">
+          <span class="material-icons">add</span> Add Module
+        </button>
+      }
+    }
+    @if (role === 'Student' && studentTab === 'all') {
+      <div class="enrol-header-area">
+        @if (selectedForEnroll.size > 0) {
+          <span class="selection-count">{{ selectedForEnroll.size }} selected</span>
+          <button class="btn btn-secondary btn-sm" (click)="clearSelection()" title="Clear selection">
+            <span class="material-icons">close</span>
+          </button>
+        }
+        <button class="btn btn-primary" (click)="enrollSelected()"
+                [disabled]="selectedForEnroll.size === 0 || enrollingAll">
+          @if (enrollingAll) { <span class="spinner-sm"></span> }
+          <span class="material-icons">school</span>
+          Enrol@if (selectedForEnroll.size > 0) { ({{ selectedForEnroll.size }}) }
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+  }
+
+  <!-- Tutor tabs -->
+  @if (role === 'Tutor') {
+    <div class="student-tabs">
+      <button class="student-tab" [class.active]="tutorTab === 'assigned'" (click)="tutorTab = 'assigned'">
+        <span class="material-icons">check_circle</span> Assigned
+        @if (assignedModuleCodes.size > 0) {
+          <span class="tab-count">{{ assignedModuleCodes.size }}</span>
+        }
+      </button>
+      <button class="student-tab" [class.active]="tutorTab === 'all'" (click)="tutorTab = 'all'">
+        <span class="material-icons">apps</span> All Modules
+      </button>
+    </div>
+  }
+
+  <!-- Student tabs -->
+  @if (role === 'Student') {
+    <div class="student-tabs">
+      <button class="student-tab" [class.active]="studentTab === 'enrolled'" (click)="switchTab('enrolled')">
+        <span class="material-icons">bookmark</span> Enrolled
+        @if (enrolledModuleCodes.size > 0) {
+          <span class="tab-count">{{ enrolledModuleCodes.size }}</span>
+        }
+      </button>
+      <button class="student-tab" [class.active]="studentTab === 'all'" (click)="switchTab('all')">
+        <span class="material-icons">apps</span> All Modules
+      </button>
+    </div>
+
+  }
+
+  <!-- Admin tabs -->
+  @if (role === 'Admin') {
+    <div class="student-tabs">
+      <button class="student-tab" [class.active]="adminTab === 'modules'" (click)="adminTab = 'modules'">
+        <span class="material-icons">menu_book</span> Modules
+      </button>
+      <button class="student-tab" [class.active]="adminTab === 'wishlist'" (click)="adminTab = 'wishlist'">
+        <span class="material-icons">bookmark_add</span> Module Wishlist
+        @if (wishlistItems.length > 0) {
+          <span class="tab-count">{{ wishlistItems.length }}</span>
+        }
+      </button>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading modules...</p></div>
+  } @else {
+
+    <!-- ─── Admin Wishlist tab ─────────────────────────────────────────── -->
+    @if (role === 'Admin' && adminTab === 'wishlist') {
+      @if (wishlistLoading) {
+        <div class="loading-state"><div class="spinner"></div><p>Loading wishlist...</p></div>
+      } @else if (wishlistItems.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">bookmark_border</span>
+          <p>No module suggestions from students yet.</p>
+        </div>
+      } @else {
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Module Code</th>
+                <th>Module Name</th>
+                <th>Suggested By</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of wishlistItems; track item.wishlist_ID) {
+                <tr>
+                  <td><span class="badge badge-teal">{{ item.module_Code }}</span></td>
+                  <td><strong>{{ item.module_Name }}</strong></td>
+                  <td>{{ item.studentName }}</td>
+                  <td style="font-size:0.82rem;color:var(--text-muted)">{{ item.date_Submitted | date:'d MMM yyyy' }}</td>
+                  <td>
+                    <button class="btn btn-secondary btn-sm" (click)="dismissWishlist(item.wishlist_ID)"
+                            [disabled]="dismissingId === item.wishlist_ID">
+                      @if (dismissingId === item.wishlist_ID) { <span class="spinner-sm"></span> }
+                      Dismiss
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+
+    <!-- ─── Tutor: Assigned tab ──────────────────────────────────────────── -->
+    @if (role === 'Tutor' && tutorTab === 'assigned') {
+      @if (assignedModules.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">lock</span>
+          <p>You are not assigned to any modules yet. Contact an admin.</p>
+        </div>
+      } @else {
+        <div class="modules-grid">
+          @for (mod of assignedModules; track mod.module_Code; let i = $index) {
+            <div class="module-card assigned" (click)="openModule(mod.module_Code)">
+              <div class="module-header">
+                <div class="module-icon-wrap" [style.background]="getModuleColor(i)">
+                  <span class="material-icons">menu_book</span>
+                </div>
+                <div class="module-badges">
+                  <span class="badge badge-teal">{{ mod.module_Code }}</span>
+                  @if (mod.module_Price > 0) {
+                    <span class="badge badge-orange">R{{ mod.module_Price }}/month</span>
+                  }
+                  <span class="badge badge-green">Assigned</span>
+                </div>
+              </div>
+              <div class="module-name-row">
+                <h3 class="module-name">{{ mod.module_Name }}</h3>
+                @if (mod.module_Description) {
+                  <span class="module-desc-tooltip">
+                    <span class="material-icons desc-icon">help_outline</span>
+                    <span class="desc-popup">{{ mod.module_Description }}</span>
+                  </span>
+                }
+              </div>
+              <div class="module-footer">
+                <span class="click-hint">
+                  <span class="material-icons">open_in_new</span> Click to manage materials
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ─── Tutor: All modules tab ────────────────────────────────────────── -->
+    @if (role === 'Tutor' && tutorTab === 'all') {
+      @if (modules.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">library_books</span>
+          <p>No modules available yet.</p>
+        </div>
+      } @else {
+        <div class="modules-grid">
+          @for (mod of modules; track mod.module_Code; let i = $index) {
+            <div class="module-card"
+              [class.assigned]="assignedModuleCodes.has(mod.module_Code)"
+              (click)="assignedModuleCodes.has(mod.module_Code) ? openModule(mod.module_Code) : null">
+              <div class="module-header">
+                <div class="module-icon-wrap" [style.background]="getModuleColor(i)">
+                  <span class="material-icons">menu_book</span>
+                </div>
+                <div class="module-badges">
+                  <span class="badge badge-teal">{{ mod.module_Code }}</span>
+                  @if (mod.module_Price > 0) {
+                    <span class="badge badge-orange">R{{ mod.module_Price }}/month</span>
+                  }
+                  @if (assignedModuleCodes.has(mod.module_Code)) {
+                    <span class="badge badge-green">Assigned</span>
+                  } @else {
+                    <span class="badge badge-gray">Not Assigned</span>
+                  }
+                </div>
+              </div>
+              <div class="module-name-row">
+                <h3 class="module-name">{{ mod.module_Name }}</h3>
+                @if (mod.module_Description) {
+                  <span class="module-desc-tooltip">
+                    <span class="material-icons desc-icon">help_outline</span>
+                    <span class="desc-popup">{{ mod.module_Description }}</span>
+                  </span>
+                }
+              </div>
+              <div class="module-footer">
+                <span class="click-hint">
+                  @if (assignedModuleCodes.has(mod.module_Code)) {
+                    <span class="material-icons">open_in_new</span> Click to manage materials
+                  } @else {
+                    <span class="material-icons">lock</span> Not assigned — contact admin
+                  }
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ─── Admin: Modules tab ────────────────────────────────────────────── -->
+    @if (role === 'Admin' && adminTab === 'modules') {
+      @if (modules.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">library_books</span>
+          <p>No modules available yet.</p>
+        </div>
+      } @else {
+        <div class="modules-grid">
+          @for (mod of modules; track mod.module_Code; let i = $index) {
+            @if (deleteModuleCode === mod.module_Code) {
+              <div class="module-card delete-confirm-card">
+                <div class="delete-confirm-icon"><span class="material-icons">delete_forever</span></div>
+                <p class="delete-confirm-title">Delete Module?</p>
+                <p class="delete-confirm-msg"><strong>{{ mod.module_Code }}</strong> — {{ mod.module_Name }}</p>
+                <p class="delete-confirm-warn">This cannot be undone.</p>
+                <div class="delete-confirm-actions">
+                  <button class="btn btn-secondary" (click)="deleteModuleCode = null">Cancel</button>
+                  <button class="btn btn-danger" (click)="deleteModule()">
+                    <span class="material-icons">delete</span> Delete
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="module-card">
+                <div class="module-header">
+                  <div class="module-icon-wrap" [style.background]="getModuleColor(i)">
+                    <span class="material-icons">menu_book</span>
+                  </div>
+                  <div class="module-badges">
+                    <span class="badge badge-teal">{{ mod.module_Code }}</span>
+                    @if (mod.module_Price > 0) {
+                      <span class="badge badge-orange">R{{ mod.module_Price }}/month</span>
+                    }
+                  </div>
+                </div>
+                <div class="module-name-row">
+                  <h3 class="module-name">{{ mod.module_Name }}</h3>
+                  @if (mod.module_Description) {
+                    <span class="module-desc-tooltip">
+                      <span class="material-icons desc-icon">help_outline</span>
+                      <span class="desc-popup">{{ mod.module_Description }}</span>
+                    </span>
+                  }
+                </div>
+                <div class="module-footer">
+                  <div class="module-actions">
+                    <button class="btn btn-teal btn-sm" (click)="openModule(mod.module_Code)">
+                      <span class="material-icons">open_in_new</span> Manage
+                    </button>
+                    <button class="btn btn-secondary btn-sm" (click)="editModule(mod)">
+                      <span class="material-icons">edit</span> Edit
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteModuleCode = mod.module_Code">
+                      <span class="material-icons">delete</span> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+    }
+
+    <!-- ─── Student: Enrolled tab ─────────────────────────────────────── -->
+    @if (role === 'Student' && studentTab === 'enrolled') {
+      @if (enrolledModules.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">bookmark_border</span>
+          <p>You are not enrolled in any modules yet.</p>
+          <button class="btn btn-primary" (click)="studentTab = 'all'">Browse All Modules</button>
+        </div>
+      } @else {
+        <div class="modules-grid">
+          @for (mod of enrolledModules; track mod.module_Code; let i = $index) {
+            <div class="module-card assigned" (click)="openModule(mod.module_Code)">
+              <div class="module-header">
+                <div class="module-icon-wrap" [style.background]="getModuleColor(i)">
+                  <span class="material-icons">menu_book</span>
+                </div>
+                <div class="module-badges">
+                  <span class="badge badge-teal">{{ mod.module_Code }}</span>
+                  <span class="badge badge-green">Enrolled</span>
+                </div>
+              </div>
+              <div class="module-name-row">
+                <h3 class="module-name">{{ mod.module_Name }}</h3>
+                @if (mod.module_Description) {
+                  <span class="module-desc-tooltip">
+                    <span class="material-icons desc-icon">help_outline</span>
+                    <span class="desc-popup">{{ mod.module_Description }}</span>
+                  </span>
+                }
+              </div>
+              <div class="module-footer">
+                <div class="module-actions" (click)="$event.stopPropagation()">
+                  <button class="btn btn-secondary btn-sm" (click)="openModule(mod.module_Code)">
+                    <span class="material-icons">open_in_new</span> View Materials
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="unenroll(mod.module_Code)"
+                    [disabled]="unenrollingCode === mod.module_Code">
+                    @if (unenrollingCode === mod.module_Code) { <span class="spinner-sm"></span> }
+                    Unenrol
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ─── Student: All tab ──────────────────────────────────────────── -->
+    @if (role === 'Student' && studentTab === 'all') {
+      @if (modules.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">library_books</span>
+          <p>No modules available yet.</p>
+        </div>
+      } @else {
+        <div class="modules-grid">
+          @for (mod of modules; track mod.module_Code; let i = $index) {
+            <div class="module-card"
+                 [class.assigned]="isEnrolled(mod.module_Code)"
+                 [class.card-selected]="isSelected(mod.module_Code)"
+                 (click)="isEnrolled(mod.module_Code) ? openModule(mod.module_Code) : toggleSelect(mod.module_Code, $event)">
+              <div class="module-header">
+                <div class="module-icon-wrap" [style.background]="getModuleColor(i)">
+                  <span class="material-icons">menu_book</span>
+                </div>
+                <div class="module-badges">
+                  <span class="badge badge-teal">{{ mod.module_Code }}</span>
+                  @if (mod.module_Price > 0) {
+                    <span class="badge badge-orange">R{{ mod.module_Price }}/month</span>
+                  }
+                  @if (isEnrolled(mod.module_Code)) {
+                    <span class="badge badge-green">Enrolled</span>
+                  }
+                </div>
+                <!-- Checkbox for non-enrolled modules -->
+                @if (!isEnrolled(mod.module_Code)) {
+                  <label class="module-checkbox" (click)="toggleSelect(mod.module_Code, $event)">
+                    <input type="checkbox" [checked]="isSelected(mod.module_Code)" (click)="$event.stopPropagation()" (change)="toggleSelect(mod.module_Code, $event)" />
+                    <span class="checkmark"></span>
+                  </label>
+                }
+              </div>
+              <div class="module-name-row">
+                <h3 class="module-name">{{ mod.module_Name }}</h3>
+                @if (mod.module_Description) {
+                  <span class="module-desc-tooltip">
+                    <span class="material-icons desc-icon">help_outline</span>
+                    <span class="desc-popup">{{ mod.module_Description }}</span>
+                  </span>
+                }
+              </div>
+              <div class="module-footer">
+                <div class="module-actions" (click)="$event.stopPropagation()">
+                  @if (isEnrolled(mod.module_Code)) {
+                    <button class="btn btn-secondary btn-sm" (click)="openModule(mod.module_Code)">
+                      <span class="material-icons">open_in_new</span> View
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="unenroll(mod.module_Code)"
+                      [disabled]="unenrollingCode === mod.module_Code">
+                      @if (unenrollingCode === mod.module_Code) { <span class="spinner-sm"></span> }
+                      Unenrol
+                    </button>
+                  } @else {
+                    <span class="select-hint">
+                      @if (isSelected(mod.module_Code)) {
+                        <span class="material-icons" style="color:var(--primary)">check_box</span> Selected for enrolment
+                      } @else {
+                        <span class="material-icons">check_box_outline_blank</span> Click to select
+                      }
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+</div>

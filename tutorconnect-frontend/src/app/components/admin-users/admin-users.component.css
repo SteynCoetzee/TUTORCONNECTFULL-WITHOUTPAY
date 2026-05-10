@@ -1,0 +1,91 @@
+.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-card { background: white; border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.stat-icon { font-size: 2rem; }
+.stat-icon.teal { color: var(--primary); }
+.stat-icon.green { color: #22c55e; }
+.stat-icon.orange { color: #f97316; }
+.stat-icon.purple { color: #8b5cf6; }
+.stat-value { font-size: 1.5rem; font-weight: 700; color: var(--dark-bg); }
+.stat-label { font-size: 0.8rem; color: var(--text-muted); }
+
+.filters-bar { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.search-box { display: flex; align-items: center; gap: 0.5rem; background: #f9fafb; border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.75rem; flex: 1; min-width: 200px; }
+.search-box .material-icons { color: var(--text-muted); font-size: 1.1rem; }
+.search-input { border: none; background: none; outline: none; font-size: 0.9rem; width: 100%; }
+.role-filters { display: flex; gap: 0.4rem; }
+.filter-btn { padding: 0.4rem 0.9rem; border-radius: 20px; border: 1px solid var(--border); background: white; cursor: pointer; font-size: 0.82rem; color: var(--text-muted); transition: all 0.2s; }
+.filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { padding: 0.75rem 1.5rem; text-align: left; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); background: #f9fafb; }
+.data-table td { padding: 0.9rem 1.5rem; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #f9fafb; }
+
+.user-cell { display: flex; align-items: center; gap: 0.75rem; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; flex-shrink: 0; }
+.user-name { font-weight: 500; }
+.user-id { font-size: 0.78rem; color: var(--text-muted); }
+
+.btn-icon { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; transition: all 0.2s; }
+.btn-icon.danger:hover { background: #fef2f2; color: #ef4444; border-color: #fca5a5; }
+.btn-icon .material-icons { font-size: 1rem; }
+
+.table-footer { padding: 0.75rem 1.5rem; font-size: 0.82rem; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+.loading-state, .empty-state { padding: 3rem; text-align: center; color: var(--text-muted); }
+.empty-state .material-icons { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+.spinner { width: 32px; height: 32px; border: 3px solid #e5e7eb; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.modal-sm { max-width: 420px; }
+
+.action-btns { display: flex; gap: 0.5rem; }
+.btn-icon:hover { background: #f3f4f6; color: var(--dark-bg); }
+
+.user-preview { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f9fafb; border-radius: 8px; }
+.preview-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+.preview-name { font-weight: 600; font-size: 14px; }
+.preview-email { font-size: 12px; color: var(--text-muted); }
+
+.role-options { display: flex; gap: 8px; margin-top: 6px; }
+.role-option {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  flex: 1; justify-content: center;
+}
+.role-option input { display: none; }
+.role-option.selected { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.role-opt-icon { font-size: 16px; }
+
+.info-note { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; background: #dbeafe; border-radius: 8px; font-size: 12px; color: #1e40af; margin-top: 12px; }
+.info-note .material-icons { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+.role-options-inline { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
+.role-option-sm { display: flex; align-items: center; gap: 5px; padding: 5px 12px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text-muted); transition: all 0.15s; }
+.role-option-sm input { display: none; }
+.role-option-sm.selected { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+.pending-approval-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.pending-approval-row:last-child { border-bottom: none; }
+.pending-meta { display: flex; align-items: center; gap: 0.75rem; flex: 1; flex-wrap: wrap; }
+.pending-detail { display: flex; align-items: center; gap: 4px; font-size: 0.82rem; color: var(--text-muted); }
+.pending-detail .material-icons { font-size: 1rem; }
+.pending-bio { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pending-approval-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+.edit-form-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.edit-form-body { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+.edit-form-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.edit-form-row .form-group { flex: 1; min-width: 140px; margin: 0; }
+.edit-form-row .form-group label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px; }
+.edit-form-role { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.role-label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }

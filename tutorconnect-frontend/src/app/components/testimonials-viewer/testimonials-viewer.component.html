@@ -1,0 +1,43 @@
+<div class="public-page">
+  <header class="pub-nav">
+    <div class="pub-brand">
+      <div class="pub-avatar">ST</div>
+      <div class="pub-brand-text">
+        <span class="pub-brand-title">Smiths</span>
+        <span class="pub-brand-sub">Tutoring</span>
+      </div>
+    </div>
+    <a routerLink="/home" class="pub-back">
+      <span class="material-icons">arrow_back</span> Back to Home
+    </a>
+  </header>
+
+  <div class="pub-content">
+    <div class="pub-hero">
+      <span class="material-icons pub-hero-icon">star</span>
+      <h1>Student Testimonials</h1>
+      <p>Hear what our students have to say about their experience</p>
+    </div>
+
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading testimonials...</p></div>
+    } @else if (testimonials.length === 0) {
+      <div class="empty-box">
+        <span class="material-icons">star_border</span>
+        <p>No testimonials available yet. Check back soon.</p>
+      </div>
+    } @else {
+      <div class="testimonials-grid">
+        @for (t of testimonials; track t.testimonial_ID) {
+          <div class="testimonial-card">
+            <span class="material-icons quote-icon">format_quote</span>
+            <p class="testimonial-text">{{ t.testimonial_Description }}</p>
+            @if (getCategoryName(t.testimonial_Category_ID)) {
+              <span class="testimonial-category">{{ getCategoryName(t.testimonial_Category_ID) }}</span>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

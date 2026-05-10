@@ -1,0 +1,62 @@
+.public-page { min-height: 100vh; background: var(--body-bg); }
+
+.pub-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: var(--topnav-height, 56px);
+  background: var(--dark-bg);
+}
+.pub-brand { display: flex; align-items: center; gap: 12px; }
+.pub-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; flex-shrink: 0;
+}
+.pub-brand-text { display: flex; flex-direction: column; }
+.pub-brand-title { color: #fff; font-weight: 700; font-size: 15px; line-height: 1.2; }
+.pub-brand-sub { color: rgba(255,255,255,0.6); font-size: 11px; }
+
+.pub-back {
+  display: flex; align-items: center; gap: 4px;
+  color: rgba(255,255,255,0.75); font-size: 13px; text-decoration: none;
+  padding: 6px 14px; border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.25);
+  transition: background 0.15s, color 0.15s;
+}
+.pub-back:hover { background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; }
+.pub-back .material-icons { font-size: 16px; }
+
+.pub-content { max-width: 960px; margin: 0 auto; padding: 40px 24px 60px; }
+
+.pub-hero { text-align: center; margin-bottom: 40px; }
+.pub-hero-icon { font-size: 48px; color: var(--warning); display: block; margin-bottom: 12px; }
+.pub-hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.pub-hero p { color: var(--text-muted); font-size: 15px; }
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.testimonial-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 18px 16px;
+  position: relative; display: flex; flex-direction: column; gap: 10px;
+}
+.quote-icon {
+  font-size: 36px; color: var(--primary); opacity: 0.2;
+  position: absolute; top: 10px; left: 12px;
+}
+.testimonial-text {
+  font-size: 14px; color: var(--text-muted); line-height: 1.65;
+  margin: 0; padding-top: 20px;
+}
+.testimonial-category {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--primary);
+  border-top: 1px solid var(--border); padding-top: 8px;
+}
+
+.empty-box { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty-box .material-icons { font-size: 48px; margin-bottom: 12px; display: block; }

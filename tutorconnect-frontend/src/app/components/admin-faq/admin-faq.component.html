@@ -1,0 +1,190 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">FAQ Management</h1>
+      <p class="page-subtitle">Manage frequently asked questions</p>
+    </div>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+  @if (errorMessage && !showFaqForm && !showCatForm) {
+    <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+  }
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'faqs'" (click)="activeTab = 'faqs'">
+      <span class="material-icons">help</span> FAQs ({{ faqs.length }})
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'categories'" (click)="activeTab = 'categories'">
+      <span class="material-icons">folder</span> Categories ({{ categories.length }})
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading...</p></div>
+  }
+
+  <!-- ── FAQs TAB ────────────────────────────────────────── -->
+  @if (!loading && activeTab === 'faqs') {
+    <div class="card">
+      <div class="section-header mb-16">
+        <h3 class="section-title">FAQs</h3>
+        <button class="btn btn-primary btn-sm" (click)="openFaqForm()">
+          <span class="material-icons">add</span> Add FAQ
+        </button>
+      </div>
+
+      <!-- Inline create/edit form -->
+      @if (showFaqForm) {
+        <div class="inline-form mb-16">
+          <h4 class="form-section-title">{{ editingFaq ? 'Edit FAQ' : 'New FAQ' }}</h4>
+          @if (errorMessage) {
+            <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+          }
+          <div class="form-group">
+            <label>Category *</label>
+            <select class="form-control" [(ngModel)]="faqCategoryId" name="faqCategory">
+              <option [ngValue]="null" disabled>Select a category</option>
+              @for (cat of categories; track cat.faq_Category_ID) {
+                <option [ngValue]="cat.faq_Category_ID">{{ cat.category_Name }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Question *</label>
+            <input type="text" class="form-control" [(ngModel)]="faqQuestion" name="faqQuestion" placeholder="Enter the question" />
+          </div>
+          <div class="form-group">
+            <label>Answer *</label>
+            <textarea class="form-control" [(ngModel)]="faqAnswer" name="faqAnswer" rows="4" placeholder="Enter the answer"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-secondary" (click)="closeFaqForm()">Cancel</button>
+            <button class="btn btn-primary" (click)="saveFaq()" [disabled]="savingFaq">
+              {{ savingFaq ? 'Saving...' : (editingFaq ? 'Update FAQ' : 'Create FAQ') }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (faqs.length === 0 && !showFaqForm) {
+        <div class="empty-state">
+          <span class="material-icons">help_outline</span>
+          <p>No FAQs yet. Add one to get started.</p>
+        </div>
+      }
+
+      <div class="faq-list">
+        @for (faq of faqs; track faq.faq_ID) {
+          @if (deleteFaqId === faq.faq_ID) {
+            <div class="faq-item inline-confirm">
+              <span class="material-icons ic-icon">delete_forever</span>
+              <p class="ic-title">Delete this FAQ?</p>
+              <p class="ic-msg"><strong>{{ faq.question }}</strong></p>
+              <p class="ic-warn">This cannot be undone.</p>
+              <div class="ic-btns">
+                <button class="btn btn-secondary btn-sm" (click)="deleteFaqId = null">Cancel</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteFaq()">
+                  <span class="material-icons">delete</span> Delete
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="faq-item">
+              <div class="faq-content">
+                <div class="faq-category-tag">{{ getCategoryName(faq.faq_Category_ID) }}</div>
+                <h3 class="faq-question">{{ faq.question }}</h3>
+                <p class="faq-answer">{{ faq.answer }}</p>
+              </div>
+              <div class="faq-actions">
+                <button class="btn btn-secondary btn-sm" (click)="openFaqForm(faq)">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteFaqId = faq.faq_ID">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── CATEGORIES TAB ─────────────────────────────────── -->
+  @if (!loading && activeTab === 'categories') {
+    <div class="card">
+      <div class="section-header mb-16">
+        <h3 class="section-title">Categories</h3>
+        <button class="btn btn-primary btn-sm" (click)="openCatForm()">
+          <span class="material-icons">add</span> Add Category
+        </button>
+      </div>
+
+      <!-- Inline create/edit form -->
+      @if (showCatForm) {
+        <div class="inline-form mb-16">
+          <h4 class="form-section-title">{{ editingCat ? 'Edit Category' : 'New Category' }}</h4>
+          @if (errorMessage) {
+            <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+          }
+          <div class="form-group">
+            <label>Category Name *</label>
+            <input type="text" class="form-control" [(ngModel)]="catName" name="catName" placeholder="e.g. Account, Technical..." />
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-secondary" (click)="closeCatForm()">Cancel</button>
+            <button class="btn btn-primary" (click)="saveCat()" [disabled]="savingCat">
+              {{ savingCat ? 'Saving...' : (editingCat ? 'Update Category' : 'Create Category') }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (categories.length === 0 && !showCatForm) {
+        <div class="empty-state">
+          <span class="material-icons">folder_open</span>
+          <p>No categories yet. Add one to get started.</p>
+        </div>
+      }
+
+      <div class="cat-grid">
+        @for (cat of categories; track cat.faq_Category_ID) {
+          @if (deleteCatId === cat.faq_Category_ID) {
+            <div class="cat-card inline-confirm">
+              <span class="material-icons ic-icon">delete_forever</span>
+              <p class="ic-title">Delete Category?</p>
+              <p class="ic-msg"><strong>{{ cat.category_Name }}</strong></p>
+              <p class="ic-warn">This cannot be undone.</p>
+              <div class="ic-btns">
+                <button class="btn btn-secondary btn-sm" (click)="deleteCatId = null">Cancel</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteCat()">
+                  <span class="material-icons">delete</span> Delete
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="cat-card">
+              <span class="material-icons cat-icon">folder</span>
+              <div class="cat-info">
+                <div class="cat-name">{{ cat.category_Name }}</div>
+                <div class="cat-count">{{ getFaqCountByCategory(cat.faq_Category_ID) }} FAQs</div>
+              </div>
+              <div class="cat-actions">
+                <button class="btn btn-secondary btn-sm" (click)="openCatForm(cat)">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteCatId = cat.faq_Category_ID">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,78 @@
+<div class="login-page">
+  <!-- Logo / Brand -->
+  <div class="brand">
+    <div class="brand-avatar">ST</div>
+    <span class="brand-name">Smiths<br><small>Tutoring</small></span>
+  </div>
+
+  <div class="login-card">
+    <h2 class="login-title">Welcome Back</h2>
+    <p class="login-subtitle">Sign in to access your tutoring dashboard</p>
+
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <span class="material-icons" style="font-size:18px">error_outline</span>
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+      <div class="form-group">
+        <label>
+          <span class="material-icons label-icon">email</span>
+          Email Address
+        </label>
+        <input
+          type="email"
+          class="form-control"
+          placeholder="you@university.edu"
+          name="email"
+          [(ngModel)]="loginObj.email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>
+          <span class="material-icons label-icon">lock</span>
+          Password
+        </label>
+        <div class="input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-control"
+            placeholder="Enter your password"
+            name="password"
+            [(ngModel)]="loginObj.password"
+            required
+          />
+          <button type="button" class="toggle-pw" (click)="showPassword = !showPassword">
+            <span class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="row-between">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="rememberMe" name="remember" />
+          Remember me
+        </label>
+        <a routerLink="/forgot-password" class="link-small">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full mt-16" [disabled]="loading">
+        <span *ngIf="loading" class="spinner"></span>
+        {{ loading ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <div class="divider">OR</div>
+
+    <p class="signup-row">
+      Don't have an account? <a routerLink="/register"><strong>Sign up</strong></a>
+    </p>
+    <p class="back-home">
+      <a routerLink="/home"><span class="material-icons" style="font-size:14px;vertical-align:middle">arrow_back</span> Back to home</a>
+    </p>
+  </div>
+
+  <p class="footer-legal">By signing in, you agree to our Terms of Service and Privacy Policy</p>
+</div>

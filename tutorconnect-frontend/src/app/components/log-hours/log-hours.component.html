@@ -1,0 +1,219 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons">timer</span>
+        Log Hours
+      </h1>
+      <p class="page-subtitle">Track your tutoring hours</p>
+    </div>
+    @if (!showForm) {
+      <button class="btn btn-primary" (click)="openCreateForm()">
+        <span class="material-icons">add</span> Log Hours
+      </button>
+    }
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="material-icons stat-icon teal">timer</span>
+      <div>
+        <div class="stat-value">{{ totalHours | number:'1.1-1' }}</div>
+        <div class="stat-label">Total Hours</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon green">check_circle</span>
+      <div>
+        <div class="stat-value">{{ approvedHours | number:'1.1-1' }}</div>
+        <div class="stat-label">Approved Hours</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon orange">pending</span>
+      <div>
+        <div class="stat-value">{{ (totalHours - approvedHours) | number:'1.1-1' }}</div>
+        <div class="stat-label">Pending Approval</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon purple">list_alt</span>
+      <div>
+        <div class="stat-value">{{ logs.length }}</div>
+        <div class="stat-label">Total Entries</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  @if (successMessage) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span> {{ successMessage }}
+    </div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">
+      <span class="material-icons">error</span> {{ errorMessage }}
+    </div>
+  }
+
+  <!-- ── Inline Create Form ──────────────────────────────────────────────── -->
+  @if (showForm) {
+    <div class="create-card card">
+      <h3 class="create-title">
+        <span class="material-icons">add_circle_outline</span>
+        New Log Entry
+      </h3>
+
+      <div class="create-steps">
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">1</span> Date
+          </div>
+          <input type="date" class="form-control date-input" [(ngModel)]="formDate" />
+        </div>
+
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">2</span> Session Start Time
+          </div>
+          <input type="time" class="form-control time-input" [(ngModel)]="formTime" step="1" />
+        </div>
+
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">3</span> Hours Worked
+          </div>
+          <div class="hours-input-wrap">
+            <input type="number" class="form-control hours-input"
+                   [(ngModel)]="formAmount"
+                   min="0.5" max="12" step="0.5"
+                   placeholder="e.g. 2.5" />
+            <span class="hours-hint">hrs</span>
+          </div>
+        </div>
+      </div>
+
+      @if (formDate && formTime && formAmount) {
+        <div class="slot-preview">
+          <span class="material-icons">event</span>
+          <span>{{ formatDate(formDate) }} at {{ formTime }}</span>
+          <span class="badge badge-teal">{{ formAmount }} hrs</span>
+        </div>
+      }
+
+      <div class="create-actions">
+        <button class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveLog()" [disabled]="saving">
+          @if (saving) { <span class="spinner-sm"></span> } Save Entry
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Log entries table ───────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Hour Log Entries</h2>
+    </div>
+
+    @if (loading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading entries...</p>
+      </div>
+    } @else if (logs.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">timer_off</span>
+        <p>No hours logged yet. Click "Log Hours" to add your first entry.</p>
+      </div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Hours</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs; track log.log_Hours_ID) {
+
+            @if (deleteTargetId === log.log_Hours_ID) {
+              <tr class="tr-confirm">
+                <td colspan="5">
+                  <div class="tr-confirm-inner">
+                    <span class="material-icons">delete_forever</span>
+                    <div class="tr-confirm-text">
+                      <strong>Delete this log entry?</strong>
+                      <span>{{ formatDate(log.log_Hours_Date) }} — {{ log.log_Hours_Amount }} hrs. This cannot be undone.</span>
+                    </div>
+                    <div class="tr-confirm-btns">
+                      <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+                      <button class="btn btn-danger btn-sm" (click)="deleteLog()">Delete</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+            } @else if (editingLog?.log_Hours_ID === log.log_Hours_ID) {
+              <tr class="tr-edit">
+                <td colspan="5">
+                  <div class="tr-edit-inner">
+                    <div class="form-group">
+                      <label>Date</label>
+                      <input type="date" class="form-control" [(ngModel)]="formDate" />
+                    </div>
+                    <div class="form-group">
+                      <label>Start Time</label>
+                      <input type="time" class="form-control" [(ngModel)]="formTime" step="1" />
+                    </div>
+                    <div class="form-group">
+                      <label>Hours</label>
+                      <input type="number" class="form-control" [(ngModel)]="formAmount" min="0.5" max="12" step="0.5" />
+                    </div>
+                    <div class="tr-edit-btns">
+                      <button class="btn btn-secondary btn-sm" (click)="closeForm()">Cancel</button>
+                      <button class="btn btn-primary btn-sm" (click)="saveLog()" [disabled]="saving">
+                        @if (saving) { <span class="spinner-sm"></span> } Save
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+            } @else {
+              <tr>
+                <td>{{ formatDate(log.log_Hours_Date) }}</td>
+                <td>{{ log.log_Hours_Time }}</td>
+                <td><strong>{{ log.log_Hours_Amount }}</strong> hrs</td>
+                <td>
+                  @if (log.isApproved) {
+                    <span class="badge badge-success">Approved</span>
+                  } @else {
+                    <span class="badge badge-orange">Pending</span>
+                  }
+                </td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-icon" title="Edit" (click)="openEditForm(log)" [disabled]="log.isApproved">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="btn-icon danger" title="Delete" (click)="confirmDelete(log.log_Hours_ID)" [disabled]="log.isApproved">
+                      <span class="material-icons">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

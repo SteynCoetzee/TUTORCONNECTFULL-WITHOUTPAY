@@ -1,0 +1,258 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">User Management</h1>
+      <p class="page-subtitle">Manage all registered users and their roles</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="material-icons stat-icon teal">group</span>
+      <div><div class="stat-value">{{ users.length }}</div><div class="stat-label">Total Users</div></div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon green">school</span>
+      <div><div class="stat-value">{{ studentCount }}</div><div class="stat-label">Students</div></div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon orange">person_pin</span>
+      <div><div class="stat-value">{{ tutorCount }}</div><div class="stat-label">Tutors</div></div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon purple">admin_panel_settings</span>
+      <div><div class="stat-value">{{ adminCount }}</div><div class="stat-label">Admins</div></div>
+    </div>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+  }
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">
+      <span class="material-icons">group</span> All Users
+      <span class="badge badge-teal ml-4">{{ users.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+      <span class="material-icons">pending_actions</span> Awaiting Approval
+      @if (awTutorCount > 0) {
+        <span class="badge badge-orange ml-4">{{ awTutorCount }}</span>
+      }
+    </button>
+  </div>
+
+  <!-- ── AWAITING APPROVAL TAB ───────────────────────────────────────────── -->
+  @if (activeTab === 'pending') {
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading...</p></div>
+    } @else if (awTutors.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">check_circle</span>
+        <p>No pending tutor applications.</p>
+      </div>
+    } @else {
+      <div class="card">
+        @for (u of awTutors; track u.user_ID) {
+
+          @if (deleteTargetId === u.user_ID) {
+            <div class="pending-approval-row" style="padding:0.85rem 1.5rem;border-top:2px solid #fca5a5;border-bottom:2px solid #fca5a5;background:#fff5f5">
+              <span class="material-icons" style="color:var(--danger)">delete_forever</span>
+              <div style="flex:1">
+                <strong style="color:var(--danger)">Reject {{ u.firstName }} {{ u.lastName }}?</strong>
+                <span style="display:block;font-size:0.78rem;color:var(--text-muted)">Their account will be permanently removed.</span>
+              </div>
+              <div class="tr-confirm-btns">
+                <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteUser()">
+                  <span class="material-icons">close</span> Reject
+                </button>
+              </div>
+            </div>
+
+          } @else {
+            <div class="pending-approval-row">
+              <div class="user-cell">
+                <div class="user-avatar">{{ getInitials(u) }}</div>
+                <div>
+                  <div class="user-name">{{ u.firstName }} {{ u.lastName }}</div>
+                  <div class="user-id">{{ u.email }}</div>
+                </div>
+              </div>
+              <div class="pending-meta">
+                @if (u.phone) { <span class="pending-detail"><span class="material-icons">phone</span>{{ u.phone }}</span> }
+                @if (u.bio) { <span class="pending-detail pending-bio">{{ u.bio }}</span> }
+              </div>
+              <div class="pending-approval-actions">
+                <button class="btn btn-primary btn-sm" (click)="approveUser(u)" [disabled]="approvingId === u.user_ID">
+                  <span class="material-icons">check</span>
+                  {{ approvingId === u.user_ID ? 'Approving...' : 'Approve' }}
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="confirmDelete(u.user_ID)">
+                  <span class="material-icons">close</span> Reject
+                </button>
+              </div>
+            </div>
+          }
+
+        }
+      </div>
+    }
+  }
+
+  <!-- ── ALL USERS TAB ───────────────────────────────────────────────────── -->
+  @if (activeTab === 'users') {
+
+  <!-- Filters -->
+  <div class="card">
+    <div class="filters-bar">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input type="text" class="search-input" placeholder="Search by name or email..." [(ngModel)]="searchQuery" (input)="applyFilters()" />
+      </div>
+      <div class="role-filters">
+        @for (role of ['All', 'Student', 'Tutor', 'AW-Tutor', 'Admin']; track role) {
+          <button class="filter-btn" [class.active]="filterRole === role" (click)="filterRole = role; applyFilters()">{{ role }}</button>
+        }
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading users...</p></div>
+    } @else if (filteredUsers.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">person_off</span>
+        <p>No users found matching your filters.</p>
+      </div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of filteredUsers; track user.user_ID) {
+
+            @if (deleteTargetId === user.user_ID) {
+              <tr class="tr-confirm">
+                <td colspan="5">
+                  <div class="tr-confirm-inner">
+                    <span class="material-icons">delete_forever</span>
+                    <div class="tr-confirm-text">
+                      <strong>Delete {{ user.firstName }} {{ user.lastName }}?</strong>
+                      <span>{{ user.email }} — All associated data may be removed. This cannot be undone.</span>
+                    </div>
+                    <div class="tr-confirm-btns">
+                      <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+                      <button class="btn btn-danger btn-sm" (click)="deleteUser()">Delete</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+            } @else if (editingUser?.user_ID === user.user_ID) {
+              <tr class="tr-edit">
+                <td colspan="5">
+                  <div class="edit-form-header">
+                    <div class="user-cell">
+                      <div class="user-avatar">{{ getInitials(user) }}</div>
+                      <div>
+                        <div class="user-name">Editing: {{ user.firstName }} {{ user.lastName }}</div>
+                        <div class="user-id">{{ user.email }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="edit-form-body">
+                    <div class="edit-form-row">
+                      <div class="form-group">
+                        <label>First Name</label>
+                        <input class="form-control" [(ngModel)]="editFirstName" name="editFN" placeholder="First name" />
+                      </div>
+                      <div class="form-group">
+                        <label>Last Name</label>
+                        <input class="form-control" [(ngModel)]="editLastName" name="editLN" placeholder="Last name" />
+                      </div>
+                      <div class="form-group">
+                        <label>Phone</label>
+                        <input class="form-control" [(ngModel)]="editPhone" name="editPhone" placeholder="Phone number" />
+                      </div>
+                    </div>
+                    <div class="edit-form-row">
+                      <div class="form-group">
+                        <label>Address</label>
+                        <input class="form-control" [(ngModel)]="editAddress" name="editAddr" placeholder="Address" />
+                      </div>
+                      <div class="form-group" style="flex:2">
+                        <label>Bio</label>
+                        <input class="form-control" [(ngModel)]="editBio" name="editBio" placeholder="Short bio" />
+                      </div>
+                    </div>
+                    <div class="edit-form-role">
+                      <label class="role-label">Role</label>
+                      <div class="role-options-inline">
+                        @for (role of roles; track role.id) {
+                          <label class="role-option-sm" [class.selected]="editRoleId === role.id">
+                            <input type="radio" name="editRole" [value]="role.id" [(ngModel)]="editRoleId" />
+                            {{ role.name }}
+                          </label>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tr-edit-btns" style="padding: 0 0 0.5rem 0">
+                    <button class="btn btn-secondary btn-sm" (click)="closeEdit()">Cancel</button>
+                    <button class="btn btn-primary btn-sm" (click)="saveEdit()" [disabled]="saving">
+                      @if (saving) { <span class="spinner-sm"></span> } Save Changes
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+            } @else {
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">{{ getInitials(user) }}</div>
+                    <div>
+                      <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+                      <div class="user-id">ID: {{ user.user_ID }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ user.email }}</td>
+                <td><span class="badge" [class]="getRoleBadgeClass(user.roleName)">{{ user.roleName }}</span></td>
+                <td>{{ user.phone || '—' }}</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-icon" title="Edit user" (click)="openEdit(user)">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="btn-icon danger" title="Delete user" (click)="confirmDelete(user.user_ID)">
+                      <span class="material-icons">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+          }
+        </tbody>
+      </table>
+      <div class="table-footer">Showing {{ filteredUsers.length }} of {{ users.length }} users</div>
+    }
+  </div>
+
+  } <!-- end activeTab === 'users' -->
+
+</div>
+

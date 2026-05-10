@@ -1,0 +1,50 @@
+<nav class="sidebar" [class.collapsed]="collapsed">
+
+  <!-- Brand + Toggle -->
+  <div class="sidebar-brand">
+    <div class="brand-avatar" [class.hidden]="collapsed">ST</div>
+    <div class="brand-text">
+      <span class="brand-title">Smiths</span>
+      <span class="brand-sub">Tutoring</span>
+    </div>
+    <button class="collapse-btn" (click)="toggle()" [title]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+      <span class="material-icons">{{ collapsed ? 'chevron_right' : 'chevron_left' }}</span>
+    </button>
+  </div>
+
+  <!-- Role badge -->
+  <div class="role-badge role-{{ role | lowercase }}">
+    <span class="material-icons role-icon">
+      @if (role === 'Admin') { admin_panel_settings }
+      @else if (role === 'Tutor') { school }
+      @else { person }
+    </span>
+    <span class="role-label">{{ role }}</span>
+  </div>
+
+  <!-- Navigation Sections -->
+  <div class="nav-sections">
+    @for (section of sections; track section.heading) {
+      <div class="nav-section">
+        @if (section.heading) {
+          <div class="nav-section-heading">{{ section.heading }}</div>
+        }
+        <ul class="nav-list">
+          @for (item of section.items; track item.route) {
+            <li class="nav-list-item">
+              <a
+                [routerLink]="item.route"
+                routerLinkActive="active"
+                class="nav-item"
+              >
+                <span class="material-icons nav-icon">{{ item.icon }}</span>
+                <span class="nav-label">{{ item.label }}</span>
+              </a>
+              <span class="tooltip">{{ item.label }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</nav>

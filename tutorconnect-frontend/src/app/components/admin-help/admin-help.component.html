@@ -1,0 +1,190 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <span class="material-icons">support</span>
+      Help Centre
+    </h1>
+    <p class="page-subtitle">Manage help pages and video resources for users.</p>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error"><span class="material-icons">error_outline</span> {{ errorMessage }}</div>
+  }
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'pages'" (click)="activeTab = 'pages'">
+      <span class="material-icons">article</span>
+      Help Pages
+      <span class="badge badge-teal ml-4">{{ helpPages.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'resources'" (click)="activeTab = 'resources'">
+      <span class="material-icons">play_circle</span>
+      Video Resources
+      <span class="badge badge-purple ml-4">{{ helpResources.length }}</span>
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="loading-msg"><span class="material-icons spin">hourglass_top</span> Loading...</div>
+  }
+
+  <!-- ── HELP PAGES ──────────────────────────────────────────────── -->
+  @if (!loading && activeTab === 'pages') {
+    <div class="card">
+      <div class="section-header mb-16">
+        <h3 class="section-title">Help Pages</h3>
+        <button class="btn btn-primary btn-sm" (click)="openPageForm()">
+          <span class="material-icons">add</span> Add Page
+        </button>
+      </div>
+
+      <!-- Inline create/edit form -->
+      @if (showPageForm) {
+        <div class="inline-form mb-16">
+          <h4 class="form-section-title">{{ editingPage ? 'Edit Help Page' : 'New Help Page' }}</h4>
+          <div class="form-group">
+            <label>Title</label>
+            <input class="form-control" [(ngModel)]="pageTitle" name="pageTitle" placeholder="e.g. Getting Started" />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" rows="4" [(ngModel)]="pageDescription" name="pageDesc"
+                      placeholder="Describe what this help page covers..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-secondary" (click)="showPageForm = false; editingPage = null">Cancel</button>
+            <button class="btn btn-primary" (click)="savePage()" [disabled]="savingPage">
+              {{ savingPage ? 'Saving...' : (editingPage ? 'Update Page' : 'Create Page') }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (helpPages.length === 0 && !showPageForm) {
+        <div class="empty-state">
+          <span class="material-icons">article</span>
+          <p>No help pages yet. Add one to get started.</p>
+        </div>
+      }
+
+      <div class="page-list">
+        @for (page of helpPages; track page.help_Page_ID) {
+          @if (deletePageId === page.help_Page_ID) {
+            <div class="help-page-card inline-confirm">
+              <span class="material-icons ic-icon">delete_forever</span>
+              <p class="ic-title">Delete Help Page?</p>
+              <p class="ic-msg"><strong>{{ page.help_Page_Title }}</strong></p>
+              <p class="ic-warn">This cannot be undone.</p>
+              <div class="ic-btns">
+                <button class="btn btn-secondary btn-sm" (click)="deletePageId = null">Cancel</button>
+                <button class="btn btn-danger btn-sm" (click)="deletePage()">
+                  <span class="material-icons">delete</span> Delete
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="help-page-card">
+              <div class="help-page-icon"><span class="material-icons">article</span></div>
+              <div class="help-page-body">
+                <div class="help-page-title">{{ page.help_Page_Title }}</div>
+                <div class="help-page-desc">{{ page.help_Page_Description }}</div>
+              </div>
+              <div class="help-page-actions">
+                <button class="btn btn-secondary btn-sm" (click)="openPageForm(page)">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deletePageId = page.help_Page_ID">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── VIDEO RESOURCES ────────────────────────────────────────── -->
+  @if (!loading && activeTab === 'resources') {
+    <div class="card">
+      <div class="section-header mb-16">
+        <h3 class="section-title">Video Resources</h3>
+        <button class="btn btn-primary btn-sm" (click)="openResourceForm()">
+          <span class="material-icons">add</span> Add Video
+        </button>
+      </div>
+
+      <!-- Inline create/edit form -->
+      @if (showResourceForm) {
+        <div class="inline-form mb-16">
+          <h4 class="form-section-title">{{ editingResource ? 'Edit Video Resource' : 'New Video Resource' }}</h4>
+          <div class="form-group">
+            <label>Title *</label>
+            <input class="form-control" [(ngModel)]="resourceTitle" name="resourceTitle"
+                   placeholder="e.g. Getting Started Tutorial" />
+          </div>
+          <div class="form-group">
+            <label>Video URL *</label>
+            <input class="form-control" [(ngModel)]="resourceUrl" name="resourceUrl"
+                   placeholder="https://www.youtube.com/watch?v=..." />
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-secondary" (click)="showResourceForm = false; editingResource = null">Cancel</button>
+            <button class="btn btn-primary" (click)="saveResource()" [disabled]="savingResource">
+              {{ savingResource ? 'Saving...' : (editingResource ? 'Update Video' : 'Add Video') }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (helpResources.length === 0 && !showResourceForm) {
+        <div class="empty-state">
+          <span class="material-icons">play_circle_outline</span>
+          <p>No video resources yet. Add tutorial videos to help users.</p>
+        </div>
+      }
+
+      <div class="resource-grid">
+        @for (res of helpResources; track res.help_Video_ID) {
+          @if (deleteResourceId === res.help_Video_ID) {
+            <div class="resource-card inline-confirm">
+              <span class="material-icons ic-icon">delete_forever</span>
+              <p class="ic-title">Delete Video Resource?</p>
+              <p class="ic-msg"><strong>{{ res.video_Title || res.video_URL }}</strong></p>
+              <p class="ic-warn">This cannot be undone.</p>
+              <div class="ic-btns">
+                <button class="btn btn-secondary btn-sm" (click)="deleteResourceId = null">Cancel</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteResource()">
+                  <span class="material-icons">delete</span> Delete
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="resource-card">
+              <div class="resource-icon"><span class="material-icons">play_circle</span></div>
+              <div class="resource-body">
+                <div class="resource-title">{{ res.video_Title }}</div>
+                <div class="resource-url">{{ res.video_URL }}</div>
+                <a [href]="res.video_URL" target="_blank" class="resource-link">
+                  <span class="material-icons">open_in_new</span> Open Video
+                </a>
+              </div>
+              <div class="resource-actions">
+                <button class="btn btn-secondary btn-sm" (click)="openResourceForm(res)">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteResourceId = res.help_Video_ID">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+</div>

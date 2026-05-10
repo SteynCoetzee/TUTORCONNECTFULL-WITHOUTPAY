@@ -1,0 +1,90 @@
+<!-- Top Nav -->
+<header class="landing-nav">
+  <div class="nav-brand hero-fade-in" style="animation-delay:0.1s">
+    <div class="nav-avatar">ST</div>
+    <div class="brand-text">
+      <span class="brand-title">Smiths</span>
+      <span class="brand-sub">Tutoring</span>
+    </div>
+  </div>
+  <nav class="nav-links">
+    <a routerLink="/help"         class="nav-link slide-from-right" style="animation-delay:0.2s">Help</a>
+    <a routerLink="/media"        class="nav-link slide-from-right" style="animation-delay:0.35s">Media</a>
+    <a routerLink="/testimonials" class="nav-link slide-from-right" style="animation-delay:0.5s">Testimonials</a>
+  </nav>
+  <div class="nav-auth slide-from-right" style="animation-delay:0.65s">
+    <a routerLink="/register" class="btn btn-outline-primary">Sign Up</a>
+    <a routerLink="/login"    class="btn btn-outline-primary">Login</a>
+  </div>
+</header>
+
+<!-- Hero Section -->
+<main class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title hero-fade-up" style="animation-delay:0.2s">
+      Transform Your<br>Academic Journey
+    </h1>
+    <p class="hero-text hero-fade-up" style="animation-delay:0.4s">
+      Get personalized tutoring from expert instructors. Excel in your courses
+      with flexible scheduling, comprehensive support, and proven teaching methods.
+    </p>
+    <div class="hero-actions hero-fade-up" style="animation-delay:0.6s">
+      <a routerLink="/register" class="btn btn-teal">Get Started</a>
+      <button class="btn btn-secondary" (click)="scrollToAbout()">Learn More</button>
+    </div>
+  </div>
+  <div class="hero-image hero-fade-in" style="animation-delay:0.4s">
+    <img
+      src="Students.png"
+      alt="Student celebrating graduation"
+    />
+  </div>
+</main>
+
+<!-- ── About the Owner ─────────────────────────────────────────── -->
+<section id="about" class="about-section">
+  <div class="about-container">
+    <div class="about-image-wrap reveal-left">
+      <img
+        src="Owner.jpeg"
+        alt="Owner of Smiths Tutoring"
+        class="about-photo"
+      />
+    </div>
+    <div class="about-content">
+      <span class="about-tag reveal-up" style="transition-delay:0.1s">Meet the Head of Innovation</span>
+      <h2 class="about-name reveal-up" style="transition-delay:0.2s">Kwanda Camane</h2>
+      <p class="about-role reveal-up" style="transition-delay:0.3s">Data Engineer &amp; Founder</p>
+      <p class="about-desc reveal-up" style="transition-delay:0.4s">
+        Smith's Tutoring is a world of academic consultants with industry experience
+        and a deep love for academia. We provide tutoring and tailored services to
+        students across the EMS, EBIT, BSC, Mathematics and Engineering Faculties.
+      </p>
+      <p class="about-desc reveal-up" style="transition-delay:0.5s">
+        Our services extend beyond the University of Pretoria — we have proudly
+        rendered services to students at Stellenbosch University, the University of
+        Cape Town, and the University of the Witwatersrand.
+      </p>
+      <p class="about-desc reveal-up" style="transition-delay:0.6s">
+        Kwanda carried the company alone for 4 years with passion and dedication.
+        As demand grew and collaborators joined, Smith's Tutoring expanded into the
+        thriving academic consultancy it is today.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Development Team ───────────────────────────────────────── -->
+<section class="team-section">
+  <div class="team-container">
+    <span class="about-tag reveal-up" style="transition-delay:0.1s">The People Behind the Platform</span>
+    <h2 class="team-title reveal-up" style="transition-delay:0.2s">Our Development Team</h2>
+    <div class="team-photo-wrap reveal-up" style="transition-delay:0.35s">
+      <img
+        src="Team.jpg"
+        alt="TutorConnect Development Team"
+        class="team-photo"
+      />
+    </div>
+  </div>
+</section>

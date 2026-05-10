@@ -1,0 +1,76 @@
+<div class="public-page">
+  <header class="pub-nav">
+    <div class="pub-brand">
+      <div class="pub-avatar">ST</div>
+      <div class="pub-brand-text">
+        <span class="pub-brand-title">Smiths</span>
+        <span class="pub-brand-sub">Tutoring</span>
+      </div>
+    </div>
+    <a routerLink="/home" class="pub-back">
+      <span class="material-icons">arrow_back</span> Back to Home
+    </a>
+  </header>
+
+  <div class="pub-content">
+    <div class="pub-hero">
+      <span class="material-icons pub-hero-icon">help_center</span>
+      <h1>Help Center</h1>
+      <p>Guides and resources to help you get the most out of TutorConnect</p>
+    </div>
+
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading help content...</p></div>
+    } @else {
+      @if (helpPages.length === 0 && helpResources.length === 0) {
+        <div class="empty-box">
+          <span class="material-icons">help_center</span>
+          <p>No help content available yet. Check back soon.</p>
+        </div>
+      }
+
+      @if (helpPages.length > 0) {
+        <div class="help-section">
+          <h2 class="section-heading">
+            <span class="material-icons">menu_book</span>
+            Help Articles
+          </h2>
+          <div class="help-list">
+            @for (page of helpPages; track page.help_Page_ID) {
+              <div class="help-item" [class.open]="expandedPageId === page.help_Page_ID">
+                <button class="help-title" (click)="toggle(page.help_Page_ID)">
+                  <span class="material-icons article-icon">article</span>
+                  <span>{{ page.help_Page_Title }}</span>
+                  <span class="material-icons chevron">
+                    {{ expandedPageId === page.help_Page_ID ? 'expand_less' : 'expand_more' }}
+                  </span>
+                </button>
+                @if (expandedPageId === page.help_Page_ID) {
+                  <div class="help-body">{{ page.help_Page_Description }}</div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (helpResources.length > 0) {
+        <div class="help-section">
+          <h2 class="section-heading">
+            <span class="material-icons">play_circle</span>
+            Video Resources
+          </h2>
+          <div class="resource-grid">
+            @for (res of helpResources; track res.help_Video_ID) {
+              <a [href]="res.video_URL" target="_blank" rel="noopener" class="resource-card">
+                <span class="material-icons resource-icon">smart_display</span>
+                <span class="resource-label">{{ res.video_Title || res.video_URL }}</span>
+                <span class="material-icons open-icon">open_in_new</span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
