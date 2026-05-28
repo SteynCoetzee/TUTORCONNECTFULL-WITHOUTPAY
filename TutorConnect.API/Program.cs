@@ -10,6 +10,12 @@ using TutorConnect.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Raise Kestrel's default 30 MB body limit to support large video uploads (up to 600 MB)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 600_000_000; // 600 MB
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

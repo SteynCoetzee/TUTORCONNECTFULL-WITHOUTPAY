@@ -85,6 +85,9 @@
                   <button class="res-type-btn" [class.active]="resType === 'PDF'" (click)="resType = 'PDF'; resFile = null; resUrl = ''">
                     <span class="material-icons" style="color:#ef4444">picture_as_pdf</span> PDF
                   </button>
+                  <button class="res-type-btn" [class.active]="resType === 'Doc'" (click)="resType = 'Doc'; resFile = null; resUrl = ''">
+                    <span class="material-icons" style="color:#f59e0b">description</span> Docs
+                  </button>
                   <button class="res-type-btn" [class.active]="resType === 'Link'" (click)="resType = 'Link'; resFile = null">
                     <span class="material-icons" style="color:#3b82f6">link</span> Link
                   </button>
@@ -113,11 +116,28 @@
                   <div class="res-upload-row">
                     <label class="res-file-btn">
                       <span class="material-icons">upload_file</span>
-                      {{ resFile ? resFile.name : 'Choose file' }}
-                      <input type="file" accept=".pdf,.doc,.docx" hidden (change)="onFileSelected($event)" />
+                      {{ resFile ? resFile.name : 'Choose PDF' }}
+                      <input type="file" accept=".pdf" hidden (change)="onFileSelected($event)" />
                     </label>
                     <span class="res-or">or</span>
                     <input class="form-control" [(ngModel)]="resUrl" placeholder="Paste a URL..." [disabled]="!!resFile" />
+                  </div>
+                  @if (resFile) {
+                    <button class="res-clear-file" (click)="resFile = null">
+                      <span class="material-icons">close</span> Remove file
+                    </button>
+                  }
+                </div>
+              }
+              @if (resType === 'Doc') {
+                <div class="res-form-group full-width">
+                  <label class="res-label">Upload Document * <span class="res-optional">(.doc, .docx, .xls, .xlsx, .ppt, .pptx)</span></label>
+                  <div class="res-upload-row">
+                    <label class="res-file-btn">
+                      <span class="material-icons">upload_file</span>
+                      {{ resFile ? resFile.name : 'Choose document' }}
+                      <input type="file" accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx" hidden (change)="onFileSelected($event)" />
+                    </label>
                   </div>
                   @if (resFile) {
                     <button class="res-clear-file" (click)="resFile = null">
@@ -155,7 +175,7 @@
               <button class="btn btn-secondary" (click)="cancelResourceForm()">Cancel</button>
               <button class="btn btn-primary" (click)="submitResource()"
                       [disabled]="savingResource || resUploading">
-                @if (resUploading) { <span class="spinner-sm"></span> Uploading... }
+                @if (resUploading) { <span class="spinner-sm"></span> {{ resType === 'Video' ? 'Uploading video...' : 'Uploading...' }} }
                 @else if (savingResource) { <span class="spinner-sm"></span> Saving... }
                 @else { <span class="material-icons">save</span> Save Resource }
               </button>
@@ -235,6 +255,9 @@
                           <button class="res-type-btn" [class.active]="editResType === 'PDF'" (click)="editResType = 'PDF'; editResFile = null">
                             <span class="material-icons" style="color:#ef4444">picture_as_pdf</span> PDF
                           </button>
+                          <button class="res-type-btn" [class.active]="editResType === 'Doc'" (click)="editResType = 'Doc'; editResFile = null; editResUrl = ''">
+                            <span class="material-icons" style="color:#f59e0b">description</span> Docs
+                          </button>
                           <button class="res-type-btn" [class.active]="editResType === 'Link'" (click)="editResType = 'Link'; editResFile = null">
                             <span class="material-icons" style="color:#3b82f6">link</span> Link
                           </button>
@@ -253,15 +276,32 @@
                       </div>
                       @if (editResType === 'PDF') {
                         <div class="res-form-group full-width">
-                          <label class="res-label">Upload new file <span class="res-optional">(leave blank to keep current)</span></label>
+                          <label class="res-label">Upload new PDF <span class="res-optional">(leave blank to keep current)</span></label>
                           <div class="res-upload-row">
                             <label class="res-file-btn">
                               <span class="material-icons">upload_file</span>
-                              {{ editResFile ? editResFile.name : 'Choose file' }}
-                              <input type="file" accept=".pdf,.doc,.docx" hidden (change)="onEditFileSelected($event)" />
+                              {{ editResFile ? editResFile.name : 'Choose PDF' }}
+                              <input type="file" accept=".pdf" hidden (change)="onEditFileSelected($event)" />
                             </label>
                             <span class="res-or">or URL</span>
                             <input class="form-control" [(ngModel)]="editResUrl" placeholder="Paste URL..." [disabled]="!!editResFile" />
+                          </div>
+                          @if (editResFile) {
+                            <button class="res-clear-file" (click)="editResFile = null">
+                              <span class="material-icons">close</span> Remove file
+                            </button>
+                          }
+                        </div>
+                      }
+                      @if (editResType === 'Doc') {
+                        <div class="res-form-group full-width">
+                          <label class="res-label">Upload new document <span class="res-optional">(leave blank to keep current — .doc, .docx, .xls, .xlsx, .ppt, .pptx)</span></label>
+                          <div class="res-upload-row">
+                            <label class="res-file-btn">
+                              <span class="material-icons">upload_file</span>
+                              {{ editResFile ? editResFile.name : 'Choose document' }}
+                              <input type="file" accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx" hidden (change)="onEditFileSelected($event)" />
+                            </label>
                           </div>
                           @if (editResFile) {
                             <button class="res-clear-file" (click)="editResFile = null">
@@ -318,12 +358,24 @@
                     </div>
                     <div class="res-item-actions">
                       @if (r.resource_URL) {
-                        <a [href]="r.resource_URL" target="_blank" rel="noopener"
-                           class="btn-res-open" [title]="r.module_Resource_Type_ID === 'PDF' ? 'Download' : 'Open'">
-                          <span class="material-icons">
-                            {{ r.module_Resource_Type_ID === 'PDF' ? 'download' : r.module_Resource_Type_ID === 'Video' ? 'play_circle' : 'open_in_new' }}
-                          </span>
-                        </a>
+                        @if (r.module_Resource_Type_ID === 'PDF') {
+                          <button class="btn-res-open" title="View PDF"
+                                  (click)="previewResource(r.module_Resource_ID, r.module_Resource_Name)">
+                            <span class="material-icons">visibility</span>
+                          </button>
+                          <a [href]="r.resource_URL" target="_blank" rel="noopener"
+                             class="btn-res-open" title="Download PDF">
+                            <span class="material-icons">download</span>
+                          </a>
+                        } @else {
+                          <a [href]="r.resource_URL" target="_blank" rel="noopener"
+                             class="btn-res-open"
+                             [title]="r.module_Resource_Type_ID === 'Video' ? 'Play' : 'Open'">
+                            <span class="material-icons">
+                              {{ r.module_Resource_Type_ID === 'Video' ? 'play_circle' : 'open_in_new' }}
+                            </span>
+                          </a>
+                        }
                       }
                       @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
                         <button class="btn-res-edit" title="Edit" (click)="openEditResource(r, $event)">
@@ -748,6 +800,11 @@
                           <div style="display:flex;align-items:center;gap:6px">
                             @if (s.submission_ID) {
                               <button class="btn-res-open"
+                                      (click)="previewSubmission(s.submission_ID, s.file_Name)"
+                                      title="Preview submission">
+                                <span class="material-icons">visibility</span>
+                              </button>
+                              <button class="btn-res-open"
                                       (click)="downloadSubmission(s.submission_ID, s.file_Name)"
                                       title="Download submission">
                                 <span class="material-icons">download</span>
@@ -843,6 +900,13 @@
                   <!-- Tutor/Admin actions -->
                   @if ((role === 'Tutor' && isAssigned) || role === 'Admin') {
                     <div class="item-actions">
+                      @if (a.assignment_URL) {
+                        <button class="btn btn-secondary btn-sm"
+                                (click)="previewBrief(a.assignment_ID, a.assignment_Name)"
+                                title="View brief PDF">
+                          <span class="material-icons">visibility</span> Brief
+                        </button>
+                      }
                       <button class="btn btn-secondary btn-sm"
                               (click)="assignmentSubmissionsId === a.assignment_ID ? closeAssignmentSubmissions() : openAssignmentSubmissions(a)">
                         <span class="material-icons">grading</span> Submissions
@@ -864,9 +928,14 @@
                     <div class="item-actions">
                       @if (a.assignment_URL) {
                         <button class="btn btn-secondary btn-sm"
+                                (click)="previewBrief(a.assignment_ID, a.assignment_Name)"
+                                title="View brief PDF">
+                          <span class="material-icons">visibility</span> Brief
+                        </button>
+                        <button class="btn-icon"
                                 (click)="downloadBrief(a.assignment_ID, a.assignment_Name)"
-                                title="Download assignment brief">
-                          <span class="material-icons">download</span> Brief
+                                title="Download brief">
+                          <span class="material-icons">download</span>
                         </button>
                       }
                       <button class="btn btn-primary btn-sm"
@@ -1102,6 +1171,35 @@
   }
 </div>
 
-
+<!-- ── PDF Viewer Modal ──────────────────────────────────────────────────── -->
+@if (pdfViewerVisible) {
+  <div class="pdf-backdrop" (click)="closePdfViewer()">
+    <div class="pdf-modal" (click)="$event.stopPropagation()">
+      <div class="pdf-modal-header">
+        <div class="pdf-modal-title">
+          <span class="material-icons">picture_as_pdf</span>
+          <span>{{ pdfViewerTitle }}</span>
+        </div>
+        <button class="btn-icon" (click)="closePdfViewer()" title="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="pdf-modal-body">
+        @if (pdfViewerLoading) {
+          <div class="pdf-loading">
+            <span class="spinner"></span>
+            <span>Loading preview...</span>
+          </div>
+        }
+        @if (!pdfViewerLoading && pdfViewerSrc) {
+          <iframe [src]="pdfViewerSrc" class="pdf-iframe"
+                  type="application/pdf"
+                  title="PDF Preview">
+          </iframe>
+        }
+      </div>
+    </div>
+  </div>
+}
 
 

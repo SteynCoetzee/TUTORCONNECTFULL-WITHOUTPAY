@@ -124,8 +124,10 @@ namespace TutorConnect.API.Controllers
                 return BadRequest("User not found.");
             }
 
-            // Generate a 6-digit reset code
-            var resetCode = new Random().Next(100000, 999999).ToString();
+            // Generate a 6-character alphanumeric reset code (uppercase letters + digits)
+            const string otpChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var rng = new Random();
+            var resetCode = new string(Enumerable.Range(0, 6).Select(_ => otpChars[rng.Next(otpChars.Length)]).ToArray());
             user.PasswordResetCode = resetCode;
             user.PasswordResetCodeExpiration = DateTime.Now.AddMinutes(15); // Code valid for 15 minutes
 
@@ -134,6 +136,18 @@ namespace TutorConnect.API.Controllers
 
             await _emailService.SendResetCodeAsync(user.Email, resetCode);
             return Ok(new { message = "Password reset code sent to your email." });
+        }
+
+        [HttpPost("verify-reset-code")]
+        public async Task<ActionResult> VerifyResetCode([FromBody] ResetPasswordDto request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null) return BadRequest("User not found.");
+            if (!string.Equals(user.PasswordResetCode, request.ResetCode?.Trim(), StringComparison.OrdinalIgnoreCase))
+                return BadRequest("Incorrect OTP. Please check your email and try again.");
+            if (user.PasswordResetCodeExpiration == null || DateTime.Now > user.PasswordResetCodeExpiration)
+                return BadRequest("OTP has expired. Please request a new one.");
+            return Ok("OTP verified successfully.");
         }
 
         [HttpPost("reset-password")]
@@ -146,8 +160,8 @@ namespace TutorConnect.API.Controllers
                 return BadRequest("User not found.");
             }
 
-            // Validate reset code and expiration
-            if (user.PasswordResetCode != request.ResetCode)
+            // Validate reset code and expiration (case-insensitive)
+            if (!string.Equals(user.PasswordResetCode, request.ResetCode?.Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 return BadRequest("Invalid reset code.");
             }
@@ -358,11 +372,13 @@ namespace TutorConnect.API.Controllers
             var profile = await _context.Tutor_Profiles.FirstOrDefaultAsync(p => p.User_ID == id);
             if (profile == null)
                 _context.Tutor_Profiles.Add(new Tutor_Profile {
-                    User_ID = id, Qualifications = dto.Qualifications,
+                    User_ID = id, Employee_Number = dto.Employee_Number,
+                    Qualifications = dto.Qualifications,
                     Specialization = dto.Specialization, Years_Of_Experience = dto.Years_Of_Experience
                 });
             else
             {
+                profile.Employee_Number = dto.Employee_Number;
                 profile.Qualifications = dto.Qualifications;
                 profile.Specialization = dto.Specialization;
                 profile.Years_Of_Experience = dto.Years_Of_Experience;
@@ -377,9 +393,12 @@ namespace TutorConnect.API.Controllers
         {
             var profile = await _context.Admin_Profiles.FirstOrDefaultAsync(p => p.User_ID == id);
             if (profile == null)
-                _context.Admin_Profiles.Add(new Admin_Profile { User_ID = id, Job_Title = dto.Job_Title });
+                _context.Admin_Profiles.Add(new Admin_Profile { User_ID = id, Staff_Number = dto.Staff_Number, Job_Title = dto.Job_Title });
             else
+            {
+                profile.Staff_Number = dto.Staff_Number;
                 profile.Job_Title = dto.Job_Title;
+            }
             await _context.SaveChangesAsync();
             return Ok("Admin profile updated.");
         }
@@ -389,51 +408,128 @@ namespace TutorConnect.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users
+                .Include(u => u.User_Role)
+                .FirstOrDefaultAsync(u => u.User_ID == id);
             if (user == null) return NotFound("User not found.");
 
-            // Remove all related records first to avoid FK constraint violations
-            var bookings = _context.Bookings.Where(b => b.Student_ID == id);
-            _context.Bookings.RemoveRange(bookings);
+            // Prevent admin from deleting their own account
+            var currentUserId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+            if (id == currentUserId)
+                return BadRequest("You cannot delete your own account.");
 
-            var slots = _context.Booking_Slots.Where(s => s.Tutor_ID == id);
-            // Delete bookings referencing those slots too
-            var slotIds = slots.Select(s => s.Booking_Slot_ID).ToList();
-            var slotBookings = _context.Bookings.Where(b => slotIds.Contains(b.Booking_Slot_ID));
-            _context.Bookings.RemoveRange(slotBookings);
-            _context.Booking_Slots.RemoveRange(slots);
-
-            var logHours = _context.Log_Hours.Where(l => l.Tutor_ID == id);
-            _context.Log_Hours.RemoveRange(logHours);
-
-            var announcements = _context.Announcements.Where(a => a.Tutor_ID == id || a.Admin_ID == id);
-            _context.Announcements.RemoveRange(announcements);
-
-            var testimonials = _context.Testimonials.Where(t => t.Student_ID == id);
-            _context.Testimonials.RemoveRange(testimonials);
-
-            var notifications = _context.Notifications.Where(n => n.User_ID == id);
-            _context.Notifications.RemoveRange(notifications);
-
-            var studentQuizzes = _context.Student_Quizzes.Where(q => q.Student_ID == id);
-            _context.Student_Quizzes.RemoveRange(studentQuizzes);
-
-            var sessionAttendances = _context.Session_Attendances.Where(a => a.Student_ID == id);
-            _context.Session_Attendances.RemoveRange(sessionAttendances);
-
-            var groupAllocations = _context.Student_Group_Allocations.Where(g => g.Student_ID == id);
-            _context.Student_Group_Allocations.RemoveRange(groupAllocations);
+            var role = user.User_Role?.User_Role_Name ?? "";
 
             try
             {
+                // ── Always remove notifications ───────────────────────────────
+                _context.Notifications.RemoveRange(
+                    _context.Notifications.Where(n => n.User_ID == id));
+
+                if (role == "Student")
+                {
+                    // Quiz answers must be removed before their parent Student_Quiz rows
+                    var quizIds = await _context.Student_Quizzes
+                        .Where(q => q.Student_ID == id)
+                        .Select(q => q.Student_Quiz_ID).ToListAsync();
+                    _context.Student_Quiz_Answers.RemoveRange(
+                        _context.Student_Quiz_Answers.Where(a => quizIds.Contains(a.Student_Quiz_ID)));
+                    _context.Student_Quizzes.RemoveRange(
+                        _context.Student_Quizzes.Where(q => q.Student_ID == id));
+
+                    // Assignment submissions (student's work is deleted with them)
+                    _context.Assignment_Submissions.RemoveRange(
+                        _context.Assignment_Submissions.Where(s => s.Student_ID == id));
+
+                    // Enrollments & unenrollments
+                    _context.Student_Modules.RemoveRange(
+                        _context.Student_Modules.Where(s => s.Student_ID == id));
+                    _context.Student_Unenrollments.RemoveRange(
+                        _context.Student_Unenrollments.Where(s => s.Student_ID == id));
+
+                    // Reviews written by this student
+                    _context.Tutor_Reviews.RemoveRange(
+                        _context.Tutor_Reviews.Where(r => r.Student_ID == id));
+                    _context.Session_Reviews.RemoveRange(
+                        _context.Session_Reviews.Where(r => r.Student_ID == id));
+
+                    // Attendance, bookings, payments, wishlist, testimonials, group allocations
+                    _context.Session_Attendances.RemoveRange(
+                        _context.Session_Attendances.Where(a => a.Student_ID == id));
+                    _context.Bookings.RemoveRange(
+                        _context.Bookings.Where(b => b.Student_ID == id));
+                    _context.Payments.RemoveRange(
+                        _context.Payments.Where(p => p.Student_ID == id));
+                    _context.Module_Wishlists.RemoveRange(
+                        _context.Module_Wishlists.Where(w => w.Student_ID == id));
+                    _context.Testimonials.RemoveRange(
+                        _context.Testimonials.Where(t => t.Student_ID == id));
+                    _context.Student_Group_Allocations.RemoveRange(
+                        _context.Student_Group_Allocations.Where(g => g.Student_ID == id));
+
+                    // Profile
+                    var sp = await _context.Student_Profiles.FirstOrDefaultAsync(p => p.User_ID == id);
+                    if (sp != null) _context.Student_Profiles.Remove(sp);
+                }
+                else if (role == "Tutor" || role == "AW-Tutor")
+                {
+                    // Tutor's uploaded content (modules, resources, assignments, quizzes) stays.
+                    // Only remove the tutor's personal links and activity.
+
+                    // Tutor-module assignments (link rows only, not the modules themselves)
+                    _context.Tutor_Modules.RemoveRange(
+                        _context.Tutor_Modules.Where(t => t.Tutor_ID == id));
+
+                    // Reviews about this tutor
+                    _context.Tutor_Reviews.RemoveRange(
+                        _context.Tutor_Reviews.Where(r => r.Tutor_ID == id));
+
+                    // Nullify graded_by on submissions so student work is preserved
+                    var graded = await _context.Assignment_Submissions
+                        .Where(s => s.Graded_By == id).ToListAsync();
+                    graded.ForEach(s => s.Graded_By = null);
+
+                    // Booking slots and their bookings
+                    var slotIds = await _context.Booking_Slots
+                        .Where(s => s.Tutor_ID == id)
+                        .Select(s => s.Booking_Slot_ID).ToListAsync();
+                    _context.Bookings.RemoveRange(
+                        _context.Bookings.Where(b => slotIds.Contains(b.Booking_Slot_ID)));
+                    _context.Booking_Slots.RemoveRange(
+                        _context.Booking_Slots.Where(s => s.Tutor_ID == id));
+
+                    // Log hours and announcements
+                    _context.Log_Hours.RemoveRange(
+                        _context.Log_Hours.Where(l => l.Tutor_ID == id));
+                    _context.Announcements.RemoveRange(
+                        _context.Announcements.Where(a => a.Tutor_ID == id));
+
+                    // Profile
+                    var tp = await _context.Tutor_Profiles.FirstOrDefaultAsync(p => p.User_ID == id);
+                    if (tp != null) _context.Tutor_Profiles.Remove(tp);
+                }
+                else if (role == "Admin")
+                {
+                    // Nullify approved-by on log hours so tutor records are preserved
+                    var approved = await _context.Log_Hours
+                        .Where(l => l.ApprovedBy_Admin_ID == id).ToListAsync();
+                    approved.ForEach(l => l.ApprovedBy_Admin_ID = null);
+
+                    _context.Announcements.RemoveRange(
+                        _context.Announcements.Where(a => a.Admin_ID == id));
+
+                    var ap = await _context.Admin_Profiles.FirstOrDefaultAsync(p => p.User_ID == id);
+                    if (ap != null) _context.Admin_Profiles.Remove(ap);
+                }
+
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
-                await _audit.LogAsync(1, "User Deleted", $"User_ID: {id}, Email: {user.Email}");
+                await _audit.LogAsync(1, "User Deleted", $"User_ID: {id}, Role: {role}, Email: {user.Email}");
                 return Ok("User deleted successfully.");
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                return Conflict("Cannot delete this user because they have associated records that could not be removed automatically.");
+                return Conflict($"Delete failed: {ex.InnerException?.Message ?? ex.Message}");
             }
         }
     }
@@ -595,9 +691,36 @@ namespace TutorConnect.API.Controllers
             }));
         }
 
-        // POST: api/ModuleResources/upload — file upload (PDF)
+        // GET: api/ModuleResources/{id}/preview — proxies file from Cloudinary for inline browser viewing
+        [HttpGet("{id}/preview")]
+        public async Task<IActionResult> PreviewResource(int id)
+        {
+            var resource = await _context.Module_Resources.FindAsync(id);
+            if (resource == null || string.IsNullOrEmpty(resource.Resource_URL))
+                return NotFound("Resource not found.");
+
+            using var http = new HttpClient();
+            var response = await http.GetAsync(resource.Resource_URL);
+            if (!response.IsSuccessStatusCode)
+                return StatusCode((int)response.StatusCode, "Could not fetch file from storage.");
+
+            var bytes = await response.Content.ReadAsByteArrayAsync();
+            var contentType = resource.Module_Resource_Type_ID switch
+            {
+                "PDF"   => "application/pdf",
+                "Video" => response.Content.Headers.ContentType?.MediaType ?? "video/mp4",
+                _       => "application/octet-stream"
+            };
+            var safeName = Uri.EscapeDataString(resource.Module_Resource_Name ?? "file");
+            Response.Headers["Content-Disposition"] = $"inline; filename=\"{safeName}\"";
+            return File(bytes, contentType);
+        }
+
+        // POST: api/ModuleResources/upload — file upload (PDF / Doc / Video)
         [HttpPost("upload")]
         [Authorize(Roles = "Tutor,Admin")]
+        [DisableRequestSizeLimit]
+        [RequestFormLimits(MultipartBodyLengthLimit = 600_000_000)] // 600 MB
         public async Task<ActionResult> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0) return BadRequest("No file provided.");
@@ -610,9 +733,10 @@ namespace TutorConnect.API.Controllers
             try
             {
                 var isVideo = new[] { ".mp4", ".webm", ".mov" }.Contains(ext);
-                var url = isVideo
-                    ? await _cloudinary.UploadVideoAsync(stream, fileName)
-                    : await _cloudinary.UploadImageAsync(stream, fileName);
+                var isPdf   = new[] { ".pdf", ".doc", ".docx", ".ppt", ".pptx" }.Contains(ext);
+                var url = isVideo ? await _cloudinary.UploadVideoAsync(stream, fileName)
+                        : isPdf   ? await _cloudinary.UploadRawAsync(stream, fileName)
+                        :           await _cloudinary.UploadImageAsync(stream, fileName);
                 return Ok(url);
             }
             catch (Exception ex)

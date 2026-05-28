@@ -3,6 +3,7 @@ import { CommonModule, DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService } from '../../services/auth.service';
 import { Module, ModuleResource, ModuleAssignment, ModuleQuiz, TutorModuleAssignment, UserProfile, Announcement } from '../../models/models';
 import { environment } from '../../../environments/environment';
@@ -46,7 +47,7 @@ export class ModuleDetailComponent implements OnInit {
   showResourceForm = false;
   resFolder = '';
   resTitle = '';
-  resType: 'PDF' | 'Link' | 'Video' | '' = '';
+  resType: 'PDF' | 'Doc' | 'Link' | 'Video' | '' = '';
   resUrl = '';
   resFile: File | null = null;
   resUploading = false;
@@ -59,7 +60,7 @@ export class ModuleDetailComponent implements OnInit {
   editingResourceId: number | null = null;
   editResTitle = '';
   editResFolder = '';
-  editResType: 'PDF' | 'Link' | 'Video' | '' = '';
+  editResType: 'PDF' | 'Doc' | 'Link' | 'Video' | '' = '';
   editResUrl = '';
   editResFile: File | null = null;
   editResUploading = false;
@@ -143,11 +144,19 @@ export class ModuleDetailComponent implements OnInit {
 
   private apiUrl = environment.apiUrl;
 
+  // ─── PDF viewer ──────────────────────────────────────────────────────────────
+  pdfViewerVisible = false;
+  pdfViewerTitle = '';
+  pdfViewerLoading = false;
+  pdfViewerSrc: SafeResourceUrl | null = null;
+  private pdfObjectUrl: string | null = null;
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit() {
@@ -262,9 +271,55 @@ export class ModuleDetailComponent implements OnInit {
     this.clearMessages();
   }
 
+  private validateFile(file: File, kind: 'pdf' | 'doc' | 'document' | 'video' | 'brief' | 'submission'): string | null {
+    const MB = 1024 * 1024;
+    const wordMimes  = ['application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const officeMimes = [
+      ...wordMimes,
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ];
+    const videoMimes = ['video/mp4', 'video/webm', 'video/quicktime'];
+    const zipMimes   = ['application/zip', 'application/x-zip-compressed'];
+
+    if (kind === 'pdf') {
+      if (file.type !== 'application/pdf') return 'Only PDF files are allowed for this type.';
+      if (file.size > 20 * MB) return 'PDF must be under 20 MB.';
+    } else if (kind === 'doc') {
+      if (!officeMimes.includes(file.type))
+        return 'Only Word (.doc/.docx), Excel (.xls/.xlsx), or PowerPoint (.ppt/.pptx) files are allowed.';
+      if (file.size > 20 * MB) return 'Document must be under 20 MB.';
+    } else if (kind === 'brief') {
+      if (file.type !== 'application/pdf') return 'Assignment brief must be a PDF file.';
+      if (file.size > 20 * MB) return 'Brief PDF must be under 20 MB.';
+    } else if (kind === 'document') {
+      // legacy: PDF or Word
+      if (!['application/pdf', ...wordMimes].includes(file.type))
+        return 'Only PDF or Word (.doc / .docx) files are allowed.';
+      if (file.size > 20 * MB) return 'Document must be under 20 MB.';
+    } else if (kind === 'video') {
+      if (!videoMimes.includes(file.type)) return 'Only MP4, WebM, or MOV video files are allowed.';
+      if (file.size > 500 * MB) return 'Video must be under 500 MB.';
+    } else if (kind === 'submission') {
+      if (!['application/pdf', ...wordMimes, ...zipMimes].includes(file.type))
+        return 'Submissions must be PDF, Word (.doc / .docx), or ZIP files.';
+      if (file.size > 50 * MB) return 'Submission must be under 50 MB.';
+    }
+    return null;
+  }
+
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.resFile = input.files?.[0] ?? null;
+    const file = input.files?.[0];
+    if (!file) return;
+    const kind = this.resType === 'Video' ? 'video' : this.resType === 'PDF' ? 'pdf' : 'doc';
+    const err = this.validateFile(file, kind);
+    if (err) { this.errorMessage = err; input.value = ''; this.resFile = null; return; }
+    this.resFile = file;
+    this.clearMessages();
   }
 
   submitResource() {
@@ -276,11 +331,28 @@ export class ModuleDetailComponent implements OnInit {
     }
     if (this.resFile) {
       this.resUploading = true;
+      const isVideo = this.resType === 'Video';
+      if (isVideo) this.successMessage = 'Uploading video — this may take a few minutes for large files...';
       const fd = new FormData();
       fd.append('file', this.resFile);
-      this.http.post(`${this.apiUrl}/ModuleResources/upload`, fd, { responseType: 'text' }).subscribe({
-        next: (url) => { this.resUploading = false; this.resUrl = this.parseUrl(url); this.doSaveResource(); },
-        error: () => { this.resUploading = false; this.errorMessage = 'File upload failed.'; }
+      this.http.post(`${this.apiUrl}/ModuleResources/upload`, fd, {
+        responseType: 'text',
+        headers: { 'X-Upload-Timeout': '600' }  // hint; actual timeout handled by Cloudinary
+      }).subscribe({
+        next: (url) => {
+          this.resUploading = false;
+          this.successMessage = '';
+          this.resUrl = this.parseUrl(url);
+          this.doSaveResource();
+        },
+        error: (err) => {
+          this.resUploading = false;
+          this.successMessage = '';
+          const msg = typeof err?.error === 'string' ? err.error : '';
+          this.errorMessage = isVideo
+            ? `Video upload failed${msg ? ': ' + msg : ''}. Check the file is .mp4/.webm/.mov and under 500 MB.`
+            : `File upload failed${msg ? ': ' + msg : ''}.`;
+        }
       });
     } else {
       this.doSaveResource();
@@ -355,7 +427,7 @@ export class ModuleDetailComponent implements OnInit {
     this.editingResourceId = res.module_Resource_ID;
     this.editResTitle  = res.module_Resource_Name;
     this.editResFolder = res.folder_Name || '';
-    this.editResType   = res.module_Resource_Type_ID as 'PDF' | 'Link' | 'Video';
+    this.editResType   = res.module_Resource_Type_ID as 'PDF' | 'Doc' | 'Link' | 'Video';
     this.editResUrl    = res.resource_URL || '';
     this.editResFile   = null;
     this.deleteResourceId = null;
@@ -370,11 +442,25 @@ export class ModuleDetailComponent implements OnInit {
     }
     if (this.editResFile) {
       this.editResUploading = true;
+      const isVideo = this.editResType === 'Video';
+      if (isVideo) this.successMessage = 'Uploading video — this may take a few minutes for large files...';
       const fd = new FormData();
       fd.append('file', this.editResFile);
       this.http.post(`${this.apiUrl}/ModuleResources/upload`, fd, { responseType: 'text' }).subscribe({
-        next: (url) => { this.editResUploading = false; this.editResUrl = this.parseUrl(url); this.doSaveEdit(); },
-        error: () => { this.editResUploading = false; this.errorMessage = 'File upload failed.'; }
+        next: (url) => {
+          this.editResUploading = false;
+          this.successMessage = '';
+          this.editResUrl = this.parseUrl(url);
+          this.doSaveEdit();
+        },
+        error: (err) => {
+          this.editResUploading = false;
+          this.successMessage = '';
+          const msg = typeof err?.error === 'string' ? err.error : '';
+          this.errorMessage = isVideo
+            ? `Video upload failed${msg ? ': ' + msg : ''}. Check the file is .mp4/.webm/.mov and under 500 MB.`
+            : `File upload failed${msg ? ': ' + msg : ''}.`;
+        }
       });
     } else {
       this.doSaveEdit();
@@ -402,7 +488,13 @@ export class ModuleDetailComponent implements OnInit {
 
   onEditFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.editResFile = input.files?.[0] ?? null;
+    const file = input.files?.[0];
+    if (!file) return;
+    const kind = this.editResType === 'Video' ? 'video' : this.editResType === 'PDF' ? 'pdf' : 'doc';
+    const err = this.validateFile(file, kind);
+    if (err) { this.errorMessage = err; input.value = ''; this.editResFile = null; return; }
+    this.editResFile = file;
+    this.clearMessages();
   }
 
   confirmDeleteResource(id: number) { this.deleteResourceId = id; this.clearMessages(); }
@@ -458,6 +550,7 @@ export class ModuleDetailComponent implements OnInit {
 
   resIcon(type: string): string {
     if (type === 'PDF') return 'picture_as_pdf';
+    if (type === 'Doc') return 'description';
     if (type === 'Video') return 'smart_display';
     if (type === 'Link') return 'link';
     return 'description';
@@ -465,6 +558,7 @@ export class ModuleDetailComponent implements OnInit {
 
   resColor(type: string): string {
     if (type === 'PDF') return '#ef4444';
+    if (type === 'Doc') return '#f59e0b';
     if (type === 'Video') return '#8b5cf6';
     if (type === 'Link') return '#3b82f6';
     return '#6b7280';
@@ -670,6 +764,61 @@ export class ModuleDetailComponent implements OnInit {
     return { Authorization: `Bearer ${token}` };
   }
 
+  // ─── PDF viewer ──────────────────────────────────────────────────────────────
+
+  private async openViewer(fetchFn: () => Promise<Response>, title: string) {
+    this.closePdfViewer();
+    this.pdfViewerTitle = title;
+    this.pdfViewerLoading = true;
+    this.pdfViewerVisible = true;
+    this.pdfViewerSrc = null;
+    try {
+      const res = await fetchFn();
+      if (!res.ok) {
+        const msg = await res.text().catch(() => '');
+        throw new Error(`${res.status}${msg ? ': ' + msg : ''}`);
+      }
+      const blob = await res.blob();
+      if (blob.size === 0) throw new Error('Empty file returned');
+      this.pdfObjectUrl = URL.createObjectURL(blob);
+      this.pdfViewerSrc = this.sanitizer.bypassSecurityTrustResourceUrl(this.pdfObjectUrl);
+    } catch (err: any) {
+      this.pdfViewerVisible = false;
+      this.errorMessage = `Preview failed (${err?.message ?? 'unknown error'}). Try downloading instead.`;
+    }
+    this.pdfViewerLoading = false;
+  }
+
+  previewResource(resourceId: number, name: string) {
+    this.openViewer(
+      () => fetch(`${this.apiUrl}/ModuleResources/${resourceId}/preview`, { headers: this.authHeader }),
+      name
+    );
+  }
+
+  previewBrief(assignmentId: number, name: string) {
+    this.openViewer(
+      () => fetch(`${this.apiUrl}/Assignments/${assignmentId}/download-brief`),
+      `${name} — Brief`
+    );
+  }
+
+  previewSubmission(submissionId: number, filename: string) {
+    this.openViewer(
+      () => fetch(`${this.apiUrl}/Assignments/submissions/${submissionId}/download`, { headers: this.authHeader }),
+      filename
+    );
+  }
+
+  closePdfViewer() {
+    this.pdfViewerVisible = false;
+    this.pdfViewerSrc = null;
+    this.pdfViewerTitle = '';
+    if (this.pdfObjectUrl) { URL.revokeObjectURL(this.pdfObjectUrl); this.pdfObjectUrl = null; }
+  }
+
+  // ─── Download helpers ─────────────────────────────────────────────────────
+
   downloadBrief(assignmentId: number, name: string) {
     fetch(`${this.apiUrl}/Assignments/${assignmentId}/download-brief`)
       .then(res => res.blob())
@@ -724,7 +873,12 @@ export class ModuleDetailComponent implements OnInit {
 
   onBriefFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.assignmentBriefFile = input.files?.[0] ?? null;
+    const file = input.files?.[0];
+    if (!file) return;
+    const err = this.validateFile(file, 'brief');
+    if (err) { this.errorMessage = err; input.value = ''; this.assignmentBriefFile = null; return; }
+    this.assignmentBriefFile = file;
+    this.clearMessages();
   }
 
   saveAssignment() {
@@ -833,7 +987,12 @@ export class ModuleDetailComponent implements OnInit {
 
   onStudentSubmitFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.studentSubmitFile = input.files?.[0] ?? null;
+    const file = input.files?.[0];
+    if (!file) return;
+    const err = this.validateFile(file, 'submission');
+    if (err) { this.errorMessage = err; input.value = ''; this.studentSubmitFile = null; return; }
+    this.studentSubmitFile = file;
+    this.clearMessages();
   }
 
   submitAssignment(assignmentId: number) {

@@ -39,8 +39,13 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Student ID</label>
-          <input class="form-control" [value]="getStudentId()" disabled />
+          <label>{{ roleName === 'Admin' ? 'Staff ID' : (roleName === 'Student' ? 'Student ID' : 'Employee ID') }}</label>
+          <input class="form-control"
+                 [value]="roleName === 'Student' ? (roleProfile?.student_Number || '') :
+                          roleName === 'Admin'   ? (roleProfile?.staff_Number   || '') :
+                                                   (roleProfile?.employee_Number || '')"
+                 placeholder="Not set — click Edit Profile to add"
+                 disabled />
         </div>
         <div class="form-group">
           <label>Bio</label>
@@ -51,17 +56,44 @@
       <ng-container *ngIf="editMode">
         <div class="grid-2">
           <div class="form-group">
-            <label>First Name</label>
-            <input class="form-control" [(ngModel)]="editData.firstName" name="firstName" />
+            <label>First Name *</label>
+            <input class="form-control" [class.input-error]="fieldErrors['firstName']"
+                   [(ngModel)]="editData.firstName" name="firstName"
+                   (ngModelChange)="validateName($event, 'firstName')" />
+            @if (fieldErrors['firstName']) { <span class="field-error">{{ fieldErrors['firstName'] }}</span> }
           </div>
           <div class="form-group">
-            <label>Last Name</label>
-            <input class="form-control" [(ngModel)]="editData.lastName" name="lastName" />
+            <label>Last Name *</label>
+            <input class="form-control" [class.input-error]="fieldErrors['lastName']"
+                   [(ngModel)]="editData.lastName" name="lastName"
+                   (ngModelChange)="validateName($event, 'lastName')" />
+            @if (fieldErrors['lastName']) { <span class="field-error">{{ fieldErrors['lastName'] }}</span> }
           </div>
         </div>
         <div class="form-group">
-          <label>Bio</label>
-          <textarea class="form-control" rows="3" [(ngModel)]="editData.bio" name="bio" placeholder="Tell us about yourself..."></textarea>
+          <label>{{ roleName === 'Admin' ? 'Staff ID' : (roleName === 'Student' ? 'Student ID *' : 'Employee ID') }}</label>
+          @if (roleName === 'Student') {
+            <input class="form-control" [class.input-error]="fieldErrors['studentNumber']"
+                   [(ngModel)]="editRoleProfile.student_Number" placeholder="e.g. u12345678"
+                   (ngModelChange)="validateStudentNumber($event)" />
+            @if (fieldErrors['studentNumber']) { <span class="field-error">{{ fieldErrors['studentNumber'] }}</span> }
+          }
+          @if (roleName === 'Tutor' || roleName === 'AW-Tutor') {
+            <input class="form-control" [(ngModel)]="editRoleProfile.employee_Number"
+                   placeholder="e.g. EMP2024001" />
+          }
+          @if (roleName === 'Admin') {
+            <input class="form-control" [(ngModel)]="editRoleProfile.staff_Number"
+                   placeholder="e.g. ADM2024001" />
+          }
+        </div>
+        <div class="form-group">
+          <label>Bio <span class="char-count">{{ (editData.bio || '').length }}/500</span></label>
+          <textarea class="form-control" [class.input-error]="fieldErrors['bio']"
+                    rows="3" [(ngModel)]="editData.bio" name="bio"
+                    placeholder="Tell us about yourself..." maxlength="500"
+                    (ngModelChange)="validateBio($event)"></textarea>
+          @if (fieldErrors['bio']) { <span class="field-error">{{ fieldErrors['bio'] }}</span> }
         </div>
       </ng-container>
     </div>
@@ -74,15 +106,9 @@
           <h3 class="section-title">Academic Information</h3>
         </div>
         @if (!editMode) {
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Student Number</label>
-              <input class="form-control" [value]="roleProfile?.student_Number || ''" disabled />
-            </div>
-            <div class="form-group">
-              <label>Faculty</label>
-              <input class="form-control" [value]="roleProfile?.faculty || ''" disabled />
-            </div>
+          <div class="form-group">
+            <label>Faculty</label>
+            <input class="form-control" [value]="roleProfile?.faculty || ''" disabled />
           </div>
           <div class="grid-2">
             <div class="form-group">
@@ -95,24 +121,27 @@
             </div>
           </div>
         } @else {
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Student Number</label>
-              <input class="form-control" [(ngModel)]="editRoleProfile.student_Number" placeholder="e.g. u12345678" />
-            </div>
-            <div class="form-group">
-              <label>Faculty</label>
-              <input class="form-control" [(ngModel)]="editRoleProfile.faculty" placeholder="e.g. EMS, EBIT, BSc" />
-            </div>
+          <div class="form-group">
+            <label>Faculty</label>
+            <input class="form-control" [class.input-error]="fieldErrors['faculty']"
+                   [(ngModel)]="editRoleProfile.faculty" placeholder="e.g. EMS, EBIT, BSc"
+                   (ngModelChange)="validateFaculty($event)" />
+            @if (fieldErrors['faculty']) { <span class="field-error">{{ fieldErrors['faculty'] }}</span> }
           </div>
           <div class="grid-2">
             <div class="form-group">
-              <label>Year of Study</label>
-              <input type="number" class="form-control" [(ngModel)]="editRoleProfile.year_Of_Study" placeholder="e.g. 2" min="1" max="7" />
+              <label>Year of Study <span class="field-hint-inline">(1–7)</span></label>
+              <input type="number" class="form-control" [class.input-error]="fieldErrors['yearOfStudy']"
+                     [(ngModel)]="editRoleProfile.year_Of_Study" placeholder="e.g. 2" min="1" max="7"
+                     (ngModelChange)="validateYearOfStudy($event)" />
+              @if (fieldErrors['yearOfStudy']) { <span class="field-error">{{ fieldErrors['yearOfStudy'] }}</span> }
             </div>
             <div class="form-group">
               <label>Degree Programme</label>
-              <input class="form-control" [(ngModel)]="editRoleProfile.degree_Program" placeholder="e.g. BSc Computer Science" />
+              <input class="form-control" [class.input-error]="fieldErrors['degreeProgram']"
+                     [(ngModel)]="editRoleProfile.degree_Program" placeholder="e.g. BSc Computer Science"
+                     (ngModelChange)="validateTextField($event, 'degreeProgram')" />
+              @if (fieldErrors['degreeProgram']) { <span class="field-error">{{ fieldErrors['degreeProgram'] }}</span> }
             </div>
           </div>
         }
@@ -144,16 +173,25 @@
         } @else {
           <div class="form-group">
             <label>Qualifications</label>
-            <input class="form-control" [(ngModel)]="editRoleProfile.qualifications" placeholder="e.g. BSc Computer Science (Honours)" />
+            <input class="form-control" [class.input-error]="fieldErrors['qualifications']"
+                   [(ngModel)]="editRoleProfile.qualifications" placeholder="e.g. BSc Computer Science (Honours)"
+                   (ngModelChange)="validateTextField($event, 'qualifications')" />
+            @if (fieldErrors['qualifications']) { <span class="field-error">{{ fieldErrors['qualifications'] }}</span> }
           </div>
           <div class="grid-2">
             <div class="form-group">
               <label>Specialization</label>
-              <input class="form-control" [(ngModel)]="editRoleProfile.specialization" placeholder="e.g. Mathematics, Programming" />
+              <input class="form-control" [class.input-error]="fieldErrors['specialization']"
+                     [(ngModel)]="editRoleProfile.specialization" placeholder="e.g. Mathematics, Programming"
+                     (ngModelChange)="validateTextField($event, 'specialization')" />
+              @if (fieldErrors['specialization']) { <span class="field-error">{{ fieldErrors['specialization'] }}</span> }
             </div>
             <div class="form-group">
-              <label>Years of Experience</label>
-              <input type="number" class="form-control" [(ngModel)]="editRoleProfile.years_Of_Experience" placeholder="e.g. 3" min="0" />
+              <label>Years of Experience <span class="field-hint-inline">(0–50)</span></label>
+              <input type="number" class="form-control" [class.input-error]="fieldErrors['yearsExp']"
+                     [(ngModel)]="editRoleProfile.years_Of_Experience" placeholder="e.g. 3" min="0" max="50"
+                     (ngModelChange)="validateYearsExp($event)" />
+              @if (fieldErrors['yearsExp']) { <span class="field-error">{{ fieldErrors['yearsExp'] }}</span> }
             </div>
           </div>
         }
@@ -175,7 +213,10 @@
         } @else {
           <div class="form-group">
             <label>Job Title</label>
-            <input class="form-control" [(ngModel)]="editRoleProfile.job_Title" placeholder="e.g. Senior Administrator" />
+            <input class="form-control" [class.input-error]="fieldErrors['jobTitle']"
+                   [(ngModel)]="editRoleProfile.job_Title" placeholder="e.g. Senior Administrator"
+                   (ngModelChange)="validateTextField($event, 'jobTitle')" />
+            @if (fieldErrors['jobTitle']) { <span class="field-error">{{ fieldErrors['jobTitle'] }}</span> }
           </div>
         }
       </div>
@@ -207,14 +248,36 @@
         <div class="form-group">
           <label>Email</label>
           <input class="form-control" [value]="profile.email" disabled />
+          <span class="field-hint">Email cannot be changed.</span>
         </div>
         <div class="form-group">
-          <label>Phone Number</label>
-          <input class="form-control" [(ngModel)]="editData.phone" name="phone" placeholder="+1 (555) 000-0000" />
+          <label>Phone Number <span class="field-hint-inline">+27XXXXXXXXX or 0XXXXXXXXX</span></label>
+          <input class="form-control" [class.input-error]="fieldErrors['phone']"
+                 [(ngModel)]="editData.phone" name="phone"
+                 placeholder="+27821234567 or 0821234567" maxlength="13"
+                 (ngModelChange)="validatePhone($event)" />
+          @if (fieldErrors['phone']) { <span class="field-error">{{ fieldErrors['phone'] }}</span> }
         </div>
         <div class="form-group">
           <label>Address</label>
-          <input class="form-control" [(ngModel)]="editData.address" name="address" placeholder="123 University Ave" />
+          <div class="autocomplete-wrap">
+            <input class="form-control" [class.input-error]="fieldErrors['address']"
+                   [(ngModel)]="editData.address" name="address"
+                   placeholder="Start typing your address..."
+                   (ngModelChange)="onAddressInput($event)"
+                   (blur)="hideAddressSuggestions()" autocomplete="off" />
+            @if (addressSuggestions.length > 0) {
+              <ul class="autocomplete-list">
+                @for (s of addressSuggestions; track s) {
+                  <li class="autocomplete-item" (mousedown)="selectAddress(s)">
+                    <span class="material-icons">location_on</span>
+                    <span>{{ s }}</span>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+          @if (fieldErrors['address']) { <span class="field-error">{{ fieldErrors['address'] }}</span> }
         </div>
       </ng-container>
     </div>
@@ -273,7 +336,22 @@
         <div class="grid-2">
           <div class="form-group">
             <label>New Password *</label>
-            <input type="password" class="form-control" [(ngModel)]="newPassword" placeholder="At least 6 characters" />
+            <input type="password" class="form-control" [(ngModel)]="newPassword"
+                   placeholder="Min 8 chars, uppercase, number, special" />
+            @if (newPassword) {
+              <div class="pw-strength">
+                <div class="pw-bar-track">
+                  <div class="pw-bar"
+                       [class.weak]="pwStrength===1"
+                       [class.fair]="pwStrength===2"
+                       [class.strong]="pwStrength===3"></div>
+                </div>
+                <span class="pw-label"
+                      [class.weak]="pwStrength===1"
+                      [class.fair]="pwStrength===2"
+                      [class.strong]="pwStrength===3">{{ pwStrengthLabel }}</span>
+              </div>
+            }
           </div>
           <div class="form-group">
             <label>Confirm New Password *</label>

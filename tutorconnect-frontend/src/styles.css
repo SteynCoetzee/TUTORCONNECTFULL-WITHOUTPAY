@@ -89,7 +89,7 @@ a:hover { text-decoration: underline; }
 .btn-primary { background: var(--dark-bg); color: #fff; }
 .btn-primary:hover:not(:disabled) { background: var(--dark-bg-hover); }
 .btn-secondary { background: transparent; color: var(--text-dark); border: 1px solid var(--border); }
-.btn-secondary:hover:not(:disabled) { background: var(--body-bg); }
+.btn-secondary:hover:not(:disabled) { background: var(--body-bg); color: var(--text-dark); }
 .btn-teal { background: var(--primary); color: #fff; }
 .btn-teal:hover:not(:disabled) { background: var(--primary-dark); }
 .btn-danger { background: var(--danger); color: #fff; }

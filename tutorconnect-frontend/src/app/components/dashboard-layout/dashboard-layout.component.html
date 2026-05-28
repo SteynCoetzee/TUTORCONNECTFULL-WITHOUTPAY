@@ -7,3 +7,44 @@
     </div>
   </div>
 </div>
+
+<!-- Complete Profile Popup (Student) -->
+@if (showCompleteProfilePopup) {
+  <div class="fl-backdrop" (click)="dismissPopup()">
+    <div class="fl-popup" (click)="$event.stopPropagation()">
+      <div class="fl-icon">
+        <span class="material-icons">account_circle</span>
+      </div>
+      <h3 class="fl-title">Welcome to TutorConnect!</h3>
+      <p class="fl-msg">
+        Your account is set up! Please complete your profile by adding your
+        <strong>name</strong>, <strong>surname</strong>, <strong>phone number</strong> and <strong>student ID</strong>
+        to get the full TutorConnect experience.
+      </p>
+      <div class="fl-actions">
+        <button class="btn btn-secondary btn-sm" (click)="dismissPopup()">Later</button>
+        <button class="btn btn-primary" (click)="goToProfile()">
+          <span class="material-icons">person</span> Complete My Profile
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Awaiting Approval Popup (AW-Tutor) -->
+@if (showAwaitingApprovalPopup) {
+  <div class="fl-backdrop" (click)="dismissAwaitingPopup()">
+    <div class="fl-popup" (click)="$event.stopPropagation()">
+      <div class="fl-icon awaiting">
+        <span class="material-icons">hourglass_top</span>
+      </div>
+      <h3 class="fl-title">Registration Successful!</h3>
+      <p class="fl-msg">
+        You have been registered as a <strong>Tutor</strong>. Your account is currently <strong>awaiting admin approval</strong> before you can access tutor features. You will be notified once approved.
+      </p>
+      <div class="fl-actions">
+        <button class="btn btn-primary" (click)="dismissAwaitingPopup()">Got it, continue</button>
+      </div>
+    </div>
+  </div>
+}

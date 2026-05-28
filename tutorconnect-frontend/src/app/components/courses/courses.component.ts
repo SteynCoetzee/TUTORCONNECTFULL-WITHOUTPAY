@@ -30,12 +30,22 @@ export class CoursesComponent implements OnInit {
   wishlistLoading = false;
   dismissingId: number | null = null;
 
+  // Search
+  moduleSearch = '';
+
   // Tutor
   assignedModuleCodes = new Set<string>();
   tutorTab: 'assigned' | 'all' = 'assigned';
 
   get assignedModules(): Module[] {
-    return this.modules.filter(m => this.assignedModuleCodes.has(m.module_Code));
+    const q = this.moduleSearch.toLowerCase().trim();
+    const assigned = this.modules.filter(m => this.assignedModuleCodes.has(m.module_Code));
+    return q ? assigned.filter(m => m.module_Code.toLowerCase().includes(q) || m.module_Name.toLowerCase().includes(q)) : assigned;
+  }
+
+  get filteredAllModules(): Module[] {
+    const q = this.moduleSearch.toLowerCase().trim();
+    return q ? this.modules.filter(m => m.module_Code.toLowerCase().includes(q) || m.module_Name.toLowerCase().includes(q)) : this.modules;
   }
 
   // Student: tabs and enrollments
@@ -44,6 +54,12 @@ export class CoursesComponent implements OnInit {
   selectedForEnroll = new Set<string>();
   enrollingAll = false;
   unenrollingCode = '';
+
+  get enrolledModules(): Module[] {
+    const q = this.moduleSearch.toLowerCase().trim();
+    const enrolled = this.modules.filter(m => this.enrolledModuleCodes.has(m.module_Code));
+    return q ? enrolled.filter(m => m.module_Code.toLowerCase().includes(q) || m.module_Name.toLowerCase().includes(q)) : enrolled;
+  }
 
   private apiUrl = environment.apiUrl;
 
@@ -136,10 +152,6 @@ export class CoursesComponent implements OnInit {
 
   // ─── Student ─────────────────────────────────────────────────────────────────
 
-  get enrolledModules(): Module[] {
-    return this.modules.filter(m => this.enrolledModuleCodes.has(m.module_Code));
-  }
-
   isEnrolled(code: string): boolean { return this.enrolledModuleCodes.has(code); }
   isSelected(code: string): boolean { return this.selectedForEnroll.has(code); }
 
@@ -159,6 +171,7 @@ export class CoursesComponent implements OnInit {
 
   switchTab(tab: 'enrolled' | 'all') {
     this.studentTab = tab;
+    this.moduleSearch = '';
     this.clearSelection();
   }
 

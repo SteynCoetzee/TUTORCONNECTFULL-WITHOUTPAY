@@ -69,6 +69,7 @@ namespace TutorConnect.API.DTOs
 
     public class TutorProfileDto
     {
+        public string? Employee_Number { get; set; }
         public string? Qualifications { get; set; }
         public string? Specialization { get; set; }
         public int? Years_Of_Experience { get; set; }
@@ -76,6 +77,7 @@ namespace TutorConnect.API.DTOs
 
     public class AdminProfileDto
     {
+        public string? Staff_Number { get; set; }
         public string? Job_Title { get; set; }
     }
 

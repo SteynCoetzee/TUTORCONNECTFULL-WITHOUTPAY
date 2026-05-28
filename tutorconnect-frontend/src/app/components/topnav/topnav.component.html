@@ -1,15 +1,23 @@
 <header class="topnav">
+  <!-- Left: quick nav links -->
   <nav class="topnav-links">
     <a routerLink="/dashboard/user-info" routerLinkActive="active-link" class="topnav-link">User Info</a>
     <a routerLink="/dashboard/courses" routerLinkActive="active-link" class="topnav-link">Courses</a>
+    <a routerLink="/dashboard/calendar" routerLinkActive="active-link" class="topnav-link">Calendar</a>
+    @if (role === 'Student') {
+      <a routerLink="/dashboard/booking" routerLinkActive="active-link" class="topnav-link">Booking</a>
+    }
   </nav>
 
+  <!-- Right: user chip + notifications + sign out -->
   <div class="topnav-right">
+    <!-- User pill -->
     <div class="user-chip" routerLink="/dashboard/user-info" style="cursor:pointer">
       <div class="user-avatar">{{ getInitials() }}</div>
       <span class="user-name">{{ userName }}</span>
     </div>
 
+    <!-- Notifications -->
     <div class="notif-wrapper">
       <button class="btn-icon notif-btn" (click)="toggleNotifications()">
         <span class="material-icons">notifications</span>
@@ -27,6 +35,30 @@
             }
           </div>
 
+          <!-- Announcements section -->
+          @if (announcements.length > 0) {
+            <div class="notif-section-label">
+              <span class="material-icons">campaign</span>
+              Announcements
+            </div>
+            @for (a of announcements; track a.announcement_ID) {
+              <div class="notif-item" [class.unread]="isAnnouncementNew(a.announcement_ID)">
+                <div class="notif-item-icon">
+                  <span class="material-icons announce-icon">campaign</span>
+                </div>
+                <div class="notif-item-body">
+                  <p class="notif-msg">{{ a.announcement_Name }}</p>
+                  <p class="notif-detail">{{ a.announcement_Details }}</p>
+                  @if (a.module_Code) {
+                    <span class="notif-tag">{{ a.module_Code }}</span>
+                  }
+                  <span class="notif-date">{{ a.date_Posted | date:'d MMM, h:mm a' }}</span>
+                </div>
+              </div>
+            }
+          }
+
+          <!-- System notifications section -->
           @if (notifications.length > 0) {
             <div class="notif-section-label">
               <span class="material-icons">notifications</span>
@@ -42,13 +74,14 @@
             }
           }
 
-          @if (notifications.length === 0) {
+          @if (announcements.length === 0 && notifications.length === 0) {
             <p class="notif-empty">No notifications</p>
           }
         </div>
       }
     </div>
 
+    <!-- Sign Out -->
     <button class="btn signout-btn btn-sm" (click)="signOut()">
       <span class="material-icons" style="font-size:16px">logout</span>
       Sign Out

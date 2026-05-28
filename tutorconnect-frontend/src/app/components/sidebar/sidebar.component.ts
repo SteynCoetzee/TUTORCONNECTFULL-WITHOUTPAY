@@ -3,8 +3,16 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 
-interface NavItem { label: string; icon: string; route: string; }
-interface NavSection { heading?: string; items: NavItem[]; }
+interface NavItem {
+  label: string;
+  icon: string;
+  route: string;
+}
+
+interface NavSection {
+  heading?: string;
+  items: NavItem[];
+}
 
 @Component({
   selector: 'app-sidebar',
@@ -30,6 +38,23 @@ export class SidebarComponent implements OnInit {
       heading: 'Learning',
       items: [
         { label: 'Modules', icon: 'menu_book', route: '/dashboard/courses' },
+        { label: 'Announcements', icon: 'campaign', route: '/dashboard/announcements' },
+        { label: 'Calendar', icon: 'calendar_today', route: '/dashboard/calendar' },
+      ]
+    },
+    {
+      heading: 'Sessions',
+      items: [
+        { label: 'Book a Session', icon: 'schedule', route: '/dashboard/booking' },
+        { label: 'My Reviews', icon: 'star', route: '/dashboard/reviews' },
+        { label: 'Testimonials', icon: 'star_border', route: '/dashboard/testimonials' },
+      ]
+    },
+    {
+      heading: 'Support',
+      items: [
+        { label: 'FAQs', icon: 'help_outline', route: '/dashboard/faqs' },
+        { label: 'Module Wishlist', icon: 'favorite_border', route: '/dashboard/wishlist' },
       ]
     },
   ];
@@ -46,7 +71,22 @@ export class SidebarComponent implements OnInit {
       heading: 'Teaching',
       items: [
         { label: 'Modules', icon: 'menu_book', route: '/dashboard/courses' },
+        { label: 'Announcements', icon: 'campaign', route: '/dashboard/announcements' },
+        { label: 'Calendar', icon: 'calendar_today', route: '/dashboard/calendar' },
+      ]
+    },
+    {
+      heading: 'Sessions',
+      items: [
+        { label: 'My Booking Slots', icon: 'event_available', route: '/dashboard/slots' },
         { label: 'Log Hours', icon: 'timer', route: '/dashboard/log-hours' },
+        { label: 'Reviews', icon: 'star', route: '/dashboard/reviews' },
+      ]
+    },
+    {
+      heading: 'Support',
+      items: [
+        { label: 'FAQs', icon: 'help_outline', route: '/dashboard/faqs' },
       ]
     },
   ];
@@ -73,12 +113,15 @@ export class SidebarComponent implements OnInit {
       items: [
         { label: 'Users', icon: 'group', route: '/dashboard/users' },
         { label: 'Modules', icon: 'menu_book', route: '/dashboard/courses' },
+        { label: 'Reports', icon: 'description', route: '/dashboard/reports' },
+        { label: 'Announcements', icon: 'campaign', route: '/dashboard/announcements' },
       ]
     },
     {
       heading: 'Content',
       items: [
         { label: 'FAQ', icon: 'help', route: '/dashboard/faq' },
+        { label: 'Media', icon: 'perm_media', route: '/dashboard/media' },
         { label: 'Help Page', icon: 'support', route: '/dashboard/help' },
         { label: 'Testimonials', icon: 'star_border', route: '/dashboard/testimonials' },
       ]
@@ -89,17 +132,30 @@ export class SidebarComponent implements OnInit {
         { label: 'Hours Review', icon: 'timer', route: '/dashboard/log-hours-review' },
       ]
     },
+    {
+      heading: 'System',
+      items: [
+        { label: 'Audit Log', icon: 'manage_search', route: '/dashboard/audit-log' },
+      ]
+    },
   ];
 
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
     this.role = this.authService.getCurrentUserRole();
-    if (this.role === 'Admin') this.sections = this.adminSections;
-    else if (this.role === 'Tutor') this.sections = this.tutorSections;
-    else if (this.role === 'AW-Tutor') this.sections = this.awTutorSections;
-    else this.sections = this.studentSections;
+    if (this.role === 'Admin') {
+      this.sections = this.adminSections;
+    } else if (this.role === 'Tutor') {
+      this.sections = this.tutorSections;
+    } else if (this.role === 'AW-Tutor') {
+      this.sections = this.awTutorSections;
+    } else {
+      this.sections = this.studentSections;
+    }
   }
 
-  toggle() { this.collapsed = !this.collapsed; }
+  toggle() {
+    this.collapsed = !this.collapsed;
+  }
 }

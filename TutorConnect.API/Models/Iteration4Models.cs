@@ -75,6 +75,7 @@ namespace TutorConnect.API.Models
         public int Tutor_ID { get; set; }
         public int User_ID { get; set; }
         public User? User { get; set; }
+        public string? Employee_Number { get; set; }
         public string? Qualifications { get; set; }
         public string? Specialization { get; set; }
         public int? Years_Of_Experience { get; set; }
@@ -86,6 +87,7 @@ namespace TutorConnect.API.Models
         public int Admin_ID { get; set; }
         public int User_ID { get; set; }
         public User? User { get; set; }
+        public string? Staff_Number { get; set; }
         public string? Job_Title { get; set; }
     }
 

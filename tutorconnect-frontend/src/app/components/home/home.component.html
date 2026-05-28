@@ -33,7 +33,7 @@
   </div>
 
   <!-- Quick Actions + Recent Announcements -->
-  <div class="grid-2">
+  <div class="grid-2 home-grid">
     <div class="card">
       <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
       <div class="quick-actions">
@@ -75,6 +75,34 @@
       }
     </div>
   </div>
+
+  <!-- Module Wishlist (students only) -->
+  @if (role === 'Student') {
+    <div class="card section-card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <span class="material-icons" style="vertical-align:middle;margin-right:6px;color:#ef4444">favorite_border</span>
+          Module Wishlist
+        </h3>
+        <a routerLink="/dashboard/wishlist" class="btn btn-outline-primary btn-sm">
+          <span class="material-icons" style="font-size:15px">open_in_new</span> Manage
+        </a>
+      </div>
+      @if (wishlistItems.length === 0) {
+        <p style="color:var(--text-muted);font-size:13px">No modules on your wishlist yet. <a routerLink="/dashboard/wishlist" style="color:var(--primary)">Add one →</a></p>
+      } @else {
+        <div class="wishlist-grid">
+          @for (w of wishlistItems; track w.wishlist_ID) {
+            <div class="wishlist-chip">
+              <span class="material-icons" style="font-size:16px;color:#ef4444">favorite</span>
+              <span class="wishlist-code">{{ w.module_Code }}</span>
+              <span class="wishlist-name">{{ w.module_Name }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
 
   <!-- Media & Resources -->
   @if (mediaItems.length > 0) {

@@ -57,12 +57,43 @@ export class ForgotPasswordComponent {
 
   verifyCode() {
     if (!this.resetCode) {
-      this.errorMessage = 'Please enter the reset code.';
+      this.errorMessage = 'Please enter the OTP sent to your email.';
       return;
     }
 
-    this.step = 'password';
+    this.loading = true;
     this.errorMessage = '';
+
+    this.http.post(`${this.apiUrl}/Auth/verify-reset-code`, {
+      email: this.email,
+      resetCode: this.resetCode,
+      newPassword: ''
+    }, { responseType: 'text' }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.step = 'password';
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error || 'Incorrect OTP. Please check your email and try again.';
+      }
+    });
+  }
+
+  get pwStrength(): 0 | 1 | 2 | 3 {
+    if (!this.newPassword) return 0;
+    const len     = this.newPassword.length >= 8;
+    const upper   = /[A-Z]/.test(this.newPassword);
+    const num     = /[0-9]/.test(this.newPassword);
+    const special = /[^a-zA-Z0-9]/.test(this.newPassword);
+    const score   = [len, upper, num, special].filter(Boolean).length;
+    if (score <= 1) return 1;
+    if (score <= 3) return 2;
+    return 3;
+  }
+
+  get pwStrengthLabel(): string {
+    return ['', 'Weak', 'Fair', 'Strong'][this.pwStrength];
   }
 
   resetPassword() {
@@ -70,14 +101,24 @@ export class ForgotPasswordComponent {
       this.errorMessage = 'Please fill in all password fields.';
       return;
     }
-
-    if (this.newPassword !== this.confirmPassword) {
-      this.errorMessage = 'Passwords do not match.';
+    if (this.newPassword.length < 8) {
+      this.errorMessage = 'Password must be at least 8 characters.';
       return;
     }
-
-    if (this.newPassword.length < 6) {
-      this.errorMessage = 'Password must be at least 6 characters long.';
+    if (!/[A-Z]/.test(this.newPassword)) {
+      this.errorMessage = 'Password must contain at least one uppercase letter.';
+      return;
+    }
+    if (!/[0-9]/.test(this.newPassword)) {
+      this.errorMessage = 'Password must contain at least one number.';
+      return;
+    }
+    if (!/[^a-zA-Z0-9]/.test(this.newPassword)) {
+      this.errorMessage = 'Password must contain at least one special character (e.g. !@#$%).';
+      return;
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      this.errorMessage = 'Passwords do not match.';
       return;
     }
 

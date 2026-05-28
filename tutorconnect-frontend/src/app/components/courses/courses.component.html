@@ -90,6 +90,25 @@
     </div>
   }
 
+  <!-- Search bar — shown for all roles -->
+  @if (!loading) {
+    <div class="module-search-wrap">
+      <span class="material-icons module-search-icon">search</span>
+      <input
+        class="module-search-input form-control"
+        type="text"
+        [(ngModel)]="moduleSearch"
+        placeholder="Search by module code or name..."
+        autocomplete="off"
+      />
+      @if (moduleSearch) {
+        <button class="module-search-clear" (click)="moduleSearch = ''">
+          <span class="material-icons">close</span>
+        </button>
+      }
+    </div>
+  }
+
   @if (loading) {
     <div class="loading-state"><div class="spinner"></div><p>Loading modules...</p></div>
   } @else {
@@ -189,7 +208,7 @@
         </div>
       } @else {
         <div class="modules-grid">
-          @for (mod of modules; track mod.module_Code; let i = $index) {
+          @for (mod of filteredAllModules; track mod.module_Code; let i = $index) {
             <div class="module-card"
               [class.assigned]="assignedModuleCodes.has(mod.module_Code)"
               (click)="assignedModuleCodes.has(mod.module_Code) ? openModule(mod.module_Code) : null">
@@ -242,7 +261,7 @@
         </div>
       } @else {
         <div class="modules-grid">
-          @for (mod of modules; track mod.module_Code; let i = $index) {
+          @for (mod of filteredAllModules; track mod.module_Code; let i = $index) {
             @if (deleteModuleCode === mod.module_Code) {
               <div class="module-card delete-confirm-card">
                 <div class="delete-confirm-icon"><span class="material-icons">delete_forever</span></div>
@@ -355,7 +374,7 @@
         </div>
       } @else {
         <div class="modules-grid">
-          @for (mod of modules; track mod.module_Code; let i = $index) {
+          @for (mod of filteredAllModules; track mod.module_Code; let i = $index) {
             <div class="module-card"
                  [class.assigned]="isEnrolled(mod.module_Code)"
                  [class.card-selected]="isSelected(mod.module_Code)"

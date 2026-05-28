@@ -118,6 +118,7 @@
 }
 .hero-content { color: #fff; }
 .hero-title { font-size: 52px; font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 20px; }
+.hero-brand-line { font-size: 0.72em; font-weight: 600; opacity: 0.88; letter-spacing: 0.5px; }
 .hero-text { font-size: 16px; color: rgba(255,255,255,0.85); line-height: 1.7; margin-bottom: 32px; }
 .hero-actions { display: flex; gap: 14px; }
 .hero-actions .btn { padding: 12px 26px; font-size: 15px; text-decoration: none; }

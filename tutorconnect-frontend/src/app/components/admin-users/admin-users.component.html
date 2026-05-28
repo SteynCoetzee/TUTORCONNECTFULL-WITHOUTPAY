@@ -237,9 +237,15 @@
                     <button class="btn-icon" title="Edit user" (click)="openEdit(user)">
                       <span class="material-icons">edit</span>
                     </button>
-                    <button class="btn-icon danger" title="Delete user" (click)="confirmDelete(user.user_ID)">
-                      <span class="material-icons">delete</span>
-                    </button>
+                    @if (user.user_ID !== currentUserId) {
+                      <button class="btn-icon danger" title="Delete user" (click)="confirmDelete(user.user_ID)">
+                        <span class="material-icons">delete</span>
+                      </button>
+                    } @else {
+                      <button class="btn-icon" title="You cannot delete your own account" disabled style="opacity:0.3;cursor:not-allowed">
+                        <span class="material-icons">delete</span>
+                      </button>
+                    }
                   </div>
                 </td>
               </tr>

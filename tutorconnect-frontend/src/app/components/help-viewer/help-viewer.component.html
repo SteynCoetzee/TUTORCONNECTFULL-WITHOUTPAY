@@ -17,26 +17,55 @@
       <span class="material-icons pub-hero-icon">help_center</span>
       <h1>Help Center</h1>
       <p>Guides and resources to help you get the most out of TutorConnect</p>
+
+      <!-- Search bar -->
+      <div class="help-search-wrap">
+        <span class="material-icons help-search-icon">search</span>
+        <input
+          class="help-search-input"
+          type="text"
+          [(ngModel)]="searchQuery"
+          placeholder="Search articles and videos..."
+          autocomplete="off"
+        />
+        @if (searchQuery) {
+          <button class="help-search-clear" (click)="searchQuery = ''">
+            <span class="material-icons">close</span>
+          </button>
+        }
+      </div>
     </div>
 
     @if (loading) {
       <div class="loading-state"><div class="spinner"></div><p>Loading help content...</p></div>
     } @else {
-      @if (helpPages.length === 0 && helpResources.length === 0) {
+
+      <!-- No results message -->
+      @if (searchQuery && !hasResults) {
+        <div class="empty-box">
+          <span class="material-icons">search_off</span>
+          <p>No results for "<strong>{{ searchQuery }}</strong>". Try different keywords.</p>
+        </div>
+      }
+
+      @if (!searchQuery && filteredPages.length === 0 && filteredResources.length === 0) {
         <div class="empty-box">
           <span class="material-icons">help_center</span>
           <p>No help content available yet. Check back soon.</p>
         </div>
       }
 
-      @if (helpPages.length > 0) {
+      @if (filteredPages.length > 0) {
         <div class="help-section">
           <h2 class="section-heading">
             <span class="material-icons">menu_book</span>
             Help Articles
+            @if (searchQuery) {
+              <span class="result-count">{{ filteredPages.length }} result{{ filteredPages.length !== 1 ? 's' : '' }}</span>
+            }
           </h2>
           <div class="help-list">
-            @for (page of helpPages; track page.help_Page_ID) {
+            @for (page of filteredPages; track page.help_Page_ID) {
               <div class="help-item" [class.open]="expandedPageId === page.help_Page_ID">
                 <button class="help-title" (click)="toggle(page.help_Page_ID)">
                   <span class="material-icons article-icon">article</span>
@@ -54,14 +83,17 @@
         </div>
       }
 
-      @if (helpResources.length > 0) {
+      @if (filteredResources.length > 0) {
         <div class="help-section">
           <h2 class="section-heading">
             <span class="material-icons">play_circle</span>
             Video Resources
+            @if (searchQuery) {
+              <span class="result-count">{{ filteredResources.length }} result{{ filteredResources.length !== 1 ? 's' : '' }}</span>
+            }
           </h2>
           <div class="resource-grid">
-            @for (res of helpResources; track res.help_Video_ID) {
+            @for (res of filteredResources; track res.help_Video_ID) {
               <a [href]="res.video_URL" target="_blank" rel="noopener" class="resource-card">
                 <span class="material-icons resource-icon">smart_display</span>
                 <span class="resource-label">{{ res.video_Title || res.video_URL }}</span>

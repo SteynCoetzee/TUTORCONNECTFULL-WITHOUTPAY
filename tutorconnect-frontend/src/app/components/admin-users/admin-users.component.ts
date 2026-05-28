@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { UserProfile } from '../../models/models';
+import { AuthService } from '../../services/auth.service';
 
 interface Role { id: number; name: string; }
 
@@ -46,11 +47,16 @@ export class AdminUsersComponent implements OnInit {
     { id: 4, name: 'AW-Tutor' },
   ];
 
+  currentUserId: number | null = null;
+
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
-  ngOnInit() { this.loadUsers(); }
+  ngOnInit() {
+    this.currentUserId = this.authService.getCurrentUserId();
+    this.loadUsers();
+  }
 
   loadUsers() {
     this.loading = true;

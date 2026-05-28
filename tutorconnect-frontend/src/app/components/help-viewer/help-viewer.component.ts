@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -10,7 +11,7 @@ interface HelpResource { help_Video_ID: number; video_Title: string; video_URL: 
 @Component({
   selector: 'app-help-viewer',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './help-viewer.component.html',
   styleUrl: './help-viewer.component.css'
 })
@@ -19,7 +20,29 @@ export class HelpViewerComponent implements OnInit {
   helpResources: HelpResource[] = [];
   loading = false;
   expandedPageId: number | null = null;
+  searchQuery = '';
   private apiUrl = environment.apiUrl;
+
+  get filteredPages(): HelpPage[] {
+    const q = this.searchQuery.toLowerCase().trim();
+    if (!q) return this.helpPages;
+    return this.helpPages.filter(p =>
+      p.help_Page_Title.toLowerCase().includes(q) ||
+      p.help_Page_Description.toLowerCase().includes(q)
+    );
+  }
+
+  get filteredResources(): HelpResource[] {
+    const q = this.searchQuery.toLowerCase().trim();
+    if (!q) return this.helpResources;
+    return this.helpResources.filter(r =>
+      (r.video_Title || '').toLowerCase().includes(q)
+    );
+  }
+
+  get hasResults(): boolean {
+    return this.filteredPages.length > 0 || this.filteredResources.length > 0;
+  }
 
   constructor(private http: HttpClient) {}
 
