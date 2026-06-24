@@ -568,7 +568,8 @@ namespace TutorConnect.API.Controllers
                         Module_Code = m!.Module_Code,
                         Module_Name = m.Module_Name,
                         Module_Description = m.Module_Description,
-                        Module_Price = m.Module_Price
+                        Module_Price_OneOnOne = m.Module_Price_OneOnOne,
+                        Module_Price_Group = m.Module_Price_Group
                     })
                     .ToListAsync();
 
@@ -582,7 +583,8 @@ namespace TutorConnect.API.Controllers
                     Module_Code = m.Module_Code,
                     Module_Name = m.Module_Name,
                     Module_Description = m.Module_Description,
-                    Module_Price = m.Module_Price
+                    Module_Price_OneOnOne = m.Module_Price_OneOnOne,
+                    Module_Price_Group = m.Module_Price_Group
                 })
                 .ToListAsync();
 
@@ -604,7 +606,8 @@ namespace TutorConnect.API.Controllers
                 Module_Code = request.Module_Code,
                 Module_Name = request.Module_Name,
                 Module_Description = request.Module_Description,
-                Module_Price = request.Module_Price
+                Module_Price_OneOnOne = request.Module_Price_OneOnOne,
+                Module_Price_Group = request.Module_Price_Group
             };
 
             _context.Modules.Add(newModule);
@@ -624,7 +627,8 @@ namespace TutorConnect.API.Controllers
 
             module.Module_Name = request.Module_Name;
             module.Module_Description = request.Module_Description;
-            module.Module_Price = request.Module_Price;
+            module.Module_Price_OneOnOne = request.Module_Price_OneOnOne;
+            module.Module_Price_Group = request.Module_Price_Group;
 
             await _context.SaveChangesAsync();
             return Ok("Module updated successfully.");

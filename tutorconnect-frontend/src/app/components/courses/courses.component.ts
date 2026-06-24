@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DecimalPipe],
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.css'
 })
@@ -54,6 +54,10 @@ export class CoursesComponent implements OnInit {
   selectedForEnroll = new Set<string>();
   enrollingAll = false;
   unenrollingCode = '';
+
+  // Student: expanded modules + session-type selection
+  expandedModuleCodes = new Set<string>();
+  selectedSessionTypes: Record<string, Set<'OneOnOne' | 'Group'>> = {};
 
   get enrolledModules(): Module[] {
     const q = this.moduleSearch.toLowerCase().trim();
@@ -169,6 +173,32 @@ export class CoursesComponent implements OnInit {
     this.selectedForEnroll = new Set();
   }
 
+  toggleExpand(code: string) {
+    if (this.expandedModuleCodes.has(code)) {
+      this.expandedModuleCodes.delete(code);
+    } else {
+      this.expandedModuleCodes.add(code);
+    }
+    this.expandedModuleCodes = new Set(this.expandedModuleCodes);
+    if (!this.selectedSessionTypes[code]) {
+      this.selectedSessionTypes[code] = new Set();
+    }
+  }
+
+  toggleSessionType(code: string, type: 'OneOnOne' | 'Group') {
+    if (!this.selectedSessionTypes[code]) this.selectedSessionTypes[code] = new Set();
+    const set = this.selectedSessionTypes[code];
+    if (set.has(type)) { set.delete(type); } else { set.add(type); }
+    // spread to trigger Angular change detection on the record
+    this.selectedSessionTypes = { ...this.selectedSessionTypes };
+    if (set.size > 0) { this.selectedForEnroll.add(code); } else { this.selectedForEnroll.delete(code); }
+    this.selectedForEnroll = new Set(this.selectedForEnroll);
+  }
+
+  hasSessionType(code: string, type: 'OneOnOne' | 'Group'): boolean {
+    return this.selectedSessionTypes[code]?.has(type) ?? false;
+  }
+
   switchTab(tab: 'enrolled' | 'all') {
     this.studentTab = tab;
     this.moduleSearch = '';
@@ -184,9 +214,12 @@ export class CoursesComponent implements OnInit {
     let succeeded = 0;
 
     for (const code of codes) {
+      const types = this.selectedSessionTypes[code] ?? new Set();
       this.http.post(`${this.apiUrl}/Enrollment/enroll`, {
         student_ID: this.userId,
-        module_Code: code
+        module_Code: code,
+        can_Book_OneOnOne: types.has('OneOnOne'),
+        can_Book_Group: types.has('Group')
       }).subscribe({
         next: () => { succeeded++; if (--pending === 0) this.finishEnroll(succeeded, codes.length); },
         error: () => { if (--pending === 0) this.finishEnroll(succeeded, codes.length); }

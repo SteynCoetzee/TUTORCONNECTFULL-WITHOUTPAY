@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "SZejRd/GgOw=",
+  "dgSpecHash": "B4t4QIqg/8s=",
   "success": true,
   "projectFilePath": "C:\\Users\\Steyn\\OneDrive\\Desktop\\Tutor Connect\\TutorConnect_Workspace\\TutorConnect.API\\TutorConnect.API.csproj",
   "expectedPackageFiles": [
@@ -9,9 +9,10 @@
     "C:\\Users\\Steyn\\.nuget\\packages\\bcrypt.net-next\\4.1.0\\bcrypt.net-next.4.1.0.nupkg.sha512",
     "C:\\Users\\Steyn\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "C:\\Users\\Steyn\\.nuget\\packages\\cloudinarydotnet\\1.28.0\\cloudinarydotnet.1.28.0.nupkg.sha512",
-    "C:\\Users\\Steyn\\.nuget\\packages\\google.apis\\1.73.0\\google.apis.1.73.0.nupkg.sha512",
-    "C:\\Users\\Steyn\\.nuget\\packages\\google.apis.auth\\1.73.0\\google.apis.auth.1.73.0.nupkg.sha512",
-    "C:\\Users\\Steyn\\.nuget\\packages\\google.apis.core\\1.73.0\\google.apis.core.1.73.0.nupkg.sha512",
+    "C:\\Users\\Steyn\\.nuget\\packages\\google.apis\\1.74.0\\google.apis.1.74.0.nupkg.sha512",
+    "C:\\Users\\Steyn\\.nuget\\packages\\google.apis.auth\\1.74.0\\google.apis.auth.1.74.0.nupkg.sha512",
+    "C:\\Users\\Steyn\\.nuget\\packages\\google.apis.calendar.v3\\1.74.0.4154\\google.apis.calendar.v3.1.74.0.4154.nupkg.sha512",
+    "C:\\Users\\Steyn\\.nuget\\packages\\google.apis.core\\1.74.0\\google.apis.core.1.74.0.nupkg.sha512",
     "C:\\Users\\Steyn\\.nuget\\packages\\google.apis.drive.v3\\1.73.0.4112\\google.apis.drive.v3.1.73.0.4112.nupkg.sha512",
     "C:\\Users\\Steyn\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Steyn\\.nuget\\packages\\mailkit\\4.16.0\\mailkit.4.16.0.nupkg.sha512",

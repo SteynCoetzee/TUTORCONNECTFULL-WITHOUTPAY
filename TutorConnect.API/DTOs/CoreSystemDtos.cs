@@ -5,6 +5,8 @@
     {
         public int Student_ID { get; set; }
         public string Module_Code { get; set; } = string.Empty;
+        public bool Can_Book_OneOnOne { get; set; } = true;
+        public bool Can_Book_Group { get; set; } = true;
     }
 
     public class EnrollmentUnenrollDto
@@ -20,6 +22,8 @@
         public string Module_Name { get; set; } = string.Empty;
         public DateTime Enrollment_Date { get; set; }
         public bool IsActive { get; set; }
+        public bool Can_Book_OneOnOne { get; set; }
+        public bool Can_Book_Group { get; set; }
     }
 
     // ─── GRADES ─────────────────────────────────────────────────

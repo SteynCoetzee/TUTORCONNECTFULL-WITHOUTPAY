@@ -255,6 +255,8 @@ namespace TutorConnect.API.Models
 
         public DateTime Enrollment_Date { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
+        public bool Can_Book_OneOnOne { get; set; } = true;
+        public bool Can_Book_Group { get; set; } = true;
     }
 
     public class Student_Unenrollment

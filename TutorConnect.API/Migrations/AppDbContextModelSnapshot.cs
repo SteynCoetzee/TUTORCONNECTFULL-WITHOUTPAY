@@ -463,7 +463,10 @@ namespace TutorConnect.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Module_Price")
+                    b.Property<decimal>("Module_Price_Group")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Module_Price_OneOnOne")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Module_Code");
@@ -870,6 +873,12 @@ namespace TutorConnect.API.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Enrollment_ID"));
+
+                    b.Property<bool>("Can_Book_Group")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Can_Book_OneOnOne")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("Enrollment_Date")
                         .HasColumnType("datetime2");

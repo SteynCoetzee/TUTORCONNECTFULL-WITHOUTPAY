@@ -63,6 +63,7 @@ builder.Services.AddControllers(options =>
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton<GoogleCalendarService>();
 builder.Services.AddSingleton<CloudinaryService>();
 builder.Services.AddScoped<AuditService>();
 builder.Services.AddEndpointsApiExplorer();

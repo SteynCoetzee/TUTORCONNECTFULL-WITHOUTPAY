@@ -35,10 +35,11 @@ namespace TutorConnect.API.Models
     public class Module
     {
         [Key]
-        public string Module_Code { get; set; } = string.Empty; // e.g., "INF370"
+        public string Module_Code { get; set; } = string.Empty;
         public string Module_Name { get; set; } = string.Empty;
         public string Module_Description { get; set; } = string.Empty;
-        public decimal Module_Price { get; set; }
+        public decimal Module_Price_OneOnOne { get; set; }
+        public decimal Module_Price_Group { get; set; }
     }
 
     public class Module_Resource

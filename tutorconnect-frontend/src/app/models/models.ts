@@ -37,7 +37,8 @@ export interface Module {
   module_Code: string;
   module_Name: string;
   module_Description: string;
-  module_Price: number;
+  module_Price_OneOnOne: number;
+  module_Price_Group: number;
 }
 
 export interface ModuleResource {

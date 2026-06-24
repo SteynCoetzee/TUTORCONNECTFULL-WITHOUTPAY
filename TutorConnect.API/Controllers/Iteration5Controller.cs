@@ -1370,7 +1370,15 @@ namespace TutorConnect.API.Controllers
     {
         private readonly AppDbContext _context;
         private readonly AuditService _audit;
-        public BookingsController(AppDbContext context, AuditService audit) { _context = context; _audit = audit; }
+        private readonly GoogleCalendarService _calendar;
+        private readonly EmailService _email;
+        public BookingsController(AppDbContext context, AuditService audit, GoogleCalendarService calendar, EmailService email)
+        {
+            _context = context;
+            _audit = audit;
+            _calendar = calendar;
+            _email = email;
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Booking>>> GetBookings() => await _context.Bookings.Include(b => b.Booking_Slot).ToListAsync();
@@ -1409,7 +1417,11 @@ namespace TutorConnect.API.Controllers
             var booking = await _context.Bookings.FindAsync(id);
             if (booking == null) return NotFound("Booking not found.");
 
-            var slot = await _context.Booking_Slots.FindAsync(booking.Booking_Slot_ID);
+            var slot = await _context.Booking_Slots
+                .Include(s => s.Tutor)
+                .FirstOrDefaultAsync(s => s.Booking_Slot_ID == booking.Booking_Slot_ID);
+
+            var student = await _context.Users.FindAsync(booking.Student_ID);
 
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
@@ -1428,6 +1440,43 @@ namespace TutorConnect.API.Controllers
             }
 
             await _audit.LogAsync(booking.Student_ID, "Booking Cancelled", $"Booking_ID: {id}");
+
+            // ── Cancellation emails ───────────────────────────────────────────
+            if (slot != null && student != null)
+            {
+                var isGroup = (slot.Max_Capacity ?? 1) > 1;
+                var dateStr    = slot.Slot_Date.ToString("dd MMM yyyy");
+                var timeStr    = slot.Slot_Time.ToString("HH:mm");
+                var module     = slot.Module_Code ?? "—";
+                var studentName = $"{student.FirstName} {student.LastName}";
+
+                try
+                {
+                    // Only send emails for 1-on-1 cancellations
+                    // Group sessions: tutor can check the booking count on the website
+                    if (!isGroup)
+                    {
+                        if (slot.Tutor != null && !string.IsNullOrEmpty(slot.Tutor.Email))
+                        {
+                            await _email.SendCancellationEmailAsync(
+                                slot.Tutor.Email, slot.Tutor.FirstName,
+                                studentName, dateStr, timeStr, module, isGroup: false);
+                        }
+
+                        if (!string.IsNullOrEmpty(student.Email))
+                        {
+                            await _email.SendCancellationEmailAsync(
+                                student.Email, student.FirstName,
+                                studentName, dateStr, timeStr, module, isGroup: false);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[TutorConnect] Cancellation email failed: {ex.Message}");
+                }
+            }
+
             return Ok("Booking cancelled.");
         }
 
@@ -1465,6 +1514,90 @@ namespace TutorConnect.API.Controllers
 
             await _context.SaveChangesAsync();
             await _audit.LogAsync(request.Student_ID, "Session Booked", $"Booking_Slot_ID: {request.Booking_Slot_ID}");
+
+            // ── Google Meet + email for all online sessions ───────────────────
+            var isOnline = slot.Session_Type?.ToLower().Contains("online") == true;
+
+            if (isOnline)
+            {
+                var tutor   = await _context.Users.FindAsync(slot.Tutor_ID);
+                var student = await _context.Users.FindAsync(request.Student_ID);
+
+                if (tutor != null && student != null &&
+                    !string.IsNullOrEmpty(tutor.Email) && !string.IsNullOrEmpty(student.Email))
+                {
+                    // Step 1: Try to create Meet link — failure here does NOT block emails
+                    var meetLink = string.Empty;
+                    try
+                    {
+                        var sessionLabel = slot.Session_Type ?? "Online Session";
+                        var title = $"TutorConnect: {sessionLabel} — {slot.Module_Code ?? "Session"} ({tutor.FirstName} & {student.FirstName})";
+                        meetLink = await _calendar.CreateMeetLinkAsync(
+                            title, slot.Slot_Date, slot.Slot_Time);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[TutorConnect] Google Meet creation failed: {ex.Message}");
+                    }
+
+                    // Step 2: Send emails — always fires whether or not Meet link was created
+                    try
+                    {
+                        var dateStr = slot.Slot_Date.ToString("dd MMM yyyy");
+                        var timeStr = slot.Slot_Time.ToString("HH:mm");
+                        var module  = slot.Module_Code ?? "—";
+
+                        await _email.SendBookingConfirmationAsync(
+                            student.Email, student.FirstName,
+                            $"{tutor.FirstName} {tutor.LastName}", "student",
+                            dateStr, timeStr, module, meetLink);
+
+                        await _email.SendBookingConfirmationAsync(
+                            tutor.Email, tutor.FirstName,
+                            $"{student.FirstName} {student.LastName}", "tutor",
+                            dateStr, timeStr, module, meetLink);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[TutorConnect] Booking email failed: {ex.Message}");
+                    }
+                }
+            }
+
+            // ── In-person confirmation email ──────────────────────────────────
+            var isInPerson = slot.Session_Type?.ToLower().Contains("in-person") == true;
+            if (isInPerson)
+            {
+                var tutor2   = await _context.Users.FindAsync(slot.Tutor_ID);
+                var student2 = await _context.Users.FindAsync(request.Student_ID);
+                if (tutor2 != null && student2 != null &&
+                    !string.IsNullOrEmpty(tutor2.Email) && !string.IsNullOrEmpty(student2.Email))
+                {
+                    try
+                    {
+                        var dateStr = slot.Slot_Date.ToString("dd MMM yyyy");
+                        var timeStr = slot.Slot_Time.ToString("HH:mm");
+                        var module  = slot.Module_Code ?? "—";
+                        var loc     = string.IsNullOrWhiteSpace(slot.Location) ? "TBA" : slot.Location;
+                        var sType   = slot.Session_Type ?? "In-Person";
+
+                        await _email.SendInPersonConfirmationAsync(
+                            student2.Email, student2.FirstName,
+                            $"{tutor2.FirstName} {tutor2.LastName}", "student",
+                            dateStr, timeStr, module, loc, sType);
+
+                        await _email.SendInPersonConfirmationAsync(
+                            tutor2.Email, tutor2.FirstName,
+                            $"{student2.FirstName} {student2.LastName}", "tutor",
+                            dateStr, timeStr, module, loc, sType);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[TutorConnect] In-person email failed: {ex.Message}");
+                    }
+                }
+            }
+
             return Ok("Session successfully booked.");
         }
     }
@@ -1589,7 +1722,9 @@ namespace TutorConnect.API.Controllers
                 Student_ID = request.Student_ID,
                 Module_Code = request.Module_Code,
                 Enrollment_Date = DateTime.UtcNow,
-                IsActive = true
+                IsActive = true,
+                Can_Book_OneOnOne = request.Can_Book_OneOnOne,
+                Can_Book_Group = request.Can_Book_Group
             };
 
             _context.Student_Modules.Add(enrollment);
@@ -1673,7 +1808,9 @@ namespace TutorConnect.API.Controllers
                     Module_Code = sm.Module_Code,
                     Module_Name = sm.Module != null ? sm.Module.Module_Name : string.Empty,
                     Enrollment_Date = sm.Enrollment_Date,
-                    IsActive = sm.IsActive
+                    IsActive = sm.IsActive,
+                    Can_Book_OneOnOne = sm.Can_Book_OneOnOne,
+                    Can_Book_Group = sm.Can_Book_Group
                 })
                 .ToListAsync();
 

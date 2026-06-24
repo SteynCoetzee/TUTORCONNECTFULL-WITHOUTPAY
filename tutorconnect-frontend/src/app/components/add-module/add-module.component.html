@@ -61,17 +61,30 @@
               </div>
 
               <div class="form-group">
-                <label for="price" class="form-label required">Monthly Price (R)</label>
-                <input 
-                  type="number" 
-                  id="price"
-                  class="form-control" 
-                  [(ngModel)]="formPrice" 
-                  placeholder="e.g., 250"
+                <label for="priceOneOnOne" class="form-label required">1 on 1 Session Price (R)</label>
+                <input
+                  type="number"
+                  id="priceOneOnOne"
+                  class="form-control"
+                  [(ngModel)]="formPriceOneOnOne"
+                  placeholder="e.g., 350"
                   min="0"
                   step="50"
                 />
-                <small class="form-hint">Monthly price for this module</small>
+                <small class="form-hint">Price per private 1-on-1 session</small>
+              </div>
+              <div class="form-group">
+                <label for="priceGroup" class="form-label required">Group Session Price (R)</label>
+                <input
+                  type="number"
+                  id="priceGroup"
+                  class="form-control"
+                  [(ngModel)]="formPriceGroup"
+                  placeholder="e.g., 150"
+                  min="0"
+                  step="50"
+                />
+                <small class="form-hint">Price per group session</small>
               </div>
             </div>
           </div>
@@ -109,7 +122,7 @@
           <button class="btn btn-secondary" (click)="goBack()" [disabled]="saving">
             <span class="material-icons">close</span> Cancel
           </button>
-          <button class="btn btn-primary" (click)="saveModule()" [disabled]="saving || !formCode || !formName || !formDescription || formPrice === null">
+          <button class="btn btn-primary" (click)="saveModule()" [disabled]="saving || !formCode || !formName || !formDescription || formPriceOneOnOne === null || formPriceGroup === null">
             @if (saving) {
               <span class="spinner-sm"></span>
             } @else {

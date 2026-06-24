@@ -21,7 +21,8 @@ export class AddModuleComponent implements OnInit {
   formCode = '';
   formName = '';
   formDescription = '';
-  formPrice: number | null = null;
+  formPriceOneOnOne: number | null = null;
+  formPriceGroup: number | null = null;
   
   loading = false;
   saving = false;
@@ -64,7 +65,8 @@ export class AddModuleComponent implements OnInit {
           this.formCode = module.module_Code;
           this.formName = module.module_Name;
           this.formDescription = module.module_Description;
-          this.formPrice = module.module_Price;
+          this.formPriceOneOnOne = module.module_Price_OneOnOne;
+          this.formPriceGroup = module.module_Price_Group;
         } else {
           this.errorMessage = 'Module not found.';
           setTimeout(() => this.goBack(), 2000);
@@ -79,8 +81,9 @@ export class AddModuleComponent implements OnInit {
   }
 
   saveModule() {
-    if (!this.formCode || !this.formName || !this.formDescription || this.formPrice === null) {
-      this.errorMessage = 'Please fill in all fields.';
+    if (!this.formCode || !this.formName || !this.formDescription ||
+        this.formPriceOneOnOne === null || this.formPriceGroup === null) {
+      this.errorMessage = 'Please fill in all fields including both session prices.';
       return;
     }
 
@@ -92,7 +95,8 @@ export class AddModuleComponent implements OnInit {
       module_Code: this.formCode,
       module_Name: this.formName,
       module_Description: this.formDescription,
-      module_Price: this.formPrice
+      module_Price_OneOnOne: this.formPriceOneOnOne,
+      module_Price_Group: this.formPriceGroup
     };
 
     if (this.isEditMode) {

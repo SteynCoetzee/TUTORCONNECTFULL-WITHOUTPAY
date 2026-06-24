@@ -1613,6 +1613,37 @@
         }
       }
     },
+    "/api/Auth/verify-reset-code": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Auth/reset-password": {
       "post": {
         "tags": [
@@ -2630,6 +2661,29 @@
         }
       }
     },
+    "/api/ModuleResources/{id}/preview": {
+      "get": {
+        "tags": [
+          "ModuleResources"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/ModuleResources/upload": {
       "post": {
         "tags": [
@@ -3611,6 +3665,24 @@
         "tags": [
           "Reports"
         ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -3622,6 +3694,24 @@
       "get": {
         "tags": [
           "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -3647,6 +3737,24 @@
         "tags": [
           "Reports"
         ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -3659,6 +3767,24 @@
         "tags": [
           "Reports"
         ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -3670,6 +3796,70 @@
       "get": {
         "tags": [
           "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Reports/custom": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "bookings"
+            }
+          },
+          {
+            "name": "groupBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "month"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -4639,6 +4829,10 @@
       "AdminProfileDto": {
         "type": "object",
         "properties": {
+          "staff_Number": {
+            "type": "string",
+            "nullable": true
+          },
           "job_Title": {
             "type": "string",
             "nullable": true
@@ -4998,6 +5192,12 @@
           "module_Code": {
             "type": "string",
             "nullable": true
+          },
+          "can_Book_OneOnOne": {
+            "type": "boolean"
+          },
+          "can_Book_Group": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -5036,6 +5236,12 @@
             "format": "date-time"
           },
           "isActive": {
+            "type": "boolean"
+          },
+          "can_Book_OneOnOne": {
+            "type": "boolean"
+          },
+          "can_Book_Group": {
             "type": "boolean"
           }
         },
@@ -5288,7 +5494,11 @@
             "type": "string",
             "nullable": true
           },
-          "module_Price": {
+          "module_Price_OneOnOne": {
+            "type": "number",
+            "format": "double"
+          },
+          "module_Price_Group": {
             "type": "number",
             "format": "double"
           }
@@ -5310,7 +5520,11 @@
             "type": "string",
             "nullable": true
           },
-          "module_Price": {
+          "module_Price_OneOnOne": {
+            "type": "number",
+            "format": "double"
+          },
+          "module_Price_Group": {
             "type": "number",
             "format": "double"
           }
@@ -5332,7 +5546,11 @@
             "type": "string",
             "nullable": true
           },
-          "module_Price": {
+          "module_Price_OneOnOne": {
+            "type": "number",
+            "format": "double"
+          },
+          "module_Price_Group": {
             "type": "number",
             "format": "double"
           }
@@ -5866,6 +6084,10 @@
       "TutorProfileDto": {
         "type": "object",
         "properties": {
+          "employee_Number": {
+            "type": "string",
+            "nullable": true
+          },
           "qualifications": {
             "type": "string",
             "nullable": true

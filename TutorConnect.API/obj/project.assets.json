@@ -90,10 +90,10 @@
           }
         }
       },
-      "Google.Apis/1.73.0": {
+      "Google.Apis/1.74.0": {
         "type": "package",
         "dependencies": {
-          "Google.Apis.Core": "1.73.0"
+          "Google.Apis.Core": "1.74.0"
         },
         "compile": {
           "lib/net6.0/Google.Apis.dll": {
@@ -106,11 +106,11 @@
           }
         }
       },
-      "Google.Apis.Auth/1.73.0": {
+      "Google.Apis.Auth/1.74.0": {
         "type": "package",
         "dependencies": {
-          "Google.Apis": "1.73.0",
-          "Google.Apis.Core": "1.73.0",
+          "Google.Apis": "1.74.0",
+          "Google.Apis.Core": "1.74.0",
           "System.Management": "7.0.2"
         },
         "compile": {
@@ -124,7 +124,24 @@
           }
         }
       },
-      "Google.Apis.Core/1.73.0": {
+      "Google.Apis.Calendar.v3/1.74.0.4154": {
+        "type": "package",
+        "dependencies": {
+          "Google.Apis": "1.74.0",
+          "Google.Apis.Auth": "1.74.0"
+        },
+        "compile": {
+          "lib/net6.0/Google.Apis.Calendar.v3.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Google.Apis.Calendar.v3.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Google.Apis.Core/1.74.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "13.0.4"
@@ -2621,16 +2638,16 @@
         "lib/netstandard2.0/CloudinaryDotNet.xml"
       ]
     },
-    "Google.Apis/1.73.0": {
-      "sha512": "TnCjEyV2aCLQ6Zl40OCbEJULDuEkEWc6C/g81KYw5l1PqGo+G7pFZrV+YH8XgUL0JRUanz+IrUp8SsKF4dzkqg==",
+    "Google.Apis/1.74.0": {
+      "sha512": "Z6hSkmRD6V8/raSBqn/EsPpNop6suaLaGE9DbSY3yRE5G47l4zYqrJgapcLARk2Z3TsQUDmWz+w/tob3wuVt3g==",
       "type": "package",
-      "path": "google.apis/1.73.0",
+      "path": "google.apis/1.74.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.1.73.0.nupkg.sha512",
+        "google.apis.1.74.0.nupkg.sha512",
         "google.apis.nuspec",
         "lib/net462/Google.Apis.dll",
         "lib/net462/Google.Apis.pdb",
@@ -2643,16 +2660,16 @@
         "lib/netstandard2.0/Google.Apis.xml"
       ]
     },
-    "Google.Apis.Auth/1.73.0": {
-      "sha512": "wEu12uhnRv3zrPBSqv4E2vPH6lYLtc1RPAnU9MJRCMFlBVwZ7Lnq3NfbYXi6VG7EurkYInTaMpeBZkbM/HrAog==",
+    "Google.Apis.Auth/1.74.0": {
+      "sha512": "43H4foh3zfWgboK8QnJjIfPQuBiS794TxqQLDfeE3erQSluKmEN0qeDuwxLTpSr9Mtwj76S4LWxPneuSbC6fNg==",
       "type": "package",
-      "path": "google.apis.auth/1.73.0",
+      "path": "google.apis.auth/1.74.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.auth.1.73.0.nupkg.sha512",
+        "google.apis.auth.1.74.0.nupkg.sha512",
         "google.apis.auth.nuspec",
         "lib/net462/Google.Apis.Auth.dll",
         "lib/net462/Google.Apis.Auth.pdb",
@@ -2665,16 +2682,38 @@
         "lib/netstandard2.0/Google.Apis.Auth.xml"
       ]
     },
-    "Google.Apis.Core/1.73.0": {
-      "sha512": "vSc7CY4KCP7HE4QTElDx/ExnGLbg9kXb89MS6cdvI+0D4sxvTYb16vGtXmF2jSDMV3iDmykSXdIUPTz8TDS6gg==",
+    "Google.Apis.Calendar.v3/1.74.0.4154": {
+      "sha512": "ye2ABeKNHtxZljiRms90t9falKKqCAfe2XSjR7+oonRT2gz1yknA9q838ZA75tDko9S1l9jZ6zbhklKlSqbHFw==",
       "type": "package",
-      "path": "google.apis.core/1.73.0",
+      "path": "google.apis.calendar.v3/1.74.0.4154",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "NuGetIcon.png",
-        "google.apis.core.1.73.0.nupkg.sha512",
+        "google.apis.calendar.v3.1.74.0.4154.nupkg.sha512",
+        "google.apis.calendar.v3.nuspec",
+        "lib/net462/Google.Apis.Calendar.v3.dll",
+        "lib/net462/Google.Apis.Calendar.v3.pdb",
+        "lib/net462/Google.Apis.Calendar.v3.xml",
+        "lib/net6.0/Google.Apis.Calendar.v3.dll",
+        "lib/net6.0/Google.Apis.Calendar.v3.pdb",
+        "lib/net6.0/Google.Apis.Calendar.v3.xml",
+        "lib/netstandard2.0/Google.Apis.Calendar.v3.dll",
+        "lib/netstandard2.0/Google.Apis.Calendar.v3.pdb",
+        "lib/netstandard2.0/Google.Apis.Calendar.v3.xml"
+      ]
+    },
+    "Google.Apis.Core/1.74.0": {
+      "sha512": "gWOIiks6yo2TRliIyy10V18BJOO2BfUSPJFiTW6Tfap4tm3hFj7nvYU3XIfwzAxwoIy6nsBoqVDt9iBDSXrvYQ==",
+      "type": "package",
+      "path": "google.apis.core/1.74.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "NuGetIcon.png",
+        "google.apis.core.1.74.0.nupkg.sha512",
         "google.apis.core.nuspec",
         "lib/net462/Google.Apis.Core.dll",
         "lib/net462/Google.Apis.Core.pdb",
@@ -7598,6 +7637,7 @@
     "net8.0": [
       "BCrypt.Net-Next >= 4.1.0",
       "CloudinaryDotNet >= 1.28.0",
+      "Google.Apis.Calendar.v3 >= 1.74.0.4154",
       "Google.Apis.Drive.v3 >= 1.73.0.4112",
       "MailKit >= 4.16.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.0",
@@ -7665,6 +7705,10 @@
             "target": "Package",
             "version": "[1.28.0, )"
           },
+          "Google.Apis.Calendar.v3": {
+            "target": "Package",
+            "version": "[1.74.0.4154, )"
+          },
           "Google.Apis.Drive.v3": {
             "target": "Package",
             "version": "[1.73.0.4112, )"
@@ -7715,7 +7759,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

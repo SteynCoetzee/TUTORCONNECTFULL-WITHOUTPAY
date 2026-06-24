@@ -296,3 +296,50 @@
   font-size: 0.78rem; color: var(--text-muted);
 }
 .select-hint .material-icons { font-size: 16px; }
+
+/* ── Card expanded state ─────────────────────────────────── */
+.card-expanded { border-color: var(--primary) !important; box-shadow: 0 0 0 2px var(--primary-light); }
+
+/* ── Session type picker ─────────────────────────────────── */
+.session-picker {
+  margin: 10px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.session-picker-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 2px;
+}
+.session-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: var(--body-bg);
+}
+.session-option:hover { border-color: var(--primary); background: var(--primary-light); }
+.session-option.checked { border-color: var(--primary); background: var(--primary-light); }
+.session-option input[type="checkbox"] { display: none; }
+.session-option-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.session-check-icon { font-size: 20px; color: var(--primary); flex-shrink: 0; }
+.session-opt-icon { font-size: 20px; color: var(--primary); }
+.session-opt-name { display: block; font-size: 13px; font-weight: 600; color: var(--text-dark); }
+.session-opt-price { display: block; font-size: 12px; color: var(--primary); font-weight: 700; margin-top: 1px; }
+.session-option.checked .session-opt-name::after {
+  content: ' ✓';
+  color: var(--primary);
+}

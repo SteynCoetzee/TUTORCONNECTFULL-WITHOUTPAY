@@ -173,8 +173,8 @@
                 </div>
                 <div class="module-badges">
                   <span class="badge badge-teal">{{ mod.module_Code }}</span>
-                  @if (mod.module_Price > 0) {
-                    <span class="badge badge-orange">R{{ mod.module_Price }}/month</span>
+                  @if (mod.module_Price_OneOnOne > 0 || mod.module_Price_Group > 0) {
+                    <span class="badge badge-orange">From R{{ mod.module_Price_Group || mod.module_Price_OneOnOne }}</span>
                   }
                   <span class="badge badge-green">Assigned</span>
                 </div>
@@ -218,8 +218,8 @@
                 </div>
                 <div class="module-badges">
                   <span class="badge badge-teal">{{ mod.module_Code }}</span>
-                  @if (mod.module_Price > 0) {
-                    <span class="badge badge-orange">R{{ mod.module_Price }}/month</span>
+                  @if (mod.module_Price_OneOnOne > 0 || mod.module_Price_Group > 0) {
+                    <span class="badge badge-orange">From R{{ mod.module_Price_Group || mod.module_Price_OneOnOne }}</span>
                   }
                   @if (assignedModuleCodes.has(mod.module_Code)) {
                     <span class="badge badge-green">Assigned</span>
@@ -283,8 +283,8 @@
                   </div>
                   <div class="module-badges">
                     <span class="badge badge-teal">{{ mod.module_Code }}</span>
-                    @if (mod.module_Price > 0) {
-                      <span class="badge badge-orange">R{{ mod.module_Price }}/month</span>
+                    @if (mod.module_Price_OneOnOne > 0 || mod.module_Price_Group > 0) {
+                      <span class="badge badge-orange">From R{{ mod.module_Price_Group || mod.module_Price_OneOnOne }}</span>
                     }
                   </div>
                 </div>
@@ -377,29 +377,21 @@
           @for (mod of filteredAllModules; track mod.module_Code; let i = $index) {
             <div class="module-card"
                  [class.assigned]="isEnrolled(mod.module_Code)"
-                 [class.card-selected]="isSelected(mod.module_Code)"
-                 (click)="isEnrolled(mod.module_Code) ? openModule(mod.module_Code) : toggleSelect(mod.module_Code, $event)">
+                 [class.card-expanded]="expandedModuleCodes.has(mod.module_Code) && !isEnrolled(mod.module_Code)"
+                 (click)="isEnrolled(mod.module_Code) ? openModule(mod.module_Code) : toggleExpand(mod.module_Code)">
+
               <div class="module-header">
                 <div class="module-icon-wrap" [style.background]="getModuleColor(i)">
                   <span class="material-icons">menu_book</span>
                 </div>
                 <div class="module-badges">
                   <span class="badge badge-teal">{{ mod.module_Code }}</span>
-                  @if (mod.module_Price > 0) {
-                    <span class="badge badge-orange">R{{ mod.module_Price }}/month</span>
-                  }
                   @if (isEnrolled(mod.module_Code)) {
                     <span class="badge badge-green">Enrolled</span>
                   }
                 </div>
-                <!-- Checkbox for non-enrolled modules -->
-                @if (!isEnrolled(mod.module_Code)) {
-                  <label class="module-checkbox" (click)="toggleSelect(mod.module_Code, $event)">
-                    <input type="checkbox" [checked]="isSelected(mod.module_Code)" (click)="$event.stopPropagation()" (change)="toggleSelect(mod.module_Code, $event)" />
-                    <span class="checkmark"></span>
-                  </label>
-                }
               </div>
+
               <div class="module-name-row">
                 <h3 class="module-name">{{ mod.module_Name }}</h3>
                 @if (mod.module_Description) {
@@ -409,6 +401,40 @@
                   </span>
                 }
               </div>
+
+              <!-- ── Session type checkboxes (expand on click for non-enrolled) ── -->
+              @if (!isEnrolled(mod.module_Code) && expandedModuleCodes.has(mod.module_Code)) {
+                <div class="session-picker" (click)="$event.stopPropagation()">
+                  <p class="session-picker-label">Select session type(s) to enrol:</p>
+                  <div class="session-option" [class.checked]="hasSessionType(mod.module_Code, 'OneOnOne')"
+                       (click)="toggleSessionType(mod.module_Code, 'OneOnOne')">
+                    <span class="material-icons session-check-icon">
+                      {{ hasSessionType(mod.module_Code, 'OneOnOne') ? 'check_box' : 'check_box_outline_blank' }}
+                    </span>
+                    <span class="session-option-info">
+                      <span class="material-icons session-opt-icon">person</span>
+                      <span>
+                        <span class="session-opt-name">1 on 1 Session</span>
+                        <span class="session-opt-price">R{{ mod.module_Price_OneOnOne | number:'1.0-0' }} per session</span>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="session-option" [class.checked]="hasSessionType(mod.module_Code, 'Group')"
+                       (click)="toggleSessionType(mod.module_Code, 'Group')">
+                    <span class="material-icons session-check-icon">
+                      {{ hasSessionType(mod.module_Code, 'Group') ? 'check_box' : 'check_box_outline_blank' }}
+                    </span>
+                    <span class="session-option-info">
+                      <span class="material-icons session-opt-icon">group</span>
+                      <span>
+                        <span class="session-opt-name">Group Session</span>
+                        <span class="session-opt-price">R{{ mod.module_Price_Group | number:'1.0-0' }} per session</span>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              }
+
               <div class="module-footer">
                 <div class="module-actions" (click)="$event.stopPropagation()">
                   @if (isEnrolled(mod.module_Code)) {
@@ -424,8 +450,10 @@
                     <span class="select-hint">
                       @if (isSelected(mod.module_Code)) {
                         <span class="material-icons" style="color:var(--primary)">check_box</span> Selected for enrolment
+                      } @else if (expandedModuleCodes.has(mod.module_Code)) {
+                        <span class="material-icons">expand_less</span> Click to collapse
                       } @else {
-                        <span class="material-icons">check_box_outline_blank</span> Click to select
+                        <span class="material-icons">expand_more</span> Click to see pricing
                       }
                     </span>
                   }
