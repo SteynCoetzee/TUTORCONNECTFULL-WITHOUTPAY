@@ -43,3 +43,8 @@ TutorConnect.API/.vs/
 TutorConnect.API/TutorConnect.API.csproj.user
 TutorConnect.API/google-credentials.json.json
 node_modules
+
+**/google-credentials.json.json
+**/tutorconnect-494110-dc3a7c066690.json
+/bin/
+/obj/
