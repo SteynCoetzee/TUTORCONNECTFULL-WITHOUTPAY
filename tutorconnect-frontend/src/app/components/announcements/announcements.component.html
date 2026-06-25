@@ -1,0 +1,189 @@
+<div class="page-container">
+  <div class="page-header row-between">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons">campaign</span>
+        Announcements
+      </h1>
+      <p class="page-subtitle">Stay up to date with website and module announcements.</p>
+    </div>
+    @if (isAdmin && activeTab === 'website') {
+      <button class="btn btn-primary" (click)="openCreate()">
+        <span class="material-icons">add</span> New Announcement
+      </button>
+    }
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'website'" (click)="activeTab = 'website'">
+      <span class="material-icons">language</span> Website
+      <span class="badge badge-teal ml-4">{{ websiteAnnouncements.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'module'" (click)="activeTab = 'module'">
+      <span class="material-icons">school</span> Module
+      <span class="badge badge-purple ml-4">{{ moduleAnnouncements.length }}</span>
+    </button>
+  </div>
+
+  @if (loading) { <div class="loading-msg"><span class="material-icons spin">hourglass_top</span> Loading...</div> }
+
+  <!-- ── WEBSITE ANNOUNCEMENTS ───────────────────────────────────── -->
+  @if (!loading && activeTab === 'website') {
+
+    <!-- Inline create form -->
+    @if (showCreateForm) {
+      <div class="announcement-card inline-edit">
+        <p class="inline-edit-title">New Website Announcement</p>
+        <div class="form-group">
+          <label>Title *</label>
+          <input class="form-control" [(ngModel)]="createData.announcement_Name" placeholder="e.g. Platform maintenance this Friday" />
+        </div>
+        <div class="annc-form-row">
+          <div class="form-group" style="flex:1">
+            <label>Type</label>
+            <select class="form-control" [(ngModel)]="createData.announcement_Type">
+              @for (t of types; track t) { <option [value]="t">{{ t }}</option> }
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Content</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="createData.announcement_Details" placeholder="Announcement details..."></textarea>
+        </div>
+        <div class="ic-btns" style="justify-content:flex-end;width:100%">
+          <button class="btn btn-secondary btn-sm" (click)="showCreateForm = false">Cancel</button>
+          <button class="btn btn-primary btn-sm" (click)="submitCreate()" [disabled]="creating">
+            @if (creating) { <span class="spinner-sm"></span> } Post
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (websiteAnnouncements.length === 0 && !showCreateForm) {
+      <div class="empty-state">
+        <span class="material-icons">campaign</span>
+        <p>No website announcements yet.</p>
+      </div>
+    }
+
+    @for (a of websiteAnnouncements; track a.announcement_ID) {
+
+      @if (deletingId === a.announcement_ID) {
+        <div class="announcement-card inline-confirm">
+          <span class="material-icons ic-icon">delete_forever</span>
+          <p class="ic-title">Delete Announcement?</p>
+          <p class="ic-msg"><strong>{{ a.announcement_Name }}</strong></p>
+          <p class="ic-warn">This cannot be undone.</p>
+          <div class="ic-btns">
+            <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+            <button class="btn btn-danger btn-sm" (click)="confirmDelete()" [disabled]="deleting">
+              <span class="material-icons">delete</span> {{ deleting ? 'Deleting...' : 'Delete' }}
+            </button>
+          </div>
+        </div>
+
+      } @else if (editingAnnouncement?.announcement_ID === a.announcement_ID) {
+        <div class="announcement-card inline-edit">
+          <p class="inline-edit-title">Edit Announcement</p>
+          <div class="form-group">
+            <label>Title</label>
+            <input class="form-control" [(ngModel)]="editData.announcement_Name" />
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select class="form-control" [(ngModel)]="editData.announcement_Type">
+              @for (t of types; track t) { <option [value]="t">{{ t }}</option> }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="editData.announcement_Details"></textarea>
+          </div>
+          <div class="ic-btns" style="justify-content:flex-end;width:100%">
+            <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">Cancel</button>
+            <button class="btn btn-primary btn-sm" (click)="submitEdit()" [disabled]="updating">
+              @if (updating) { <span class="spinner-sm"></span> } Save
+            </button>
+          </div>
+        </div>
+
+      } @else {
+        <div class="announcement-card">
+          <div class="annc-top-row">
+            <div class="annc-info">
+              <div class="annc-source-badge">
+                <span class="material-icons" style="font-size:13px">language</span> Website
+              </div>
+              <h3 class="annc-title">{{ a.announcement_Name }}</h3>
+            </div>
+            <div class="annc-right">
+              <span [ngClass]="getBadgeClass(a.announcement_Type)">{{ a.announcement_Type }}</span>
+              @if (isAdmin) {
+                <button class="btn-icon" title="Edit" (click)="openEdit(a)">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="btn-icon danger" title="Delete" (click)="openDelete(a.announcement_ID)">
+                  <span class="material-icons">delete</span>
+                </button>
+              }
+            </div>
+          </div>
+          <p class="annc-body">{{ a.announcement_Details }}</p>
+          <div class="annc-date">
+            <span class="material-icons" style="font-size:14px">calendar_today</span>
+            Posted: {{ a.date_Posted | date:'yyyy-MM-dd' }}
+          </div>
+        </div>
+      }
+
+    }
+  }
+
+  <!-- ── MODULE ANNOUNCEMENTS ────────────────────────────────────── -->
+  @if (!loading && activeTab === 'module') {
+
+    @if (moduleAnnouncements.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">school</span>
+        <p>No module announcements yet. Tutors post these inside each module.</p>
+      </div>
+    }
+
+    @for (a of moduleAnnouncements; track a.announcement_ID) {
+      <div class="announcement-card">
+        <div class="annc-top-row">
+          <div class="annc-info">
+            <div class="annc-source-badge module-badge">
+              <span class="material-icons" style="font-size:13px">school</span> {{ a.module_Code }}
+            </div>
+            <h3 class="annc-title">{{ a.announcement_Name }}</h3>
+          </div>
+          <div class="annc-right">
+            <span [ngClass]="getBadgeClass(a.announcement_Type)">{{ a.announcement_Type }}</span>
+          </div>
+        </div>
+        <p class="annc-body">{{ a.announcement_Details }}</p>
+        <div class="annc-date">
+          <span class="material-icons" style="font-size:14px">calendar_today</span>
+          Posted: {{ a.date_Posted | date:'yyyy-MM-dd' }}
+        </div>
+      </div>
+    }
+
+  }
+</div>
+
+<!-- Error Modal -->
+<div class="modal-backdrop" *ngIf="showErrorModal" (click)="showErrorModal = false">
+  <div class="modal modal-sm" (click)="$event.stopPropagation()">
+    <h3 class="modal-title" style="color:var(--danger)">
+      <span class="material-icons" style="vertical-align:middle;font-size:20px">error_outline</span>
+      Error
+    </h3>
+    <p style="margin:12px 0 20px;color:var(--text-muted)">{{ errorModalMessage }}</p>
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="showErrorModal = false">OK</button>
+    </div>
+  </div>
+</div>

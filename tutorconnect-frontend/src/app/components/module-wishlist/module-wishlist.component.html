@@ -1,0 +1,101 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons">bookmark_add</span> Module Wishlist
+      </h1>
+      <p class="page-subtitle">Suggest modules you'd like to see added to the catalogue.</p>
+    </div>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+  }
+
+  <!-- ── Add form ────────────────────────────────────────────────────────── -->
+  <div class="card wish-form-card">
+    <h3 class="form-title">
+      <span class="material-icons">add_circle_outline</span> Suggest a Module
+    </h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label required">Module Code</label>
+        <input type="text" class="form-control" [(ngModel)]="formCode"
+               placeholder="e.g. CS301, MATH202"
+               (keyup.enter)="submit()" />
+        <small class="form-hint">Short code for the module</small>
+      </div>
+      <div class="form-group">
+        <label class="form-label required">Module Name</label>
+        <input type="text" class="form-control" [(ngModel)]="formName"
+               placeholder="e.g. Advanced Algorithms"
+               (keyup.enter)="submit()" />
+        <small class="form-hint">Full name of the module you'd like to see</small>
+      </div>
+      <div class="form-group form-group-btn">
+        <button class="btn btn-primary" (click)="submit()" [disabled]="saving || !formCode.trim() || !formName.trim()">
+          @if (saving) { <span class="spinner-sm"></span> }
+          <span class="material-icons">send</span> Submit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Wishlist ────────────────────────────────────────────────────────── -->
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading wishlist...</p></div>
+  } @else if (items.length === 0) {
+    <div class="empty-state">
+      <span class="material-icons">bookmark_border</span>
+      <p>Your wishlist is empty. Suggest a module above!</p>
+    </div>
+  } @else {
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Module Code</th>
+            <th>Module Name</th>
+            <th>Date Submitted</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.wishlist_ID) {
+            @if (confirmDeleteId === item.wishlist_ID) {
+              <tr class="tr-confirm">
+                <td colspan="4">
+                  <div class="tr-confirm-inner">
+                    <span class="material-icons">delete_forever</span>
+                    <div class="tr-confirm-text">
+                      <strong>Remove {{ item.module_Code }}?</strong>
+                      <span>This will remove it from your wishlist.</span>
+                    </div>
+                    <div class="tr-confirm-btns">
+                      <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+                      <button class="btn btn-danger btn-sm" (click)="confirmDelete()">Remove</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              <tr>
+                <td><span class="badge badge-teal">{{ item.module_Code }}</span></td>
+                <td>{{ item.module_Name }}</td>
+                <td class="date-cell">{{ item.date_Submitted | date:'d MMM yyyy' }}</td>
+                <td>
+                  <button class="btn-icon danger" title="Remove" (click)="requestDelete(item.wishlist_ID)">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

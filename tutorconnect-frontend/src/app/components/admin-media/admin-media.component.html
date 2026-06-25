@@ -1,0 +1,185 @@
+<div class="page-container">
+  <div class="page-header row-between">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons">perm_media</span>
+        Media Management
+      </h1>
+      <p class="page-subtitle">Manage platform media content and resources.</p>
+    </div>
+    @if (!showCreateForm) {
+      <button class="btn btn-primary" (click)="openCreate()">
+        <span class="material-icons">add</span> Add Media
+      </button>
+    }
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+
+  <!-- Inline Create Form -->
+  @if (showCreateForm) {
+    <div class="announcement-card inline-edit">
+      <p class="inline-edit-title">New Media Item</p>
+      @if (errorMessage) {
+        <div class="alert alert-error" style="width:100%"><span class="material-icons">error</span> {{ errorMessage }}</div>
+      }
+      <div class="form-group">
+        <label>Name *</label>
+        <input class="form-control" [(ngModel)]="createName" placeholder="e.g. Tutorial Video 1" />
+      </div>
+
+      <!-- File upload area -->
+      <div class="form-group">
+        <label>Upload from Device</label>
+        @if (!createFile) {
+          <label class="file-drop-zone">
+            <span class="material-icons file-drop-icon">cloud_upload</span>
+            <span class="file-drop-text">Click to choose a file</span>
+            <span class="file-drop-sub">Images &amp; videos (JPG, PNG, GIF, MP4…)</span>
+            <input type="file" class="file-input-hidden" accept="image/*,video/*"
+              (change)="onCreateFileSelected($event)" />
+          </label>
+        } @else {
+          <div class="file-preview-row">
+            @if (createPreview) {
+              <img [src]="createPreview" alt="preview" class="file-preview-img" />
+            } @else {
+              <span class="material-icons file-preview-icon">videocam</span>
+            }
+            <div class="file-preview-info">
+              <span class="file-preview-name">{{ createFile.name }}</span>
+              <button class="btn-text-danger" type="button" (click)="clearCreateFile()">Remove</button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="url-divider"><span>— or enter a URL directly —</span></div>
+
+      <div class="form-group">
+        <label>URL / Link</label>
+        <input class="form-control" [(ngModel)]="createAddress" placeholder="https://youtube.com/..."
+          [disabled]="!!createFile" />
+      </div>
+
+      <div class="ic-btns" style="justify-content:flex-end;width:100%">
+        <button class="btn btn-secondary btn-sm" (click)="showCreateForm = false">Cancel</button>
+        <button class="btn btn-primary btn-sm" (click)="create()" [disabled]="creating">
+          @if (creating) { <span class="spinner-sm"></span> } Add Media
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading media...</p></div>
+  } @else if (mediaItems.length === 0 && !showCreateForm) {
+    <div class="empty-card">
+      <span class="material-icons">perm_media</span>
+      <h3>No media content yet</h3>
+      <p>Add images, videos, or links for the platform.</p>
+    </div>
+  } @else {
+    <div class="media-grid">
+      @for (item of mediaItems; track item.media_ID) {
+
+        <!-- Delete confirm state -->
+        @if (deleteTargetId === item.media_ID) {
+          <div class="media-card inline-confirm">
+            <span class="material-icons ic-icon">delete_forever</span>
+            <p class="ic-title">Delete Media?</p>
+            <p class="ic-msg"><strong>{{ item.media_Name }}</strong></p>
+            <p class="ic-warn">This cannot be undone.</p>
+            <div class="ic-btns">
+              <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+              <button class="btn btn-danger btn-sm" (click)="deleteMedia()">
+                <span class="material-icons">delete</span> Delete
+              </button>
+            </div>
+          </div>
+
+        <!-- Inline edit state -->
+        } @else if (editingItem?.media_ID === item.media_ID) {
+          <div class="media-card inline-edit" style="flex-direction:column;align-items:stretch;padding:16px">
+            <p class="inline-edit-title">Edit Media</p>
+            @if (errorMessage) {
+              <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+            }
+            <div class="form-group">
+              <label>Name *</label>
+              <input class="form-control" [(ngModel)]="editName" placeholder="Media name" />
+            </div>
+
+            <div class="form-group">
+              <label>Upload new file</label>
+              @if (!editFile) {
+                <label class="file-drop-zone file-drop-sm">
+                  <span class="material-icons" style="font-size:20px;color:var(--primary)">cloud_upload</span>
+                  <span class="file-drop-text" style="font-size:13px">Choose a new file to replace</span>
+                  <input type="file" class="file-input-hidden" accept="image/*,video/*"
+                    (change)="onEditFileSelected($event)" />
+                </label>
+              } @else {
+                <div class="file-preview-row">
+                  @if (editPreview) {
+                    <img [src]="editPreview" alt="preview" class="file-preview-img" />
+                  } @else {
+                    <span class="material-icons file-preview-icon">videocam</span>
+                  }
+                  <div class="file-preview-info">
+                    <span class="file-preview-name">{{ editFile.name }}</span>
+                    <button class="btn-text-danger" type="button" (click)="clearEditFile()">Remove</button>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="url-divider"><span>— or enter a URL directly —</span></div>
+
+            <div class="form-group">
+              <label>URL / Link</label>
+              <input class="form-control" [(ngModel)]="editAddress" placeholder="https://..."
+                [disabled]="!!editFile" />
+            </div>
+
+            <div class="ic-btns" style="justify-content:flex-end">
+              <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">Cancel</button>
+              <button class="btn btn-primary btn-sm" (click)="saveEdit()" [disabled]="updating">
+                @if (updating) { <span class="spinner-sm"></span> } Save
+              </button>
+            </div>
+          </div>
+
+        <!-- Normal card state -->
+        } @else {
+          <div class="media-card">
+            <div class="media-preview">
+              @if (isImage(item.media_Address)) {
+                <img [src]="getFullImageUrl(item.media_Address)" [alt]="item.media_Name" />
+              } @else if (isVideo(item.media_Address)) {
+                <span class="material-icons media-type-icon">videocam</span>
+              } @else {
+                <span class="material-icons media-type-icon">link</span>
+              }
+            </div>
+            <div class="media-info">
+              <div class="media-name">{{ item.media_Name }}</div>
+              <div class="media-url">{{ item.media_Address }}</div>
+            </div>
+            <div class="media-actions">
+              <button class="btn-icon" title="Edit" (click)="openEdit(item)">
+                <span class="material-icons">edit</span>
+              </button>
+              <button class="btn-icon danger" title="Delete" (click)="confirmDelete(item.media_ID)">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+          </div>
+        }
+
+      }
+    </div>
+  }
+</div>

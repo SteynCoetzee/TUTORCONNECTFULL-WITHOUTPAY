@@ -1,0 +1,218 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title"><span class="material-icons">description</span> Reports</h1>
+    <p class="page-subtitle">Click a report to preview and chart the data, or build a custom query on the left.</p>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-error mb-16">
+      <span class="material-icons" style="font-size:18px">error_outline</span> {{ errorMessage }}
+    </div>
+  }
+
+  <div class="reports-layout">
+
+    <!-- ── LEFT: Custom Query Builder ──────────────────────────────────────── -->
+    <div class="card custom-card">
+      <div class="custom-header">
+        <span class="material-icons" style="color:var(--primary)">tune</span>
+        <h3 class="section-title">Custom Query</h3>
+      </div>
+      <p class="custom-sub">Build an ad-hoc report from any data source.</p>
+
+      <div class="form-group">
+        <label>Data Source</label>
+        <select class="form-control" [(ngModel)]="customEntity" (ngModelChange)="onEntityChange()">
+          @for (e of customEntities; track e.id) {
+            <option [value]="e.id">{{ e.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Group By</label>
+        <select class="form-control" [(ngModel)]="customGroupBy">
+          @for (g of currentEntityGroupBys; track g.id) {
+            <option [value]="g.id">{{ g.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>From Date</label>
+          <input type="date" class="form-control" [(ngModel)]="customFrom" />
+        </div>
+        <div class="form-group">
+          <label>To Date</label>
+          <input type="date" class="form-control" [(ngModel)]="customTo" />
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" (click)="runCustomQuery()" [disabled]="customLoading">
+        @if (customLoading) { <span class="spinner-sm light"></span> }
+        <span class="material-icons">analytics</span>
+        {{ customLoading ? 'Running...' : 'Run Query' }}
+      </button>
+
+      <!-- Custom result -->
+      @if (customLoading) {
+        <div class="mini-loading mt-16"><span class="spinner-sm dark"></span> Loading...</div>
+      }
+      @if (customData !== null && !customLoading) {
+        <div class="custom-result mt-16">
+          <div class="custom-result-header">
+            <span class="badge badge-info">{{ customData.length }} rows</span>
+            <button class="btn btn-secondary btn-sm" (click)="downloadCustom()"
+                    [disabled]="!customData.length">
+              <span class="material-icons" style="font-size:14px">download</span> CSV
+            </button>
+          </div>
+          @if (customData.length > 0) {
+            <div class="custom-chart-wrap mt-12">
+              <canvas id="customChart"></canvas>
+            </div>
+            <div class="mini-table-wrap mt-12">
+              <table class="mini-table">
+                <thead><tr>@for (col of customColumns; track col) { <th>{{ col }}</th> }</tr></thead>
+                <tbody>
+                  @for (row of customData; track $index) {
+                    <tr>@for (col of customColumns; track col) { <td>{{ formatVal(row[col]) }}</td> }</tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="no-data-sm mt-12">No data for this query.</p>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── RIGHT: Standard Reports ──────────────────────────────────────────── -->
+    <div class="right-panel">
+      <div class="card">
+        <h3 class="section-title">Standard Reports</h3>
+
+        <!-- Date range filter -->
+        <div class="date-range-row mt-12">
+          <div class="date-range-inputs">
+            <div class="form-group mb-0">
+              <label class="small-label">From</label>
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="dateFrom" />
+            </div>
+            <div class="form-group mb-0">
+              <label class="small-label">To</label>
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="dateTo" />
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" (click)="applyDateRange()"
+                  [disabled]="previewLoading" title="Apply date range">
+            <span class="material-icons" style="font-size:16px">filter_list</span>
+            Apply
+          </button>
+        </div>
+
+        <div class="report-list mt-12">
+          @for (rt of reportTypes; track rt.id) {
+            <div class="report-item" [class.active]="selectedReportType === rt.id"
+                 (click)="selectReport(rt)">
+              <div class="report-item-left">
+                <span class="material-icons report-icon"
+                      [style.color]="selectedReportType === rt.id ? 'var(--primary)' : ''">
+                  {{ rt.icon }}
+                </span>
+                <div>
+                  <div class="report-item-name">{{ rt.name }}</div>
+                  <div class="report-item-desc">{{ rt.description }}</div>
+                </div>
+              </div>
+              @if (selectedReportType === rt.id && previewLoading) {
+                <span class="spinner-sm dark"></span>
+              } @else {
+                <span class="badge"
+                      [class.badge-teal]="selectedReportType === rt.id"
+                      [class.badge-info]="selectedReportType !== rt.id">
+                  {{ selectedReportType === rt.id ? 'Selected' : 'Available' }}
+                </span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Preview section ──────────────────────────────────────────────────── -->
+  @if (previewData !== null || previewLoading) {
+    <div class="card preview-card mt-20">
+      <div class="preview-header-row">
+        <div class="preview-title-group">
+          <span class="material-icons" style="color:var(--primary);font-size:22px">{{ previewIcon }}</span>
+          <h3 class="section-title">{{ previewTitle }}</h3>
+          @if (!previewLoading && previewData?.length) {
+            <span class="badge badge-success">{{ previewData!.length }} rows</span>
+          }
+        </div>
+        <button class="btn btn-primary btn-sm"
+                (click)="downloadPreview()"
+                [disabled]="previewLoading || !previewData?.length">
+          <span class="material-icons">download</span> Download CSV
+        </button>
+      </div>
+
+      @if (previewLoading) {
+        <div class="preview-loading">
+          <span class="spinner"></span>
+          <span>Loading report data...</span>
+        </div>
+      } @else if (previewData?.length) {
+        <!-- Chart -->
+        <div class="chart-section">
+          <canvas id="reportChart"></canvas>
+        </div>
+
+        <!-- Table -->
+        <div class="preview-table-wrap">
+          <table class="preview-table">
+            <thead>
+              <tr>@for (col of previewColumns; track col) { <th>{{ col }}</th> }</tr>
+            </thead>
+            <tbody>
+              @for (row of previewData!; track $index) {
+                <tr>@for (col of previewColumns; track col) { <td>{{ formatVal(row[col]) }}</td> }</tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="preview-empty">
+          <span class="material-icons">inbox</span>
+          <p>No data available for this report.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── Recent Downloads ──────────────────────────────────────────────────── -->
+  <div class="card mt-20">
+    <h3 class="section-title mb-16">Recent Downloads</h3>
+    @if (!recentReports.length) {
+      <p style="color:var(--text-muted);font-size:13px">No reports downloaded yet.</p>
+    }
+    @for (r of recentReports; track r.name) {
+      <div class="recent-row">
+        <div class="recent-left">
+          <span class="material-icons recent-icon">{{ r.icon }}</span>
+          <div>
+            <div class="recent-name">{{ r.name }}</div>
+            <div class="recent-date">Downloaded on {{ r.generatedOn }}</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" (click)="downloadRecent(r)">
+          <span class="material-icons" style="font-size:14px">download</span> Download
+        </button>
+      </div>
+    }
+  </div>
+</div>

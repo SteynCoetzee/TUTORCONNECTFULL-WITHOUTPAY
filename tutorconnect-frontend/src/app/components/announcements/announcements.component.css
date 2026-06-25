@@ -1,0 +1,25 @@
+.row-between { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+.loading-msg { color: var(--text-muted); padding: 20px 0; }
+
+.empty-state { text-align: center; padding: 60px; color: var(--text-muted); }
+.empty-state .material-icons { font-size: 48px; color: var(--border); display: block; margin-bottom: 12px; }
+
+.announcement-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+
+.annc-top-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; gap: 12px; }
+.annc-info { flex: 1; }
+.annc-title { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+.annc-module { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+.annc-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.annc-body { color: var(--text-dark); font-size: 13.5px; line-height: 1.6; margin: 0 0 12px; }
+.annc-date { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
+
+.btn-icon.danger:hover { background: #fee2e2; color: var(--danger); }

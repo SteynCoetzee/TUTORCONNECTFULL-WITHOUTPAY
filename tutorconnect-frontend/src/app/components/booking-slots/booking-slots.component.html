@@ -1,0 +1,371 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons">event_available</span>
+        My Booking Slots
+      </h1>
+      <p class="page-subtitle">Create and manage your available time slots for students to book</p>
+    </div>
+    @if (!showForm) {
+      <button class="btn btn-primary" (click)="openForm()">
+        <span class="material-icons">add</span> Add Slot
+      </button>
+    }
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="material-icons stat-icon teal">event_available</span>
+      <div><div class="stat-value">{{ availableSlots.length }}</div><div class="stat-label">Available</div></div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon orange">event_busy</span>
+      <div><div class="stat-value">{{ bookedSlots.length }}</div><div class="stat-label">Booked</div></div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon purple">calendar_month</span>
+      <div><div class="stat-value">{{ slots.length }}</div><div class="stat-label">Total Slots</div></div>
+    </div>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+  }
+
+  <!-- ── Inline Create Form ──────────────────────────────────────────────── -->
+  @if (showForm) {
+    <div class="create-card card">
+      <h3 class="create-title">
+        <span class="material-icons">add_circle_outline</span>
+        New Booking Slot
+      </h3>
+
+      <div class="create-steps">
+
+        <!-- Step 1: Module -->
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">1</span> Module
+          </div>
+          @if (tutorModules.length === 0) {
+            <p class="no-modules-hint">No modules assigned yet.</p>
+          } @else {
+            <select class="form-control" [(ngModel)]="formModuleCode">
+              <option value="">— Select module —</option>
+              @for (mod of tutorModules; track mod.module_Code) {
+                <option [value]="mod.module_Code">{{ mod.module_Code }} — {{ mod.module_Name }}</option>
+              }
+            </select>
+          }
+        </div>
+
+        <!-- Step 2: Date -->
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">2</span> Select Date
+          </div>
+          <input type="date" class="form-control date-input" [(ngModel)]="formDate" [min]="today" />
+        </div>
+
+        <!-- Step 3: Time -->
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">3</span> Select Time
+          </div>
+          <input type="time" class="form-control time-input" [(ngModel)]="formTime" />
+        </div>
+
+        <!-- Step 4: Group or 1-on-1 -->
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">4</span> Session Format
+          </div>
+          <div class="pill-group">
+            <button class="pill-btn" [class.pill-active]="formSessionFormat === 'One-on-One'"
+                    (click)="formSessionFormat = 'One-on-One'">
+              <span class="material-icons">person</span> One-on-One
+            </button>
+            <button class="pill-btn" [class.pill-active]="formSessionFormat === 'Group'"
+                    (click)="formSessionFormat = 'Group'">
+              <span class="material-icons">group</span> Group
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 5: Online or In-Person -->
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">5</span> Session Mode
+          </div>
+          <div class="pill-group">
+            <button class="pill-btn" [class.pill-active]="formSessionMode === 'Online'"
+                    (click)="formSessionMode = 'Online'">
+              <span class="material-icons">videocam</span> Online
+            </button>
+            <button class="pill-btn" [class.pill-active]="formSessionMode === 'In-Person'"
+                    (click)="formSessionMode = 'In-Person'">
+              <span class="material-icons">place</span> In-Person
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 6: Location -->
+        <div class="create-step">
+          <div class="step-label">
+            <span class="step-num">6</span> Location
+          </div>
+          <input type="text" class="form-control"
+                 [(ngModel)]="formLocation"
+                 placeholder="e.g. Room 204, Library, Zoom link..." />
+        </div>
+
+        <!-- Step 7: Capacity (Group only) -->
+        @if (formSessionFormat === 'Group') {
+          <div class="create-step">
+            <div class="step-label">
+              <span class="step-num">7</span> Max Group Capacity
+            </div>
+            <div class="capacity-input-wrap">
+              <input type="number" class="form-control capacity-input"
+                     [(ngModel)]="formCapacity"
+                     min="2" max="100"
+                     placeholder="e.g. 10" />
+              <span class="capacity-hint">students</span>
+            </div>
+          </div>
+        }
+
+      </div>
+
+      <!-- Summary preview -->
+      @if (formModuleCode && formDate && formTime && formSessionFormat && formSessionMode &&
+           (formSessionFormat !== 'Group' || formCapacity)) {
+        <div class="slot-preview">
+          <span class="material-icons">event</span>
+          <span class="badge badge-purple">{{ formModuleCode }}</span>
+          <span>{{ formatDate(formDate) }} at {{ formatTime(formTime + ':00') }}</span>
+          <span class="badge badge-teal">{{ formSessionFormat }} · {{ formSessionMode }}</span>
+          @if (formLocation) {
+            <span class="badge badge-blue"><span class="material-icons" style="font-size:12px">place</span> {{ formLocation }}</span>
+          }
+          @if (formSessionFormat === 'Group' && formCapacity) {
+            <span class="badge badge-purple">Max {{ formCapacity }} students</span>
+          }
+        </div>
+      }
+
+      <div class="create-actions">
+        <button class="btn btn-secondary" (click)="cancelCreate()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveSlot()" [disabled]="saving">
+          @if (saving) { <span class="spinner-sm"></span> } Create Slot
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Slots Table ─────────────────────────────────────────────────────── -->
+  <div class="card">
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading slots...</p></div>
+    } @else if (slots.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">event_note</span>
+        <p>No booking slots yet. Click "Add Slot" to create your first one.</p>
+      </div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Session Type</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (slot of slots; track slot.booking_Slot_ID) {
+
+            @if (deleteTargetId === slot.booking_Slot_ID) {
+              <tr class="tr-confirm">
+                <td colspan="7">
+                  <div class="tr-confirm-inner">
+                    <span class="material-icons">delete_forever</span>
+                    <div class="tr-confirm-text">
+                      <strong>Delete this slot?</strong>
+                      <span>{{ formatDate(slot.slot_Date) }} at {{ formatTime(slot.slot_Time) }} — {{ slot.session_Type }}. This cannot be undone.</span>
+                    </div>
+                    <div class="tr-confirm-btns">
+                      <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+                      <button class="btn btn-danger btn-sm" (click)="deleteSlot()">Delete</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+            } @else if (editTargetId === slot.booking_Slot_ID) {
+              <tr class="tr-edit">
+                <td colspan="7">
+                  <div class="edit-form">
+                    <div class="edit-form-title">
+                      <span class="material-icons">edit</span> Edit Slot
+                    </div>
+                    <div class="create-steps">
+
+                      <!-- Module -->
+                      <div class="create-step">
+                        <div class="step-label"><span class="step-num">1</span> Module</div>
+                        @if (tutorModules.length === 0) {
+                          <p class="no-modules-hint">No modules assigned.</p>
+                        } @else {
+                          <select class="form-control" [(ngModel)]="editModuleCode">
+                            <option value="">— Select module —</option>
+                            @for (mod of tutorModules; track mod.module_Code) {
+                              <option [value]="mod.module_Code">{{ mod.module_Code }} — {{ mod.module_Name }}</option>
+                            }
+                          </select>
+                        }
+                      </div>
+
+                      <!-- Date -->
+                      <div class="create-step">
+                        <div class="step-label"><span class="step-num">2</span> Date</div>
+                        <input type="date" class="form-control date-input" [(ngModel)]="editDate" [min]="today" />
+                      </div>
+
+                      <!-- Time -->
+                      <div class="create-step">
+                        <div class="step-label"><span class="step-num">3</span> Time</div>
+                        <input type="time" class="form-control time-input" [(ngModel)]="editTime" />
+                      </div>
+
+                      <!-- Format -->
+                      <div class="create-step">
+                        <div class="step-label"><span class="step-num">4</span> Format</div>
+                        <div class="pill-group">
+                          <button class="pill-btn" [class.pill-active]="editSessionFormat === 'One-on-One'"
+                                  (click)="editSessionFormat = 'One-on-One'">
+                            <span class="material-icons">person</span> One-on-One
+                          </button>
+                          <button class="pill-btn" [class.pill-active]="editSessionFormat === 'Group'"
+                                  (click)="editSessionFormat = 'Group'">
+                            <span class="material-icons">group</span> Group
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Mode -->
+                      <div class="create-step">
+                        <div class="step-label"><span class="step-num">5</span> Mode</div>
+                        <div class="pill-group">
+                          <button class="pill-btn" [class.pill-active]="editSessionMode === 'Online'"
+                                  (click)="editSessionMode = 'Online'">
+                            <span class="material-icons">videocam</span> Online
+                          </button>
+                          <button class="pill-btn" [class.pill-active]="editSessionMode === 'In-Person'"
+                                  (click)="editSessionMode = 'In-Person'">
+                            <span class="material-icons">place</span> In-Person
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Location -->
+                      <div class="create-step">
+                        <div class="step-label"><span class="step-num">6</span> Location</div>
+                        <input type="text" class="form-control"
+                               [(ngModel)]="editLocation"
+                               placeholder="e.g. Room 204, Library, Zoom link..." />
+                      </div>
+
+                      <!-- Capacity (Group only) -->
+                      @if (editSessionFormat === 'Group') {
+                        <div class="create-step">
+                          <div class="step-label"><span class="step-num">7</span> Max Capacity</div>
+                          <div class="capacity-input-wrap">
+                            <input type="number" class="form-control capacity-input"
+                                   [(ngModel)]="editCapacity" min="2" max="100" placeholder="e.g. 10" />
+                            <span class="capacity-hint">students</span>
+                          </div>
+                        </div>
+                      }
+
+                    </div>
+                    <div class="create-actions">
+                      <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+                      <button class="btn btn-primary" (click)="saveEdit()" [disabled]="saving">
+                        @if (saving) { <span class="spinner-sm"></span> } Save Changes
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+            } @else {
+              <tr>
+                <td>
+                  @if (slot.module_Code) {
+                    <span class="badge badge-purple">{{ slot.module_Code }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>{{ formatDate(slot.slot_Date) }}</td>
+                <td>{{ formatTime(slot.slot_Time) }}</td>
+                <td>
+                  <div class="session-type-pills">
+                    @for (part of slot.session_Type.split('·'); track part) {
+                      <span class="session-type-badge">{{ part.trim() }}</span>
+                    }
+                    @if (slot.max_Capacity) {
+                      <span class="capacity-badge">
+                        <span class="material-icons">group</span> {{ slot.max_Capacity }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  @if (slot.location) {
+                    <span class="location-cell">
+                      <span class="material-icons">place</span> {{ slot.location }}
+                    </span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (slot.is_Booked) {
+                    <span class="badge badge-orange">Booked</span>
+                  } @else {
+                    <span class="badge badge-success">Available</span>
+                  }
+                </td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-icon" title="Edit slot"
+                            (click)="openEdit(slot)"
+                            [disabled]="slot.is_Booked">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="btn-icon danger" title="Delete slot"
+                            (click)="confirmDelete(slot.booking_Slot_ID)"
+                            [disabled]="slot.is_Booked">
+                      <span class="material-icons">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

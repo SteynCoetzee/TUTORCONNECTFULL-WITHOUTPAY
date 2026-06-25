@@ -17,22 +17,6 @@ Iteration 5.2-UCs.png
 Iteration 6-UCs.png
 Smith's Tutoring Advert.jpeg
 
-# IT5/IT6 frontend components only
-tutorconnect-frontend/src/app/components/booking/
-tutorconnect-frontend/src/app/components/booking-slots/
-tutorconnect-frontend/src/app/components/calendar/
-tutorconnect-frontend/src/app/components/reviews/
-tutorconnect-frontend/src/app/components/reports/
-tutorconnect-frontend/src/app/components/announcements/
-tutorconnect-frontend/src/app/components/admin-audit/
-tutorconnect-frontend/src/app/components/module-wishlist/
-tutorconnect-frontend/src/app/components/admin-media/
-tutorconnect-frontend/src/app/components/media-viewer/
-
-# Angular services for IT5/IT6 only
-tutorconnect-frontend/src/app/services/announcement.service.ts
-tutorconnect-frontend/src/app/services/booking.service.ts
-tutorconnect-frontend/src/app/services/report.service.ts
 
 # Frontend build output only
 tutorconnect-frontend/dist/

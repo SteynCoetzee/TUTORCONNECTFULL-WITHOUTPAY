@@ -1,0 +1,96 @@
+<div class="public-page">
+  <header class="pub-nav">
+    <div class="pub-brand">
+      <div class="pub-avatar">ST</div>
+      <div class="pub-brand-text">
+        <span class="pub-brand-title">Smiths</span>
+        <span class="pub-brand-sub">Tutoring</span>
+      </div>
+    </div>
+    <a routerLink="/home" class="pub-back">
+      <span class="material-icons">arrow_back</span> Back to Home
+    </a>
+  </header>
+
+  <div class="pub-content">
+    <div class="pub-hero">
+      <span class="material-icons pub-hero-icon">perm_media</span>
+      <h1>Media &amp; Resources</h1>
+      <p>Browse our photos, videos and resources</p>
+    </div>
+
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading media...</p></div>
+    } @else if (mediaItems.length === 0) {
+      <div class="empty-box">
+        <span class="material-icons">perm_media</span>
+        <p>No media content available yet. Check back soon.</p>
+      </div>
+    } @else {
+
+      <!-- Photo Gallery -->
+      @if (images.length > 0) {
+        <h2 class="section-heading">
+          <span class="material-icons">photo_library</span> Photos
+        </h2>
+        <div class="photo-grid">
+          @for (m of images; track m.media_ID) {
+            <div class="photo-tile" (click)="openLightbox(m)" title="{{ m.media_Name }}">
+              <img [src]="m.media_Address" [alt]="m.media_Name" loading="lazy" />
+              <div class="photo-overlay">
+                <span class="material-icons">zoom_in</span>
+                <span class="photo-name">{{ m.media_Name }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Videos -->
+      @if (videos.length > 0) {
+        <h2 class="section-heading">
+          <span class="material-icons">videocam</span> Videos
+        </h2>
+        <div class="video-grid">
+          @for (m of videos; track m.media_ID) {
+            <div class="video-card">
+              <video controls preload="metadata">
+                <source [src]="m.media_Address" />
+              </video>
+              <p class="video-label">{{ m.media_Name }}</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Other links -->
+      @if (others.length > 0) {
+        <h2 class="section-heading">
+          <span class="material-icons">link</span> Resources
+        </h2>
+        <div class="resource-grid">
+          @for (m of others; track m.media_ID) {
+            <a [href]="m.media_Address" target="_blank" rel="noopener" class="resource-card">
+              <span class="material-icons resource-icon">open_in_new</span>
+              <span class="resource-label">{{ m.media_Name }}</span>
+            </a>
+          }
+        </div>
+      }
+
+    }
+  </div>
+</div>
+
+<!-- Lightbox -->
+@if (lightboxItem) {
+  <div class="lightbox-backdrop" (click)="closeLightbox()">
+    <div class="lightbox-box" (click)="$event.stopPropagation()">
+      <button class="lightbox-close" (click)="closeLightbox()">
+        <span class="material-icons">close</span>
+      </button>
+      <img [src]="lightboxItem.media_Address" [alt]="lightboxItem.media_Name" />
+      <p class="lightbox-caption">{{ lightboxItem.media_Name }}</p>
+    </div>
+  </div>
+}

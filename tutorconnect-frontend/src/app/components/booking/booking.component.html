@@ -1,0 +1,298 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons">event_available</span> Sessions</h1>
+      <p class="page-subtitle">Book new sessions or manage your existing bookings.</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="booking-tabs">
+    <button class="booking-tab" [class.active]="activeTab === 'book'" (click)="activeTab = 'book'">
+      <span class="material-icons">add_circle_outline</span> Book a Session
+    </button>
+    <button class="booking-tab" [class.active]="activeTab === 'my-bookings'" (click)="activeTab = 'my-bookings'">
+      <span class="material-icons">event_note</span> My Bookings
+      @if (myBookings.length > 0) {
+        <span class="badge badge-teal" style="margin-left:6px">{{ myBookings.length }}</span>
+      }
+    </button>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span> {{ successMessage }}
+    </div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span> {{ errorMessage }}
+    </div>
+  }
+
+  <!-- ── MY BOOKINGS TAB ─────────────────────────────────────────── -->
+  @if (activeTab === 'my-bookings') {
+    @if (loadingBookings) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading your bookings...</p></div>
+    } @else if (myBookings.length === 0) {
+      <div class="empty-bookings">
+        <span class="material-icons">event_busy</span>
+        <p>You have no upcoming bookings.</p>
+      </div>
+    } @else {
+      <div class="my-bookings-list">
+        @for (b of myBookings; track b.booking_ID) {
+          @if (confirmCancelId === b.booking_ID) {
+            <div class="booking-card confirm-cancel">
+              <span class="material-icons" style="color:#ef4444;font-size:28px">warning</span>
+              <div style="flex:1">
+                <strong>Cancel this booking?</strong>
+                <p style="margin:4px 0 0;font-size:13px;color:var(--text-muted)">
+                  {{ b.moduleCode }} — {{ formatDate(b.slotDate) }} at {{ formatTime(b.slotTime) }}
+                  @if (isGroup(b.sessionType)) {
+                    <br><span style="color:#f59e0b">Group session: only the tutor will be notified.</span>
+                  }
+                </p>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-secondary btn-sm" (click)="dismissCancel()">Keep it</button>
+                <button class="btn btn-danger btn-sm" (click)="cancelBooking(b.booking_ID)"
+                        [disabled]="cancellingId === b.booking_ID">
+                  @if (cancellingId === b.booking_ID) { <span class="spinner-sm"></span> }
+                  Yes, Cancel
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="booking-card">
+              <div class="booking-card-left">
+                <div class="booking-date-badge">
+                  <span class="booking-day">{{ formatDate(b.slotDate).split(' ')[1] }}</span>
+                  <span class="booking-month">{{ formatDate(b.slotDate).split(' ')[2] }}</span>
+                </div>
+                <div class="booking-info">
+                  <div class="booking-module">{{ b.moduleCode || '—' }}</div>
+                  <div class="booking-detail">
+                    <span class="material-icons">schedule</span> {{ formatTime(b.slotTime) }}
+                  </div>
+                  <div class="booking-detail">
+                    <span class="material-icons">person</span> {{ b.tutorName }}
+                  </div>
+                  @if (b.location) {
+                    <div class="booking-detail">
+                      <span class="material-icons">place</span> {{ b.location }}
+                    </div>
+                  }
+                  <div class="booking-detail">
+                    <span class="badge" [class.badge-teal]="!isGroup(b.sessionType)" [class.badge-info]="isGroup(b.sessionType)">
+                      {{ b.sessionType }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-danger btn-sm" (click)="confirmCancel(b.booking_ID)">
+                <span class="material-icons">cancel</span> Cancel
+              </button>
+            </div>
+          }
+        }
+      </div>
+    }
+  }
+
+  <!-- ── BOOK A SESSION TAB ──────────────────────────────────────── -->
+  @if (activeTab === 'book') {
+  <div class="booking-layout">
+
+    <!-- ── Left: Steps ─────────────────────────────────────────────────── -->
+    <div class="steps-col">
+
+      <!-- Step 1: Module -->
+      <div class="step-card card">
+        <div class="step-header">
+          <span class="step-num" [class.done]="!!selectedModule">1</span>
+          <div>
+            <div class="step-title">Select Module</div>
+            <div class="step-hint">Choose one of your enrolled modules</div>
+          </div>
+        </div>
+        @if (loadingModules) {
+          <div class="step-loading"><div class="spinner-sm dark"></div> Loading modules...</div>
+        } @else if (enrolledModules.length === 0) {
+          <p class="step-empty">You are not enrolled in any modules yet.</p>
+        } @else {
+          <select class="form-control" [(ngModel)]="selectedModule" (ngModelChange)="onModuleChange()">
+            <option value="">— Choose a module —</option>
+            @for (m of enrolledModules; track m.module_Code) {
+              <option [value]="m.module_Code">{{ m.module_Code }} · {{ m.module_Name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- Step 2: Format -->
+      <div class="step-card card" [class.step-disabled]="!selectedModule">
+        <div class="step-header">
+          <span class="step-num" [class.done]="!!selectedFormat">2</span>
+          <div>
+            <div class="step-title">Session Format</div>
+            <div class="step-hint">One-on-One or Group session</div>
+          </div>
+        </div>
+        <div class="format-options">
+          <button class="format-btn"
+                  [class.active]="selectedFormat === 'One-on-One'"
+                  [class.format-unavailable]="selectedModule && !canBookFormat('One-on-One')"
+                  [disabled]="!selectedModule || !canBookFormat('One-on-One')"
+                  (click)="selectedFormat = 'One-on-One'; onFormatChange()"
+                  [title]="selectedModule && !canBookFormat('One-on-One') ? 'You did not enrol for 1-on-1 sessions' : ''">
+            <span class="material-icons">person</span>
+            <span class="format-label">1 on 1</span>
+            <span class="format-sub">
+              @if (selectedModule && !canBookFormat('One-on-One')) {
+                Not enrolled
+              } @else {
+                Private session
+              }
+            </span>
+          </button>
+          <button class="format-btn"
+                  [class.active]="selectedFormat === 'Group'"
+                  [class.format-unavailable]="selectedModule && !canBookFormat('Group')"
+                  [disabled]="!selectedModule || !canBookFormat('Group')"
+                  (click)="selectedFormat = 'Group'; onFormatChange()"
+                  [title]="selectedModule && !canBookFormat('Group') ? 'You did not enrol for group sessions' : ''">
+            <span class="material-icons">group</span>
+            <span class="format-label">Group</span>
+            <span class="format-sub">
+              @if (selectedModule && !canBookFormat('Group')) {
+                Not enrolled
+              } @else {
+                Multiple students
+              }
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Time Slot -->
+      <div class="step-card card" [class.step-disabled]="!selectedFormat">
+        <div class="step-header">
+          <span class="step-num" [class.done]="!!selectedSlotId">3</span>
+          <div>
+            <div class="step-title">Pick a Time Slot</div>
+            <div class="step-hint">Available slots for your chosen module and format</div>
+          </div>
+        </div>
+
+        @if (loadingSlots) {
+          <div class="step-loading"><div class="spinner-sm dark"></div> Loading slots...</div>
+        } @else if (!selectedFormat) {
+          <p class="step-empty">Select a session format first.</p>
+        } @else if (filteredSlots.length === 0) {
+          <div class="no-slots">
+            <span class="material-icons">event_busy</span>
+            <p>No available slots for this module and format.</p>
+          </div>
+        } @else {
+          <div class="slots-list">
+            @for (slot of filteredSlots; track slot.booking_Slot_ID) {
+              <div class="slot-card"
+                   [class.selected]="selectedSlotId === slot.booking_Slot_ID"
+                   (click)="selectSlot(slot.booking_Slot_ID)">
+                <div class="slot-date-col">
+                  <div class="slot-weekday">{{ formatDate(slot.slotDate).split(',')[0] }}</div>
+                  <div class="slot-day">{{ formatDate(slot.slotDate).split(' ')[1] }}</div>
+                  <div class="slot-month">{{ formatDate(slot.slotDate).split(' ')[2] }}</div>
+                </div>
+                <div class="slot-info">
+                  <div class="slot-time">
+                    <span class="material-icons">schedule</span>
+                    {{ formatTime(slot.slotTime) }}
+                  </div>
+                  <div class="slot-meta">
+                    <span class="badge badge-mode">{{ getSessionMode(slot.session_Type) }}</span>
+                    @if (slot.maxCapacity && slot.maxCapacity > 1) {
+                      <span class="badge badge-capacity">{{ slot.remaining }}/{{ slot.maxCapacity }} spots left</span>
+                    }
+                  </div>
+                  <div class="slot-tutor">
+                    <span class="material-icons">person</span> {{ slot.tutorName }}
+                  </div>
+                  @if (slot.location) {
+                    <div class="slot-location">
+                      <span class="material-icons">place</span> {{ slot.location }}
+                    </div>
+                  }
+                </div>
+                <div class="slot-select-col">
+                  @if (selectedSlotId === slot.booking_Slot_ID) {
+                    <span class="material-icons slot-check">check_circle</span>
+                  } @else {
+                    <span class="material-icons slot-radio">radio_button_unchecked</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Book button -->
+      @if (selectedSlotId) {
+        <div class="book-bar card">
+          <div class="book-bar-info">
+            <span class="material-icons">event_available</span>
+            <div>
+              <div class="book-bar-title">{{ getSelectedSlot()?.tutorName }}</div>
+              <div class="book-bar-sub">{{ formatDate(getSelectedSlot()?.slotDate || '') }} · {{ formatTime(getSelectedSlot()?.slotTime || '') }} · {{ getSessionMode(getSelectedSlot()?.session_Type || '') }}</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="submitBooking()" [disabled]="booking">
+            @if (booking) { <span class="spinner-sm"></span> } Book Session
+          </button>
+        </div>
+      }
+
+    </div>
+
+    <!-- ── Right: Summary / Guidelines ────────────────────────────────── -->
+    <div class="right-col">
+      <div class="card summary-card">
+        <h4 class="summary-title">Your Selection</h4>
+        <div class="summary-row">
+          <span class="summary-label"><span class="material-icons">menu_book</span> Module</span>
+          <span class="summary-value">{{ selectedModule || '—' }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label"><span class="material-icons">people</span> Format</span>
+          <span class="summary-value">{{ selectedFormat || '—' }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label"><span class="material-icons">schedule</span> Slot</span>
+          <span class="summary-value">
+            @if (getSelectedSlot()) {
+              {{ formatDate(getSelectedSlot()!.slotDate) }}<br>{{ formatTime(getSelectedSlot()!.slotTime) }}
+            } @else { — }
+          </span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label"><span class="material-icons">person</span> Tutor</span>
+          <span class="summary-value">{{ getSelectedSlot()?.tutorName || '—' }}</span>
+        </div>
+      </div>
+
+      <div class="card guidelines-card">
+        <h4 class="guidelines-title">Booking Guidelines</h4>
+        <ul class="guidelines-list">
+          <li>Book at least 24 hours in advance</li>
+          <li>Group sessions fill up — book early!</li>
+          <li>Online sessions require a stable connection</li>
+          <li>Contact your tutor if you need to reschedule</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  } <!-- end book tab -->
+</div>

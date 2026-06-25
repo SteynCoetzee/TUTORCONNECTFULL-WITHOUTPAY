@@ -1,0 +1,335 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <span class="material-icons">calendar_today</span>
+      @if (userRole === 'Student') { My Calendar }
+      @else if (userRole === 'Tutor') { My Session Slots }
+      @else { All Booking Slots }
+    </h1>
+    <p class="page-subtitle">
+      @if (userRole === 'Student') { View your booked sessions and available sessions from your modules. }
+      @else if (userRole === 'Tutor') { View all your available and booked session slots. }
+      @else { Overview of all session slots across all tutors. }
+    </p>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-error">
+      <span class="material-icons" style="font-size:18px">error_outline</span> {{ errorMessage }}
+    </div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success">
+      <span class="material-icons" style="font-size:18px">check_circle</span> {{ successMessage }}
+    </div>
+  }
+
+  @if (loading) {
+    <div style="text-align:center;padding:40px;color:var(--text-muted)">
+      <span class="material-icons" style="font-size:32px">hourglass_top</span>
+      <p>Loading schedule...</p>
+    </div>
+  } @else {
+    <div class="calendar-layout">
+
+      <!-- ── Calendar Grid ─────────────────────────────────────────────── -->
+      <div class="card calendar-card">
+        <div class="cal-header">
+          <button class="cal-nav-btn" (click)="prevMonth()">
+            <span class="material-icons">chevron_left</span>
+          </button>
+          <h3 class="cal-month-title">{{ getMonthName() }}</h3>
+          <button class="cal-nav-btn" (click)="nextMonth()">
+            <span class="material-icons">chevron_right</span>
+          </button>
+        </div>
+
+        <div class="cal-weekdays">
+          <div *ngFor="let d of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" class="cal-weekday">{{ d }}</div>
+        </div>
+
+        <div class="cal-grid">
+          @for (day of calendarDays; track $index) {
+            <div class="cal-day"
+                 [class.cal-empty]="!day"
+                 [class.cal-today]="isToday(day)"
+                 [class.cal-selected]="isSelected(day)"
+                 [class.cal-has-booking]="userRole === 'Student' && hasBooking(day)"
+                 [class.cal-has-available]="userRole !== 'Student' && hasAvailableSlot(day)"
+                 [class.cal-has-booked]="userRole !== 'Student' && hasBookedSlot(day)"
+                 (click)="selectDay(day)">
+              <span *ngIf="day">{{ day.getDate() }}</span>
+              <!-- Student: green dot for open slots from enrolled modules -->
+              @if (userRole === 'Student' && hasAvailableForStudent(day)) {
+                <span class="cal-dot dot-open" style="left:calc(50% - 7px)"></span>
+              }
+              <!-- Student: teal dot for confirmed bookings -->
+              @if (userRole === 'Student' && hasBooking(day)) {
+                <span class="cal-dot dot-booked" style="left:calc(50% + 1px)"></span>
+              }
+              <!-- Tutor/Admin dots -->
+              @if (userRole !== 'Student' && hasAvailableSlot(day)) {
+                <span class="cal-dot dot-available"></span>
+              }
+              @if (userRole !== 'Student' && hasBookedSlot(day)) {
+                <span class="cal-dot dot-taken"></span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Legend -->
+        <div class="cal-legend">
+          <div class="legend-item"><span class="legend-dot today-dot"></span> Today</div>
+          @if (userRole === 'Student') {
+            <div class="legend-item"><span class="legend-dot dot-open"></span> Open slot (bookable)</div>
+            <div class="legend-item"><span class="legend-dot dot-booked"></span> Booked by you</div>
+          } @else {
+            <div class="legend-item"><span class="legend-dot dot-available"></span> Available slot</div>
+            <div class="legend-item"><span class="legend-dot dot-taken"></span> Slot booked</div>
+          }
+        </div>
+      </div>
+
+      <!-- ── Right Panel ───────────────────────────────────────────────── -->
+      <div class="calendar-side">
+
+        <!-- Selected Day Detail (Student) -->
+        @if (selectedDay && userRole === 'Student') {
+          <div class="card">
+            <h4 class="section-title">
+              {{ selectedDay.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) }}
+            </h4>
+
+            <!-- Available slots to book on this day -->
+            @if (dayAvailableSlots.length > 0) {
+              <p class="day-section-label open-label">
+                <span class="material-icons">event_available</span> Open sessions to book
+              </p>
+              @for (s of dayAvailableSlots; track s.booking_Slot_ID) {
+                <div class="session-card session-card-open">
+                  <div class="session-card-main">
+                    <div class="session-time">
+                      <span class="material-icons">schedule</span>
+                      {{ formatTime(s.slot_Time) }}
+                    </div>
+                    <div class="session-meta">
+                      <span class="badge badge-teal">{{ s.session_Type }}</span>
+                      @if (s.moduleCode) {
+                        <span class="badge badge-purple">{{ s.moduleCode }}</span>
+                      }
+                      @if (s.tutorName) {
+                        <span class="session-detail"><span class="material-icons">person</span> {{ s.tutorName }}</span>
+                      }
+                      @if (s.location) {
+                        <span class="session-detail"><span class="material-icons">place</span> {{ s.location }}</span>
+                      }
+                      @if (s.remaining > 1) {
+                        <span class="session-detail"><span class="material-icons">group</span> {{ s.remaining }} spots left</span>
+                      }
+                    </div>
+                  </div>
+                  <a routerLink="/dashboard/booking" class="btn-book-slot" title="Go to booking">
+                    <span class="material-icons">add_circle</span>
+                  </a>
+                </div>
+              }
+              <div class="day-divider"></div>
+            }
+
+            <!-- Confirmed bookings on this day -->
+            @if (dayBookings.length === 0 && dayAvailableSlots.length === 0) {
+              <div class="no-sessions">
+                <span class="material-icons" style="font-size:32px;color:var(--text-muted)">event_note</span>
+                <p>Nothing scheduled for this day.</p>
+                <a routerLink="/dashboard/booking" class="btn btn-primary btn-sm">
+                  <span class="material-icons">add</span> Book a Session
+                </a>
+              </div>
+            } @else if (dayBookings.length > 0) {
+              <p class="day-section-label booked-label">
+                <span class="material-icons">check_circle</span> Your bookings
+              </p>
+              @for (b of dayBookings; track b.booking_ID) {
+                <div class="session-card" [class.session-card-cancelling]="confirmCancelId === b.booking_ID">
+                  <div class="session-card-main">
+                    <div class="session-time">
+                      <span class="material-icons">schedule</span> {{ formatTime(b.slot_Time) }}
+                    </div>
+                    <div class="session-meta">
+                      <span class="badge badge-teal">{{ b.session_Type }}</span>
+                      @if (b.moduleCode) { <span class="badge badge-purple">{{ b.moduleCode }}</span> }
+                      @if (b.tutorName) { <span class="session-detail"><span class="material-icons">person</span> {{ b.tutorName }}</span> }
+                      @if (b.location) { <span class="session-detail"><span class="material-icons">place</span> {{ b.location }}</span> }
+                    </div>
+                  </div>
+                  @if (confirmCancelId === b.booking_ID) {
+                    <div class="cancel-confirm-row">
+                      <span class="material-icons cancel-warn-icon">warning</span>
+                      <span class="cancel-confirm-text">Cancel this session?</span>
+                      <button class="btn btn-secondary btn-sm" (click)="dismissCancel()">Keep</button>
+                      <button class="btn btn-danger btn-sm" (click)="executeCancel()" [disabled]="cancelling">
+                        @if (cancelling) { <span class="spinner-sm dark"></span> } Yes, Cancel
+                      </button>
+                    </div>
+                  } @else {
+                    <button class="btn-icon-cancel" title="Cancel booking" (click)="requestCancel(b.booking_ID)">
+                      <span class="material-icons">event_busy</span>
+                    </button>
+                  }
+                </div>
+              }
+            }
+          </div>
+        }
+
+        <!-- Selected Day Detail (Tutor / Admin) -->
+        @if (selectedDay && userRole !== 'Student') {
+          <div class="card">
+            <h4 class="section-title">
+              {{ selectedDay.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) }}
+            </h4>
+            @if (daySlots.length === 0) {
+              <div class="no-sessions">
+                <span class="material-icons" style="font-size:32px;color:var(--text-muted)">event_available</span>
+                <p>No slots on this day.</p>
+              </div>
+            }
+            @for (s of daySlots; track s.booking_Slot_ID) {
+              <div class="session-card">
+                <div class="session-time">
+                  <span class="material-icons">schedule</span> {{ formatTime(s.slot_Time) }}
+                </div>
+                <div class="session-info">
+                  <span class="badge badge-teal">{{ s.session_Type }}</span>
+                  @if (s.is_Booked) { <span class="badge badge-orange">Booked</span> }
+                  @else { <span class="badge badge-success">Available</span> }
+                  @if (userRole === 'Admin') { <span class="slot-tutor-id">{{ s.tutorName }}</span> }
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ── Upcoming Sessions (Student) ────────────────────────────── -->
+        @if (userRole === 'Student') {
+          <div class="card mt-16">
+            <h4 class="section-title">Upcoming Booked Sessions</h4>
+            @if (upcomingBookings.length === 0) {
+              <div class="no-sessions">
+                <span class="material-icons" style="font-size:28px;color:var(--text-muted)">event_busy</span>
+                <p>No upcoming bookings.</p>
+              </div>
+            }
+            @for (b of upcomingBookings; track b.booking_ID) {
+              <div class="upcoming-booking" [class.upcoming-booking-cancelling]="confirmCancelId === b.booking_ID">
+                <div class="upcoming-booking-body">
+                  <div class="upcoming-date-col booked-col">
+                    <span class="upcoming-weekday">{{ b.slot_Date | date:'EEE' }}</span>
+                    <span class="upcoming-day">{{ b.slot_Date | date:'d' }}</span>
+                    <span class="upcoming-month">{{ b.slot_Date | date:'MMM' }}</span>
+                  </div>
+                  <div class="upcoming-info">
+                    <div class="upcoming-time-row">
+                      <span class="material-icons">schedule</span> {{ formatTime(b.slot_Time) }}
+                      @if (b.moduleCode) { <span class="badge badge-purple" style="font-size:10px;padding:2px 6px">{{ b.moduleCode }}</span> }
+                    </div>
+                    <div class="upcoming-badges"><span class="badge badge-teal" style="font-size:10px">{{ b.session_Type }}</span></div>
+                    @if (b.tutorName) { <div class="upcoming-sub"><span class="material-icons">person</span> {{ b.tutorName }}</div> }
+                    @if (b.location)  { <div class="upcoming-sub"><span class="material-icons">place</span> {{ b.location }}</div> }
+                  </div>
+                </div>
+                @if (confirmCancelId === b.booking_ID) {
+                  <div class="cancel-confirm-row">
+                    <span class="material-icons cancel-warn-icon">warning</span>
+                    <span class="cancel-confirm-text">Cancel this booking?</span>
+                    <button class="btn btn-secondary btn-sm" (click)="dismissCancel()">Keep</button>
+                    <button class="btn btn-danger btn-sm" (click)="executeCancel()" [disabled]="cancelling">
+                      @if (cancelling) { <span class="spinner-sm dark"></span> } Yes, Cancel
+                    </button>
+                  </div>
+                } @else {
+                  <button class="btn-icon-cancel" title="Cancel booking" (click)="requestCancel(b.booking_ID)">
+                    <span class="material-icons">event_busy</span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- ── Open Slots from Enrolled Modules ───────────────────────── -->
+          <div class="card mt-16">
+            <h4 class="section-title">
+              <span class="material-icons" style="font-size:15px;color:#22c55e;vertical-align:middle">circle</span>
+              Open Sessions to Book
+            </h4>
+            @if (upcomingAvailable.length === 0) {
+              <div class="no-sessions">
+                <span class="material-icons" style="font-size:28px;color:var(--text-muted)">event_available</span>
+                <p>No open sessions for your modules right now.</p>
+              </div>
+            }
+            @for (s of upcomingAvailable; track s.booking_Slot_ID) {
+              <div class="upcoming-booking upcoming-open">
+                <div class="upcoming-booking-body">
+                  <div class="upcoming-date-col open-col">
+                    <span class="upcoming-weekday">{{ s.slot_Date | date:'EEE' }}</span>
+                    <span class="upcoming-day">{{ s.slot_Date | date:'d' }}</span>
+                    <span class="upcoming-month">{{ s.slot_Date | date:'MMM' }}</span>
+                  </div>
+                  <div class="upcoming-info">
+                    <div class="upcoming-time-row">
+                      <span class="material-icons">schedule</span> {{ formatTime(s.slot_Time) }}
+                      @if (s.moduleCode) { <span class="badge badge-purple" style="font-size:10px;padding:2px 6px">{{ s.moduleCode }}</span> }
+                    </div>
+                    <div class="upcoming-badges"><span class="badge badge-teal" style="font-size:10px">{{ s.session_Type }}</span></div>
+                    @if (s.tutorName) { <div class="upcoming-sub"><span class="material-icons">person</span> {{ s.tutorName }}</div> }
+                    @if (s.location)  { <div class="upcoming-sub"><span class="material-icons">place</span> {{ s.location }}</div> }
+                    @if (s.remaining > 1) { <div class="upcoming-sub"><span class="material-icons">group</span> {{ s.remaining }} spots left</div> }
+                  </div>
+                </div>
+                <a routerLink="/dashboard/booking" class="btn-book-slot" title="Go to booking">
+                  <span class="material-icons">add_circle</span>
+                </a>
+              </div>
+            }
+          </div>
+
+        <!-- ── Upcoming Slots (Tutor / Admin) ─────────────────────────── -->
+        } @else {
+          <div class="card mt-16">
+            <h4 class="section-title">Upcoming Slots</h4>
+            @if (upcomingSlots.length === 0) {
+              <div class="no-sessions">
+                <span class="material-icons" style="font-size:28px;color:var(--text-muted)">event_busy</span>
+                <p>No upcoming slots.</p>
+              </div>
+            }
+            @for (s of upcomingSlots; track s.booking_Slot_ID) {
+              <div class="upcoming-row">
+                <div class="upcoming-icon-wrap">
+                  <span class="material-icons" [style.color]="s.is_Booked ? 'var(--warning)' : 'var(--primary)'">
+                    {{ s.is_Booked ? 'event_busy' : 'event_available' }}
+                  </span>
+                </div>
+                <div class="upcoming-info">
+                  <div class="upcoming-date">
+                    {{ s.slot_Date | date:'EEE, MMM d' }}
+                    @if (userRole === 'Admin') { <span class="slot-tutor-id">· {{ s.tutorName }}</span> }
+                  </div>
+                  <div class="upcoming-time">
+                    {{ formatTime(s.slot_Time) }} &bull; {{ s.session_Type }} &bull;
+                    <span [style.color]="s.is_Booked ? 'var(--warning)' : '#22c55e'">
+                      {{ s.is_Booked ? 'Booked' : 'Available' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+    </div>
+  }
+</div>

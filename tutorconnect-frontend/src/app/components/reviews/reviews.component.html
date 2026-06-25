@@ -1,0 +1,237 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons">star</span>
+        {{ isTutor ? 'My Reviews' : 'Reviews' }}
+      </h1>
+      <p class="page-subtitle">{{ isTutor ? 'Feedback left by your students' : 'Tutor and session feedback' }}</p>
+    </div>
+    @if (!isTutor) {
+      @if (activeTab === 'tutor' && !showTutorForm) {
+        <button class="btn btn-primary" (click)="openTutorForm()">
+          <span class="material-icons">add</span> Review a Tutor
+        </button>
+      }
+      @if (activeTab === 'session' && !showSessionForm) {
+        <button class="btn btn-primary" (click)="openSessionForm()">
+          <span class="material-icons">add</span> Review a Session
+        </button>
+      }
+    }
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'tutor'" (click)="setTab('tutor')">
+      <span class="material-icons">person</span> Tutor Reviews
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'session'" (click)="setTab('session')">
+      <span class="material-icons">event</span> Session Reviews
+    </button>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success"><span class="material-icons">check_circle</span> {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error"><span class="material-icons">error</span> {{ errorMessage }}</div>
+  }
+
+  <!-- ── Inline Tutor Review Form ──────────────────────────────────────── -->
+  @if (showTutorForm && !isTutor) {
+    <div class="create-card card">
+      <h3 class="create-title">
+        <span class="material-icons">add_circle_outline</span> New Tutor Review
+      </h3>
+      <div class="create-steps">
+        <div class="create-step">
+          <div class="step-label"><span class="step-num">1</span> Select Tutor</div>
+          @if (tutorOptions.length === 0) {
+            <p class="no-options-hint">No tutors found for your enrolled modules.</p>
+          } @else {
+            <select class="form-control" [(ngModel)]="selectedTutorId">
+              <option [ngValue]="null" disabled>— Choose a tutor —</option>
+              @for (t of tutorOptions; track t.tutorId) {
+                <option [ngValue]="t.tutorId">{{ t.tutorName }} ({{ getTutorModuleLabel(t) }})</option>
+              }
+            </select>
+          }
+        </div>
+        <div class="create-step">
+          <div class="step-label"><span class="step-num">2</span> Rating</div>
+          <div class="star-picker">
+            @for (star of getStars(); track star) {
+              <span class="material-icons star-pick"
+                    [class.active]="star <= tutorRating"
+                    (click)="setTutorRating(star)">star</span>
+            }
+            <span class="rating-label">{{ tutorRating }}/5</span>
+          </div>
+        </div>
+      </div>
+      <div class="create-actions">
+        <button class="btn btn-secondary" (click)="cancelTutorForm()">Cancel</button>
+        <button class="btn btn-primary" (click)="submitTutorReview()" [disabled]="savingTutor">
+          @if (savingTutor) { <span class="spinner-sm"></span> } Submit Review
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Inline Session Review Form ───────────────────────────────────── -->
+  @if (showSessionForm && !isTutor) {
+    <div class="create-card card">
+      <h3 class="create-title">
+        <span class="material-icons">add_circle_outline</span> New Session Review
+      </h3>
+      <div class="create-steps">
+        <div class="create-step full-width">
+          <div class="step-label"><span class="step-num">1</span> Select Session</div>
+          @if (sessionOptions.length === 0) {
+            <p class="no-options-hint">No booked sessions found.</p>
+          } @else {
+            <select class="form-control" [(ngModel)]="selectedBookingSlotId">
+              <option [ngValue]="null" disabled>— Choose a session —</option>
+              @for (s of sessionOptions; track s.booking_ID) {
+                <option [ngValue]="s.booking_Slot_ID">{{ formatSessionLabel(s) }}</option>
+              }
+            </select>
+          }
+        </div>
+        <div class="create-step">
+          <div class="step-label"><span class="step-num">2</span> Rating</div>
+          <div class="star-picker">
+            @for (star of getStars(); track star) {
+              <span class="material-icons star-pick"
+                    [class.active]="star <= sessionRating"
+                    (click)="setSessionRating(star)">star</span>
+            }
+            <span class="rating-label">{{ sessionRating }}/5</span>
+          </div>
+        </div>
+        <div class="create-step full-width">
+          <div class="step-label"><span class="step-num">3</span> Description</div>
+          <textarea class="form-control" [(ngModel)]="sessionDescription"
+                    rows="3" placeholder="Describe your session experience..."></textarea>
+        </div>
+      </div>
+      <div class="create-actions">
+        <button class="btn btn-secondary" (click)="cancelSessionForm()">Cancel</button>
+        <button class="btn btn-primary" (click)="submitSessionReview()" [disabled]="savingSession">
+          @if (savingSession) { <span class="spinner-sm"></span> } Submit Review
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Tutor Reviews List ────────────────────────────────────────────── -->
+  @if (activeTab === 'tutor') {
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading reviews...</p></div>
+    } @else if (tutorReviews.length === 0) {
+      <div class="empty-card">
+        <span class="material-icons">star_border</span>
+        <h3>No tutor reviews yet</h3>
+        <p>{{ isTutor ? 'You have not received any reviews yet.' : 'Be the first to review a tutor!' }}</p>
+      </div>
+    } @else {
+      <div class="reviews-grid">
+        @for (review of tutorReviews; track review.tutor_Review_ID) {
+          <div class="review-card" [class.confirming]="confirmDeleteTutorId === review.tutor_Review_ID">
+            <div class="review-header">
+              <div class="review-avatar">
+                <span class="material-icons">person</span>
+              </div>
+              <div class="review-header-info">
+                <div class="review-title">{{ review.tutorName || 'Tutor #' + review.tutor_ID }}</div>
+                <div class="review-subtitle">{{ isTutor ? (review.studentName || 'Student #' + review.student_ID) : 'Rated by you' }}</div>
+              </div>
+              @if (!isTutor && confirmDeleteTutorId !== review.tutor_Review_ID) {
+                <button class="btn-icon-delete" (click)="requestDeleteTutor(review.tutor_Review_ID)" title="Delete review">
+                  <span class="material-icons">delete</span>
+                </button>
+              }
+            </div>
+            <div class="star-rating">
+              @for (star of getStars(); track star) {
+                <span class="material-icons star" [class.filled]="star <= review.tutor_Rating">star</span>
+              }
+              <span class="rating-text">{{ review.tutor_Rating }}/5</span>
+            </div>
+            @if (!isTutor && confirmDeleteTutorId === review.tutor_Review_ID) {
+              <div class="confirm-row">
+                <span class="material-icons confirm-icon">warning</span>
+                <span class="confirm-text">Delete this review?</span>
+                <button class="btn btn-danger btn-sm" (click)="confirmDeleteTutor()">Delete</button>
+                <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- ── Session Reviews List ──────────────────────────────────────────── -->
+  @if (activeTab === 'session') {
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div><p>Loading reviews...</p></div>
+    } @else if (sessionReviews.length === 0) {
+      <div class="empty-card">
+        <span class="material-icons">event_note</span>
+        <h3>No session reviews yet</h3>
+        <p>{{ isTutor ? 'None of your sessions have been reviewed yet.' : 'Review your completed sessions!' }}</p>
+      </div>
+    } @else {
+      <div class="reviews-grid">
+        @for (review of sessionReviews; track review.session_Review_ID) {
+          <div class="review-card" [class.confirming]="confirmDeleteSessionId === review.session_Review_ID">
+            <div class="review-header">
+              <div class="review-avatar session">
+                <span class="material-icons">event</span>
+              </div>
+              <div class="review-header-info">
+                <div class="review-title">
+                  {{ review.sessionType || 'Session' }} · {{ review.slotDate }}
+                  @if (review.moduleCode) {
+                    <span class="badge badge-purple" style="font-size:10px;padding:2px 6px;margin-left:4px">{{ review.moduleCode }}</span>
+                  }
+                </div>
+                <div class="review-subtitle">
+                  @if (isTutor) {
+                    {{ formatTime(review.slotTime) }} · by {{ review.studentName || 'Student #' + review.student_ID }}
+                  } @else {
+                    {{ formatTime(review.slotTime) }}{{ review.tutorName ? ' · ' + review.tutorName : '' }}
+                  }
+                </div>
+              </div>
+              @if (!isTutor && confirmDeleteSessionId !== review.session_Review_ID) {
+                <button class="btn-icon-delete" (click)="requestDeleteSession(review.session_Review_ID)" title="Delete review">
+                  <span class="material-icons">delete</span>
+                </button>
+              }
+            </div>
+            <div class="star-rating">
+              @for (star of getStars(); track star) {
+                <span class="material-icons star" [class.filled]="star <= review.session_Rating">star</span>
+              }
+              <span class="rating-text">{{ review.session_Rating }}/5</span>
+            </div>
+            @if (review.session_Description) {
+              <p class="review-description">{{ review.session_Description }}</p>
+            }
+            @if (!isTutor && confirmDeleteSessionId === review.session_Review_ID) {
+              <div class="confirm-row">
+                <span class="material-icons confirm-icon">warning</span>
+                <span class="confirm-text">Delete this review?</span>
+                <button class="btn btn-danger btn-sm" (click)="confirmDeleteSession()">Delete</button>
+                <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,64 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons">manage_search</span> Audit Log</h1>
+      <p class="page-subtitle">Track all key system actions across users, modules, bookings and more.</p>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar card">
+    <select class="form-control" [(ngModel)]="filterType" (change)="loadLogs()" style="max-width:260px">
+      <option value="">All action types</option>
+      @for (t of transactionTypes; track t) {
+        <option [value]="t">{{ t }}</option>
+      }
+    </select>
+    <button class="btn btn-secondary btn-sm" (click)="filterType = ''; loadLogs()">
+      <span class="material-icons">refresh</span> Reset
+    </button>
+    <span class="log-count">{{ logs.length }} record{{ logs.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading audit log...</p></div>
+  } @else if (logs.length === 0) {
+    <div class="empty-card">
+      <span class="material-icons">history</span>
+      <h3>No audit records yet</h3>
+      <p>Actions like logins, module changes, and bookings will appear here.</p>
+    </div>
+  } @else {
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs; track log.audit_Log_ID) {
+            <tr>
+              <td style="font-size:0.82rem;color:var(--text-muted)">{{ log.audit_Date }}</td>
+              <td style="font-size:0.82rem;color:var(--text-muted)">{{ formatTime(log.audit_Time) }}</td>
+              <td>
+                <div style="font-weight:600;font-size:0.88rem">{{ log.userName }}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)">ID: {{ log.user_ID }}</div>
+              </td>
+              <td>
+                <span class="action-badge" [class]="getBadgeClass(log.transaction_Type)">
+                  {{ log.transaction_Type }}
+                </span>
+              </td>
+              <td style="font-size:0.82rem;color:var(--text-muted)">{{ log.critical_Data }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

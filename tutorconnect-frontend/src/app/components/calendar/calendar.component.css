@@ -1,0 +1,255 @@
+.calendar-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .calendar-layout { grid-template-columns: 1fr; }
+}
+
+/* ── Calendar Card ─────────────────────────────────────── */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-month-title { font-size: 16px; font-weight: 600; }
+.cal-nav-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+  transition: background 0.15s;
+}
+.cal-nav-btn:hover { background: var(--background); }
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.cal-day {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+.cal-day:hover:not(.cal-empty) { background: var(--background); }
+.cal-empty { cursor: default; pointer-events: none; }
+.cal-today {
+  background: var(--primary-light, #e0f2fe);
+  color: var(--primary);
+  font-weight: 700;
+}
+.cal-selected {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+.cal-has-booking { font-weight: 600; }
+
+/* Two-dot system for students: green (open) left, teal (booked) right */
+.cal-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 4px;
+  left: calc(50% - 3px); /* default centred */
+}
+.cal-selected .cal-dot { opacity: 0.85; }
+
+.dot-open   { background: #22c55e; }
+.dot-booked { background: var(--teal, #14b8a6); }
+.dot-available { background: #22c55e; }
+.dot-taken     { background: #f97316; }
+
+/* Legend */
+.cal-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot  { width: 8px; height: 8px; border-radius: 50%; }
+.today-dot   { background: var(--primary); }
+
+/* ── Side Panel ─────────────────────────────────────────── */
+.calendar-side { display: flex; flex-direction: column; gap: 0; }
+.mt-16 { margin-top: 16px; }
+
+.section-title { font-size: 0.88rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.75rem; display: flex; align-items: center; gap: 5px; }
+
+.no-sessions {
+  text-align: center;
+  padding: 20px 16px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.no-sessions p { margin: 8px 0 12px; }
+
+/* ── Day section labels ──────────────────────────────────── */
+.day-section-label {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  margin-bottom: 0.4rem;
+}
+.day-section-label .material-icons { font-size: 14px; }
+.open-label   { color: #16a34a; }
+.booked-label { color: var(--primary); }
+.day-divider  { border-top: 1px solid var(--border); margin: 0.6rem 0; }
+
+/* ── Session card (selected day) ────────────────────────── */
+.session-card {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem;
+  margin-bottom: 0.45rem;
+  transition: border-color 0.15s;
+}
+.session-card:last-child { margin-bottom: 0; }
+.session-card-open        { border-color: #bbf7d0; background: #f0fdf4; }
+.session-card-cancelling  { border-color: #fca5a5; background: #fff7f7; }
+
+.session-card-main { margin-bottom: 0.4rem; }
+.session-time {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.88rem; font-weight: 600; color: var(--text-dark);
+  margin-bottom: 0.35rem;
+}
+.session-time .material-icons { font-size: 14px; color: var(--primary); }
+
+.session-meta { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.session-detail { display: flex; align-items: center; gap: 2px; font-size: 11px; color: var(--text-muted); }
+.session-detail .material-icons { font-size: 12px; }
+.session-info { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.slot-tutor-id { font-size: 11px; color: var(--text-muted); }
+
+/* Book button on open slot cards */
+.btn-book-slot {
+  display: flex; align-items: center;
+  background: none; border: none;
+  color: #16a34a; cursor: pointer;
+  padding: 3px; border-radius: 6px;
+  margin-left: auto; text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-book-slot:hover { background: #dcfce7; color: #15803d; }
+.btn-book-slot .material-icons { font-size: 22px; }
+
+/* ── Cancel confirm inline row ──────────────────────────── */
+.cancel-confirm-row {
+  display: flex; align-items: center; gap: 8px;
+  padding-top: 0.45rem;
+  border-top: 1px solid #fca5a5;
+  flex-wrap: wrap;
+}
+.cancel-warn-icon   { font-size: 16px; color: #ef4444; }
+.cancel-confirm-text { font-size: 0.8rem; font-weight: 600; color: #b91c1c; flex: 1; }
+
+.btn-icon-cancel {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px;
+  cursor: pointer; color: var(--text-muted);
+  display: flex; align-items: center;
+  transition: all 0.15s; margin-left: auto;
+}
+.btn-icon-cancel:hover { background: #fef2f2; color: #ef4444; border-color: #fca5a5; }
+.btn-icon-cancel .material-icons { font-size: 16px; }
+
+/* ── Upcoming booking card ──────────────────────────────── */
+.upcoming-booking {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.15s;
+}
+.upcoming-booking:last-child { margin-bottom: 0; }
+.upcoming-booking-cancelling { border-color: #fca5a5; background: #fff7f7; }
+.upcoming-open { border-color: #bbf7d0; }
+
+.upcoming-booking-body {
+  display: flex; gap: 0.65rem; align-items: flex-start;
+  margin-bottom: 0.1rem;
+}
+
+/* Date column - booked (teal tint) */
+.upcoming-date-col {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 36px; padding: 3px 5px;
+  border-radius: 7px; flex-shrink: 0;
+}
+.booked-col { background: var(--primary-light, #e0f2fe); }
+.open-col   { background: #dcfce7; }
+
+.upcoming-weekday { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+.upcoming-day     { font-size: 1.25rem; font-weight: 700; line-height: 1.1; }
+.upcoming-month   { font-size: 9px; font-weight: 600; text-transform: uppercase; }
+
+.booked-col .upcoming-weekday,
+.booked-col .upcoming-day,
+.booked-col .upcoming-month { color: var(--primary); }
+
+.open-col .upcoming-weekday,
+.open-col .upcoming-day,
+.open-col .upcoming-month   { color: #16a34a; }
+
+.upcoming-info { flex: 1; }
+.upcoming-time-row {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.83rem; font-weight: 600; color: var(--text-dark);
+  margin-bottom: 2px;
+}
+.upcoming-time-row .material-icons { font-size: 13px; color: var(--primary); }
+.upcoming-badges { display: flex; gap: 4px; margin-bottom: 2px; flex-wrap: wrap; }
+.upcoming-sub {
+  display: flex; align-items: center; gap: 3px;
+  font-size: 11px; color: var(--text-muted); margin-top: 1px;
+}
+.upcoming-sub .material-icons { font-size: 12px; }
+
+/* ── Tutor / Admin upcoming rows ────────────────────────── */
+.upcoming-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.upcoming-row:last-child { border-bottom: none; }
+.upcoming-icon-wrap {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--background);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.upcoming-icon-wrap .material-icons { font-size: 18px; color: var(--primary); }
+.upcoming-date { font-size: 13px; font-weight: 600; }
+.upcoming-time { font-size: 12px; color: var(--text-muted); }
+
+/* ── Spinners ────────────────────────────────────────────── */
+.spinner-sm { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+.spinner-sm.dark { border-color: #e5e7eb; border-top-color: var(--primary); }
+@keyframes spin { to { transform: rotate(360deg); } }
