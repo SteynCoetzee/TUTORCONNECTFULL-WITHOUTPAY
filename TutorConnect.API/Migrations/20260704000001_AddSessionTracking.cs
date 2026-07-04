@@ -1,9 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using TutorConnect.API.Data;
 
 #nullable disable
 
 namespace TutorConnect.API.Migrations
 {
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20260704000001_AddSessionTracking")]
     public partial class AddSessionTracking : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

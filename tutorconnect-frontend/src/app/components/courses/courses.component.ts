@@ -260,6 +260,7 @@ export class CoursesComponent implements OnInit {
     const codes = Array.from(this.selectedForEnroll);
     let pending = codes.length;
     let succeeded = 0;
+    let alreadyEnrolled = 0;
 
     for (const code of codes) {
       const types = this.selectedSessionTypes[code] ?? new Set();
@@ -269,8 +270,12 @@ export class CoursesComponent implements OnInit {
         can_Book_OneOnOne: types.has('OneOnOne'),
         can_Book_Group: types.has('Group')
       }).subscribe({
-        next: () => { succeeded++; if (--pending === 0) this.finishEnroll(succeeded, codes.length); },
-        error: () => { if (--pending === 0) this.finishEnroll(succeeded, codes.length); }
+        next: () => { succeeded++; if (--pending === 0) this.finishEnroll(succeeded, alreadyEnrolled, codes.length); },
+        error: (err) => {
+          const msg: string = err?.error ?? '';
+          if (msg.includes('already enrolled')) alreadyEnrolled++;
+          if (--pending === 0) this.finishEnroll(succeeded, alreadyEnrolled, codes.length);
+        }
       });
     }
   }
@@ -279,15 +284,20 @@ export class CoursesComponent implements OnInit {
     this.showPaymentModal = false;
   }
 
-  private finishEnroll(succeeded: number, total: number) {
+  private finishEnroll(succeeded: number, alreadyEnrolled: number, total: number) {
     this.enrollingAll = false;
     this.clearSelection();
     if (succeeded === total) {
-      this.successMessage = `Enrolled in ${succeeded} module${succeeded > 1 ? 's' : ''}! You have 5 sessions per selected type.`;
+      this.successMessage = `Enrolled successfully! You have 5 sessions per selected type.`;
+      this.studentTab = 'enrolled';
     } else if (succeeded > 0) {
-      this.successMessage = `Enrolled in ${succeeded} of ${total} modules. Some may already be enrolled.`;
+      this.successMessage = `Enrolled in ${succeeded} of ${total}. Switching to your enrolled modules.`;
+      this.studentTab = 'enrolled';
+    } else if (alreadyEnrolled > 0) {
+      this.successMessage = 'You are already enrolled in these modules.';
+      this.studentTab = 'enrolled';
     } else {
-      this.errorMessage = 'Enrollment failed. You may already be enrolled in these modules.';
+      this.errorMessage = 'Enrollment failed. Please try again or contact support.';
     }
     this.loadEnrollments();
   }
