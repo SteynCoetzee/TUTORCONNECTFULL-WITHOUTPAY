@@ -296,3 +296,38 @@
   </div>
   } <!-- end book tab -->
 </div>
+
+<!-- ─── Session-Out Modal ──────────────────────────────────────────────────── -->
+@if (showSessionOutModal) {
+  <div class="modal-overlay" (click)="dismissSessionOutModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="material-icons modal-icon-warn">warning</span>
+        <h2 class="modal-title">No Sessions Remaining</h2>
+      </div>
+      <p class="modal-body">
+        You have used all your <strong>{{ sessionOutType === 'Group' ? 'Group' : '1-on-1' }}</strong>
+        sessions for <strong>{{ sessionOutModuleName }}</strong>.
+      </p>
+      <p class="modal-body">
+        Top up to get <strong>5 more sessions</strong> and continue booking,
+        or unenrol from this module. You can re-enrol at any time.
+      </p>
+
+      <div class="modal-notice-warn">
+        <span class="material-icons">info</span>
+        PayStack payment coming soon — contact your admin to top up manually for now.
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-danger" (click)="unenrolDueToNoPayment()" [disabled]="unenrolling">
+          @if (unenrolling) { <span class="spinner-sm"></span> }
+          <span class="material-icons">exit_to_app</span> Unenrol
+        </button>
+        <button class="btn btn-secondary" (click)="dismissSessionOutModal()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+}

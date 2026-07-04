@@ -257,6 +257,8 @@ namespace TutorConnect.API.Models
         public bool IsActive { get; set; } = true;
         public bool Can_Book_OneOnOne { get; set; } = true;
         public bool Can_Book_Group { get; set; } = true;
+        public int Sessions_Remaining_Group { get; set; } = 5;
+        public int Sessions_Remaining_OneOnOne { get; set; } = 5;
     }
 
     public class Student_Unenrollment

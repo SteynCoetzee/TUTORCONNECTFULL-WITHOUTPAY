@@ -24,6 +24,15 @@
         public bool IsActive { get; set; }
         public bool Can_Book_OneOnOne { get; set; }
         public bool Can_Book_Group { get; set; }
+        public int Sessions_Remaining_Group { get; set; }
+        public int Sessions_Remaining_OneOnOne { get; set; }
+    }
+
+    public class SessionTopUpDto
+    {
+        public int Student_ID { get; set; }
+        public string Module_Code { get; set; } = string.Empty;
+        public string Session_Type { get; set; } = string.Empty; // "Group" or "OneOnOne"
     }
 
     // ─── GRADES ─────────────────────────────────────────────────

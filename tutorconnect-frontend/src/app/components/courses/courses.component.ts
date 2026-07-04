@@ -7,6 +7,20 @@ import { AuthService } from '../../services/auth.service';
 import { Module, Enrollment, TutorModuleAssignment } from '../../models/models';
 import { environment } from '../../../environments/environment';
 
+interface EnrollmentWithSessions extends Enrollment {
+  sessions_Remaining_Group: number;
+  sessions_Remaining_OneOnOne: number;
+  can_Book_Group: boolean;
+  can_Book_OneOnOne: boolean;
+}
+
+interface PaymentItem {
+  module_Code: string;
+  module_Name: string;
+  sessionType: 'OneOnOne' | 'Group';
+  price: number;
+}
+
 @Component({
   selector: 'app-courses',
   standalone: true,
@@ -51,9 +65,17 @@ export class CoursesComponent implements OnInit {
   // Student: tabs and enrollments
   studentTab: 'enrolled' | 'all' = 'enrolled';
   enrolledModuleCodes = new Set<string>();
+  enrolledModules: EnrollmentWithSessions[] = [];
   selectedForEnroll = new Set<string>();
   enrollingAll = false;
   unenrollingCode = '';
+
+  // Payment modal
+  showPaymentModal = false;
+  paymentItems: PaymentItem[] = [];
+  get paymentTotal(): number {
+    return this.paymentItems.reduce((sum, i) => sum + i.price, 0);
+  }
 
   // Student: expanded modules + session-type selection
   expandedModuleCodes = new Set<string>();
@@ -99,10 +121,17 @@ export class CoursesComponent implements OnInit {
   }
 
   loadEnrollments() {
-    this.http.get<Enrollment[]>(`${this.apiUrl}/Enrollment/student/${this.userId}`).subscribe({
-      next: (data) => { this.enrolledModuleCodes = new Set(data.map(e => e.module_Code)); },
+    this.http.get<EnrollmentWithSessions[]>(`${this.apiUrl}/Enrollment/student/${this.userId}`).subscribe({
+      next: (data) => {
+        this.enrolledModules = data;
+        this.enrolledModuleCodes = new Set(data.map(e => e.module_Code));
+      },
       error: () => {}
     });
+  }
+
+  getEnrollment(code: string): EnrollmentWithSessions | undefined {
+    return this.enrolledModules.find(e => e.module_Code === code);
   }
 
   openModule(code: string) {
@@ -207,8 +236,28 @@ export class CoursesComponent implements OnInit {
 
   enrollSelected() {
     if (this.selectedForEnroll.size === 0) return;
-    this.enrollingAll = true;
     this.clearMessages();
+
+    // Build payment summary items
+    this.paymentItems = [];
+    for (const code of Array.from(this.selectedForEnroll)) {
+      const mod = this.modules.find(m => m.module_Code === code);
+      if (!mod) continue;
+      const types = this.selectedSessionTypes[code] ?? new Set();
+      if (types.has('OneOnOne')) {
+        this.paymentItems.push({ module_Code: code, module_Name: mod.module_Name, sessionType: 'OneOnOne', price: mod.module_Price_OneOnOne });
+      }
+      if (types.has('Group')) {
+        this.paymentItems.push({ module_Code: code, module_Name: mod.module_Name, sessionType: 'Group', price: mod.module_Price_Group });
+      }
+    }
+
+    this.showPaymentModal = true;
+  }
+
+  confirmEnrolment() {
+    this.showPaymentModal = false;
+    this.enrollingAll = true;
     const codes = Array.from(this.selectedForEnroll);
     let pending = codes.length;
     let succeeded = 0;
@@ -227,11 +276,15 @@ export class CoursesComponent implements OnInit {
     }
   }
 
+  cancelPaymentModal() {
+    this.showPaymentModal = false;
+  }
+
   private finishEnroll(succeeded: number, total: number) {
     this.enrollingAll = false;
     this.clearSelection();
     if (succeeded === total) {
-      this.successMessage = `Enrolled in ${succeeded} module${succeeded > 1 ? 's' : ''}!`;
+      this.successMessage = `Enrolled in ${succeeded} module${succeeded > 1 ? 's' : ''}! You have 5 sessions per selected type.`;
     } else if (succeeded > 0) {
       this.successMessage = `Enrolled in ${succeeded} of ${total} modules. Some may already be enrolled.`;
     } else {

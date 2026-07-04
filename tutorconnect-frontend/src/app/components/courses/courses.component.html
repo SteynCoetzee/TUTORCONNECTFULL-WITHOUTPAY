@@ -327,34 +327,51 @@
         </div>
       } @else {
         <div class="modules-grid">
-          @for (mod of enrolledModules; track mod.module_Code; let i = $index) {
-            <div class="module-card assigned" (click)="openModule(mod.module_Code)">
+          @for (enr of enrolledModules; track enr.module_Code; let i = $index) {
+            <div class="module-card assigned" (click)="openModule(enr.module_Code)">
               <div class="module-header">
                 <div class="module-icon-wrap" [style.background]="getModuleColor(i)">
                   <span class="material-icons">menu_book</span>
                 </div>
                 <div class="module-badges">
-                  <span class="badge badge-teal">{{ mod.module_Code }}</span>
+                  <span class="badge badge-teal">{{ enr.module_Code }}</span>
                   <span class="badge badge-green">Enrolled</span>
+                  @if (enr.sessions_Remaining_Group === 0 && enr.can_Book_Group === false) {
+                    <span class="badge badge-red">Group: Pay Required</span>
+                  }
+                  @if (enr.sessions_Remaining_OneOnOne === 0 && enr.can_Book_OneOnOne === false) {
+                    <span class="badge badge-red">1-on-1: Pay Required</span>
+                  }
                 </div>
               </div>
               <div class="module-name-row">
-                <h3 class="module-name">{{ mod.module_Name }}</h3>
-                @if (mod.module_Description) {
-                  <span class="module-desc-tooltip">
-                    <span class="material-icons desc-icon">help_outline</span>
-                    <span class="desc-popup">{{ mod.module_Description }}</span>
-                  </span>
+                <h3 class="module-name">{{ enr.module_Name }}</h3>
+              </div>
+
+              <!-- Session counters -->
+              <div class="session-counters" (click)="$event.stopPropagation()">
+                @if (enr.can_Book_Group || enr.sessions_Remaining_Group > 0) {
+                  <div class="session-counter" [class.session-counter-warn]="enr.sessions_Remaining_Group <= 1">
+                    <span class="material-icons">group</span>
+                    <span>Group: <strong>{{ enr.sessions_Remaining_Group }}</strong> sessions left</span>
+                  </div>
+                }
+                @if (enr.can_Book_OneOnOne || enr.sessions_Remaining_OneOnOne > 0) {
+                  <div class="session-counter" [class.session-counter-warn]="enr.sessions_Remaining_OneOnOne <= 1">
+                    <span class="material-icons">person</span>
+                    <span>1-on-1: <strong>{{ enr.sessions_Remaining_OneOnOne }}</strong> sessions left</span>
+                  </div>
                 }
               </div>
+
               <div class="module-footer">
                 <div class="module-actions" (click)="$event.stopPropagation()">
-                  <button class="btn btn-secondary btn-sm" (click)="openModule(mod.module_Code)">
+                  <button class="btn btn-secondary btn-sm" (click)="openModule(enr.module_Code)">
                     <span class="material-icons">open_in_new</span> View Materials
                   </button>
-                  <button class="btn btn-danger btn-sm" (click)="unenroll(mod.module_Code)"
-                    [disabled]="unenrollingCode === mod.module_Code">
-                    @if (unenrollingCode === mod.module_Code) { <span class="spinner-sm"></span> }
+                  <button class="btn btn-danger btn-sm" (click)="unenroll(enr.module_Code)"
+                    [disabled]="unenrollingCode === enr.module_Code">
+                    @if (unenrollingCode === enr.module_Code) { <span class="spinner-sm"></span> }
                     Unenrol
                   </button>
                 </div>
@@ -466,3 +483,50 @@
     }
   }
 </div>
+
+<!-- ─── Payment Summary Modal ──────────────────────────────────────────────── -->
+@if (showPaymentModal) {
+  <div class="modal-overlay" (click)="cancelPaymentModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="material-icons modal-icon">payment</span>
+        <h2 class="modal-title">Confirm Enrolment</h2>
+      </div>
+      <p class="modal-subtitle">You will receive <strong>5 sessions</strong> per selected session type.</p>
+
+      <div class="payment-items">
+        @for (item of paymentItems; track item.module_Code + item.sessionType) {
+          <div class="payment-item">
+            <div class="payment-item-info">
+              <span class="payment-item-code">{{ item.module_Code }}</span>
+              <span class="payment-item-name">{{ item.module_Name }}</span>
+              <span class="payment-item-type">
+                <span class="material-icons">{{ item.sessionType === 'Group' ? 'group' : 'person' }}</span>
+                {{ item.sessionType === 'Group' ? 'Group Session' : '1-on-1 Session' }} &times; 5
+              </span>
+            </div>
+            <div class="payment-item-price">R{{ item.price | number:'1.0-0' }}</div>
+          </div>
+        }
+      </div>
+
+      <div class="payment-total-row">
+        <span>Total</span>
+        <span class="payment-total-amount">R{{ paymentTotal | number:'1.0-0' }}</span>
+      </div>
+
+      <div class="modal-notice">
+        <span class="material-icons">info</span>
+        Payment via PayStack will be available soon. Click <strong>Confirm</strong> to enrol now.
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="cancelPaymentModal()">Cancel</button>
+        <button class="btn btn-primary" (click)="confirmEnrolment()" [disabled]="enrollingAll">
+          @if (enrollingAll) { <span class="spinner-sm"></span> }
+          <span class="material-icons">school</span> Confirm &amp; Enrol
+        </button>
+      </div>
+    </div>
+  </div>
+}

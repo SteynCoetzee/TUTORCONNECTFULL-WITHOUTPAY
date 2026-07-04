@@ -10,6 +10,8 @@ interface EnrolledModule {
   module_Name: string;
   can_Book_OneOnOne: boolean;
   can_Book_Group: boolean;
+  sessions_Remaining_Group: number;
+  sessions_Remaining_OneOnOne: number;
 }
 
 interface AvailableSlot {
@@ -54,6 +56,12 @@ export class BookingComponent implements OnInit {
   booking = false;
   successMessage = '';
   errorMessage = '';
+
+  // Session-out modal
+  showSessionOutModal = false;
+  sessionOutType = '';   // 'Group' or 'OneOnOne'
+  sessionOutModule = '';
+  unenrolling = false;
 
   private apiUrl = environment.apiUrl;
   private userId = 0;
@@ -105,7 +113,9 @@ export class BookingComponent implements OnInit {
           module_Code: e.module_Code,
           module_Name: e.module_Name,
           can_Book_OneOnOne: e.can_Book_OneOnOne ?? true,
-          can_Book_Group: e.can_Book_Group ?? true
+          can_Book_Group: e.can_Book_Group ?? true,
+          sessions_Remaining_Group: e.sessions_Remaining_Group ?? 5,
+          sessions_Remaining_OneOnOne: e.sessions_Remaining_OneOnOne ?? 5
         }));
         this.loadingModules = false;
       },
@@ -164,11 +174,52 @@ export class BookingComponent implements OnInit {
       next: () => {
         this.booking = false;
         this.successMessage = 'Session booked successfully!';
+        this.loadEnrolledModules();
         this.resetForm();
       },
       error: (err) => {
         this.booking = false;
-        this.errorMessage = err?.error || 'Failed to book session.';
+        const msg: string = err?.error ?? '';
+        if (msg === 'NO_SESSIONS_GROUP') {
+          this.sessionOutType = 'Group';
+          this.sessionOutModule = this.selectedModule;
+          this.showSessionOutModal = true;
+        } else if (msg === 'NO_SESSIONS_ONEONONE') {
+          this.sessionOutType = 'OneOnOne';
+          this.sessionOutModule = this.selectedModule;
+          this.showSessionOutModal = true;
+        } else {
+          this.errorMessage = msg || 'Failed to book session.';
+        }
+      }
+    });
+  }
+
+  dismissSessionOutModal() {
+    this.showSessionOutModal = false;
+    this.sessionOutType = '';
+    this.sessionOutModule = '';
+  }
+
+  get sessionOutModuleName(): string {
+    return this.enrolledModules.find(m => m.module_Code === this.sessionOutModule)?.module_Name ?? this.sessionOutModule;
+  }
+
+  unenrolDueToNoPayment() {
+    this.unenrolling = true;
+    this.http.delete(`${this.apiUrl}/Enrollment/unenroll/${this.sessionOutModule}?studentId=${this.userId}`, {
+      body: { unenroll_Reason: 'No sessions remaining — student declined top-up' }
+    }).subscribe({
+      next: () => {
+        this.unenrolling = false;
+        this.dismissSessionOutModal();
+        this.successMessage = `You have been unenrolled from ${this.sessionOutModuleName}. Re-enrol any time to get 5 new sessions.`;
+        this.resetForm();
+        this.loadEnrolledModules();
+      },
+      error: () => {
+        this.unenrolling = false;
+        this.errorMessage = 'Failed to unenrol. Please try again.';
       }
     });
   }

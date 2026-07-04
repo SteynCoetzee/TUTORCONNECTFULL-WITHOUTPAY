@@ -1423,6 +1423,30 @@ namespace TutorConnect.API.Controllers
 
             var student = await _context.Users.FindAsync(booking.Student_ID);
 
+            // ── Refund session on cancel ──────────────────────────────────────
+            if (slot != null && !string.IsNullOrEmpty(slot.Module_Code))
+            {
+                var enrollment = await _context.Student_Modules
+                    .FirstOrDefaultAsync(sm => sm.Student_ID == booking.Student_ID
+                        && sm.Module_Code == slot.Module_Code
+                        && sm.IsActive);
+
+                if (enrollment != null)
+                {
+                    bool isGroupSlot = (slot.Max_Capacity ?? 1) > 1;
+                    if (isGroupSlot)
+                    {
+                        enrollment.Sessions_Remaining_Group++;
+                        enrollment.Can_Book_Group = true;
+                    }
+                    else
+                    {
+                        enrollment.Sessions_Remaining_OneOnOne++;
+                        enrollment.Can_Book_OneOnOne = true;
+                    }
+                }
+            }
+
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
 
@@ -1490,6 +1514,36 @@ namespace TutorConnect.API.Controllers
             var alreadyBooked = await _context.Bookings
                 .AnyAsync(b => b.Student_ID == request.Student_ID && b.Booking_Slot_ID == request.Booking_Slot_ID);
             if (alreadyBooked) return BadRequest("You have already booked this session.");
+
+            // ── Session tracking ──────────────────────────────────────────────
+            bool isGroupSession = (slot.Max_Capacity ?? 1) > 1;
+            if (!string.IsNullOrEmpty(slot.Module_Code))
+            {
+                var enrollment = await _context.Student_Modules
+                    .FirstOrDefaultAsync(sm => sm.Student_ID == request.Student_ID
+                        && sm.Module_Code == slot.Module_Code
+                        && sm.IsActive);
+
+                if (enrollment != null)
+                {
+                    if (isGroupSession)
+                    {
+                        if (enrollment.Sessions_Remaining_Group <= 0)
+                            return BadRequest("NO_SESSIONS_GROUP");
+                        enrollment.Sessions_Remaining_Group--;
+                        if (enrollment.Sessions_Remaining_Group == 0)
+                            enrollment.Can_Book_Group = false;
+                    }
+                    else
+                    {
+                        if (enrollment.Sessions_Remaining_OneOnOne <= 0)
+                            return BadRequest("NO_SESSIONS_ONEONONE");
+                        enrollment.Sessions_Remaining_OneOnOne--;
+                        if (enrollment.Sessions_Remaining_OneOnOne == 0)
+                            enrollment.Can_Book_OneOnOne = false;
+                    }
+                }
+            }
 
             var booking = new Booking
             {
@@ -1724,7 +1778,9 @@ namespace TutorConnect.API.Controllers
                 Enrollment_Date = DateTime.UtcNow,
                 IsActive = true,
                 Can_Book_OneOnOne = request.Can_Book_OneOnOne,
-                Can_Book_Group = request.Can_Book_Group
+                Can_Book_Group = request.Can_Book_Group,
+                Sessions_Remaining_OneOnOne = request.Can_Book_OneOnOne ? 5 : 0,
+                Sessions_Remaining_Group = request.Can_Book_Group ? 5 : 0
             };
 
             _context.Student_Modules.Add(enrollment);
@@ -1810,11 +1866,52 @@ namespace TutorConnect.API.Controllers
                     Enrollment_Date = sm.Enrollment_Date,
                     IsActive = sm.IsActive,
                     Can_Book_OneOnOne = sm.Can_Book_OneOnOne,
-                    Can_Book_Group = sm.Can_Book_Group
+                    Can_Book_Group = sm.Can_Book_Group,
+                    Sessions_Remaining_Group = sm.Sessions_Remaining_Group,
+                    Sessions_Remaining_OneOnOne = sm.Sessions_Remaining_OneOnOne
                 })
                 .ToListAsync();
 
             return Ok(enrollments);
+        }
+
+        // POST: api/enrollment/topup
+        [HttpPost("topup")]
+        public async Task<IActionResult> TopUpSessions([FromBody] SessionTopUpDto request)
+        {
+            var enrollment = await _context.Student_Modules
+                .FirstOrDefaultAsync(sm => sm.Student_ID == request.Student_ID
+                    && sm.Module_Code == request.Module_Code
+                    && sm.IsActive);
+
+            if (enrollment == null)
+                return NotFound("Enrollment not found.");
+
+            if (request.Session_Type == "Group")
+            {
+                enrollment.Sessions_Remaining_Group += 5;
+                enrollment.Can_Book_Group = true;
+            }
+            else if (request.Session_Type == "OneOnOne")
+            {
+                enrollment.Sessions_Remaining_OneOnOne += 5;
+                enrollment.Can_Book_OneOnOne = true;
+            }
+            else
+            {
+                return BadRequest("Session_Type must be 'Group' or 'OneOnOne'.");
+            }
+
+            await _context.SaveChangesAsync();
+            await _audit.LogAsync(request.Student_ID, "Sessions Topped Up",
+                $"Module: {request.Module_Code}, Type: {request.Session_Type}");
+
+            return Ok(new
+            {
+                message = "Sessions topped up successfully.",
+                sessions_Remaining_Group = enrollment.Sessions_Remaining_Group,
+                sessions_Remaining_OneOnOne = enrollment.Sessions_Remaining_OneOnOne
+            });
         }
 
         // GET: api/enrollment/module/{moduleCode}

@@ -343,3 +343,108 @@
   content: ' ✓';
   color: var(--primary);
 }
+
+/* ── Session counters on enrolled cards ────────────────────────────── */
+.session-counters {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0 4px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+.session-counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.session-counter .material-icons { font-size: 15px; color: var(--primary); }
+.session-counter strong { color: var(--text-dark); }
+.session-counter-warn .material-icons { color: #f59e0b; }
+.session-counter-warn strong { color: #f59e0b; }
+.badge-red {
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── Payment Modal ─────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0.5rem;
+}
+.modal-icon { font-size: 28px; color: var(--primary); }
+.modal-title { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); margin: 0; }
+.modal-subtitle { font-size: 13px; color: var(--text-muted); margin: 0 0 1.25rem; }
+.payment-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1rem; }
+.payment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--body-bg);
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+}
+.payment-item-info { display: flex; flex-direction: column; gap: 2px; }
+.payment-item-code { font-size: 11px; font-weight: 700; color: var(--primary); }
+.payment-item-name { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+.payment-item-type {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.payment-item-type .material-icons { font-size: 14px; }
+.payment-item-price { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+.payment-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 2px solid var(--border);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+.payment-total-amount { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+.modal-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #eff6ff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: #1e40af;
+  margin-bottom: 1.25rem;
+}
+.modal-notice .material-icons { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
