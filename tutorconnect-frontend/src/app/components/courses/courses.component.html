@@ -327,7 +327,7 @@
         </div>
       } @else {
         <div class="modules-grid">
-          @for (enr of enrolledModules; track enr.module_Code; let i = $index) {
+          @for (enr of filteredEnrolledModules; track enr.module_Code; let i = $index) {
             <div class="module-card assigned" (click)="openModule(enr.module_Code)">
               <div class="module-header">
                 <div class="module-icon-wrap" [style.background]="getModuleColor(i)">

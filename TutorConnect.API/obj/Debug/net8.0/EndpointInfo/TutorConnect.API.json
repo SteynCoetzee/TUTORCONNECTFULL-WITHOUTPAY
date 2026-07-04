@@ -2115,6 +2115,37 @@
         }
       }
     },
+    "/api/Enrollment/topup": {
+      "post": {
+        "tags": [
+          "Enrollment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionTopUpDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionTopUpDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionTopUpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Enrollment/module/{moduleCode}": {
       "get": {
         "tags": [
@@ -5243,6 +5274,14 @@
           },
           "can_Book_Group": {
             "type": "boolean"
+          },
+          "sessions_Remaining_Group": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sessions_Remaining_OneOnOne": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -5951,6 +5990,24 @@
           "session_ID": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SessionTopUpDto": {
+        "type": "object",
+        "properties": {
+          "student_ID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "module_Code": {
+            "type": "string",
+            "nullable": true
+          },
+          "session_Type": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

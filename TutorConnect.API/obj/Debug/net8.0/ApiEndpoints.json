@@ -1290,6 +1290,22 @@
   },
   {
     "ContainingType": "TutorConnect.API.Controllers.EnrollmentController",
+    "Method": "TopUpSessions",
+    "RelativePath": "api/Enrollment/topup",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TutorConnect.API.DTOs.SessionTopUpDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TutorConnect.API.Controllers.EnrollmentController",
     "Method": "UnenrollFromModule",
     "RelativePath": "api/Enrollment/unenroll/{moduleCode}",
     "HttpMethod": "DELETE",

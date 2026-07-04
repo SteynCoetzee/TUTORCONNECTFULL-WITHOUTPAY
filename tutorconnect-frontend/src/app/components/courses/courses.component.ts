@@ -81,10 +81,9 @@ export class CoursesComponent implements OnInit {
   expandedModuleCodes = new Set<string>();
   selectedSessionTypes: Record<string, Set<'OneOnOne' | 'Group'>> = {};
 
-  get enrolledModules(): Module[] {
+  get filteredEnrolledModules(): EnrollmentWithSessions[] {
     const q = this.moduleSearch.toLowerCase().trim();
-    const enrolled = this.modules.filter(m => this.enrolledModuleCodes.has(m.module_Code));
-    return q ? enrolled.filter(m => m.module_Code.toLowerCase().includes(q) || m.module_Name.toLowerCase().includes(q)) : enrolled;
+    return q ? this.enrolledModules.filter(e => e.module_Code.toLowerCase().includes(q) || e.module_Name.toLowerCase().includes(q)) : this.enrolledModules;
   }
 
   private apiUrl = environment.apiUrl;
