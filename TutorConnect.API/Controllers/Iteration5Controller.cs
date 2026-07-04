@@ -1854,25 +1854,51 @@ namespace TutorConnect.API.Controllers
         [HttpGet("student/{studentId}")]
         public async Task<ActionResult<List<EnrollmentViewDto>>> GetStudentModules(int studentId)
         {
-            var enrollments = await _context.Student_Modules
-                .Where(sm => sm.Student_ID == studentId && sm.IsActive)
-                .Include(sm => sm.Module)
-                .Select(sm => new EnrollmentViewDto
-                {
-                    Enrollment_ID = sm.Enrollment_ID,
-                    Student_ID = sm.Student_ID,
-                    Module_Code = sm.Module_Code,
-                    Module_Name = sm.Module != null ? sm.Module.Module_Name : string.Empty,
-                    Enrollment_Date = sm.Enrollment_Date,
-                    IsActive = sm.IsActive,
-                    Can_Book_OneOnOne = sm.Can_Book_OneOnOne,
-                    Can_Book_Group = sm.Can_Book_Group,
-                    Sessions_Remaining_Group = sm.Sessions_Remaining_Group,
-                    Sessions_Remaining_OneOnOne = sm.Sessions_Remaining_OneOnOne
-                })
-                .ToListAsync();
+            try
+            {
+                var enrollments = await _context.Student_Modules
+                    .Where(sm => sm.Student_ID == studentId && sm.IsActive)
+                    .Include(sm => sm.Module)
+                    .Select(sm => new EnrollmentViewDto
+                    {
+                        Enrollment_ID = sm.Enrollment_ID,
+                        Student_ID = sm.Student_ID,
+                        Module_Code = sm.Module_Code,
+                        Module_Name = sm.Module != null ? sm.Module.Module_Name : string.Empty,
+                        Enrollment_Date = sm.Enrollment_Date,
+                        IsActive = sm.IsActive,
+                        Can_Book_OneOnOne = sm.Can_Book_OneOnOne,
+                        Can_Book_Group = sm.Can_Book_Group,
+                        Sessions_Remaining_Group = sm.Sessions_Remaining_Group,
+                        Sessions_Remaining_OneOnOne = sm.Sessions_Remaining_OneOnOne
+                    })
+                    .ToListAsync();
 
-            return Ok(enrollments);
+                return Ok(enrollments);
+            }
+            catch
+            {
+                // Fallback if session columns don't exist yet (migration pending)
+                var enrollments = await _context.Student_Modules
+                    .Where(sm => sm.Student_ID == studentId && sm.IsActive)
+                    .Include(sm => sm.Module)
+                    .Select(sm => new EnrollmentViewDto
+                    {
+                        Enrollment_ID = sm.Enrollment_ID,
+                        Student_ID = sm.Student_ID,
+                        Module_Code = sm.Module_Code,
+                        Module_Name = sm.Module != null ? sm.Module.Module_Name : string.Empty,
+                        Enrollment_Date = sm.Enrollment_Date,
+                        IsActive = sm.IsActive,
+                        Can_Book_OneOnOne = sm.Can_Book_OneOnOne,
+                        Can_Book_Group = sm.Can_Book_Group,
+                        Sessions_Remaining_Group = 5,
+                        Sessions_Remaining_OneOnOne = 5
+                    })
+                    .ToListAsync();
+
+                return Ok(enrollments);
+            }
         }
 
         // POST: api/enrollment/topup

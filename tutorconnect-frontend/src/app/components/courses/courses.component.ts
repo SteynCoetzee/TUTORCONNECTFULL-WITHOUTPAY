@@ -125,7 +125,7 @@ export class CoursesComponent implements OnInit {
         this.enrolledModules = data;
         this.enrolledModuleCodes = new Set(data.map(e => e.module_Code));
       },
-      error: () => {}
+      error: (err) => { this.errorMessage = 'Failed to load your enrollments. Please refresh.'; }
     });
   }
 
