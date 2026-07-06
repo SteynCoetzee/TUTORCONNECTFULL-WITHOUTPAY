@@ -71,6 +71,7 @@ export class CoursesComponent implements OnInit {
   unenrollingCode = '';
 
   // Payment modal
+  showPreConfirmModal = false;
   showPaymentModal = false;
   paymentItems: PaymentItem[] = [];
   get paymentTotal(): number {
@@ -251,7 +252,16 @@ export class CoursesComponent implements OnInit {
       }
     }
 
+    this.showPreConfirmModal = true;
+  }
+
+  proceedToPayment() {
+    this.showPreConfirmModal = false;
     this.showPaymentModal = true;
+  }
+
+  cancelPreConfirm() {
+    this.showPreConfirmModal = false;
   }
 
   confirmEnrolment() {

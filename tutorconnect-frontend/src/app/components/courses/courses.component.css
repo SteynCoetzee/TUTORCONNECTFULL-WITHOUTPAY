@@ -448,3 +448,55 @@
 .modal-notice .material-icons { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
+/* ── Pre-Confirm (No-Refund) Modal ──────────────────────────────────────── */
+.preconfirm-card {
+  max-width: 440px;
+  text-align: center;
+}
+
+.preconfirm-icon-wrap {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: #fef3c7;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.1rem;
+}
+.preconfirm-icon { font-size: 38px; color: #d97706; }
+
+.preconfirm-title {
+  font-size: 1.3rem; font-weight: 800;
+  color: var(--text-dark); margin: 0 0 0.6rem;
+}
+.preconfirm-body {
+  font-size: 0.9rem; color: var(--text-muted);
+  margin: 0 0 1.1rem; line-height: 1.5;
+}
+
+.preconfirm-warning-box {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem; color: #92400e;
+  text-align: left;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+.preconfirm-warning-box .material-icons { font-size: 20px; color: #d97706; flex-shrink: 0; margin-top: 1px; }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .modules-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+  .page-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  .enrol-header-area { display: flex; justify-content: flex-end; gap: 0.5rem; }
+  .student-tabs { overflow-x: auto; }
+  .modal-card { padding: 1.25rem; }
+  .modal-actions { flex-direction: column-reverse; }
+  .modal-actions .btn { width: 100%; justify-content: center; }
+}
+@media (max-width: 480px) {
+  .modules-grid { gap: 0.65rem; }
+  .module-card { padding: 1rem; }
+}
+
+

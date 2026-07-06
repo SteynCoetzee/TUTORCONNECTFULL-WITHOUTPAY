@@ -484,6 +484,33 @@
   }
 </div>
 
+<!-- ─── Pre-Confirm Modal (No-Refund Warning) ──────────────────────────────── -->
+@if (showPreConfirmModal) {
+  <div class="modal-overlay" (click)="cancelPreConfirm()">
+    <div class="modal-card preconfirm-card" (click)="$event.stopPropagation()">
+      <div class="preconfirm-icon-wrap">
+        <span class="material-icons preconfirm-icon">warning_amber</span>
+      </div>
+      <h2 class="preconfirm-title">Are you sure?</h2>
+      <p class="preconfirm-body">
+        You are about to enrol in <strong>{{ selectedForEnroll.size }}</strong> module(s) and proceed to payment.
+      </p>
+      <div class="preconfirm-warning-box">
+        <span class="material-icons">money_off</span>
+        <span><strong>No Refund Policy:</strong> Once payment has been processed, refunds are not available under any circumstances. Please review your selection carefully before continuing.</span>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="cancelPreConfirm()">
+          <span class="material-icons">arrow_back</span> Cancel
+        </button>
+        <button class="btn btn-primary" (click)="proceedToPayment()">
+          <span class="material-icons">chevron_right</span> Yes, Proceed to Payment
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
 <!-- ─── Payment Summary Modal ──────────────────────────────────────────────── -->
 @if (showPaymentModal) {
   <div class="modal-overlay" (click)="cancelPaymentModal()">
@@ -517,7 +544,7 @@
 
       <div class="modal-notice">
         <span class="material-icons">info</span>
-        Payment via PayStack will be available soon. Click <strong>Confirm</strong> to enrol now.
+        Payment via <strong>PayFast</strong> will be activated soon. Click <strong>Confirm &amp; Enrol</strong> to proceed.
       </div>
 
       <div class="modal-actions">

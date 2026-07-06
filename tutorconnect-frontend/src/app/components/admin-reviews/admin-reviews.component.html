@@ -1,0 +1,141 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Tutor &amp; Session Reviews</h1>
+      <p class="page-subtitle">All reviews submitted across the platform</p>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="material-icons stat-icon" style="color:#6366f1">rate_review</span>
+      <div class="stat-info">
+        <div class="stat-value">{{ tutorReviews.length }}</div>
+        <div class="stat-label">Tutor Reviews</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon" style="color:#f59e0b">star</span>
+      <div class="stat-info">
+        <div class="stat-value">{{ avgTutorRating() }}</div>
+        <div class="stat-label">Avg Tutor Rating</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon" style="color:#10b981">event_note</span>
+      <div class="stat-info">
+        <div class="stat-value">{{ sessionReviews.length }}</div>
+        <div class="stat-label">Session Reviews</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="material-icons stat-icon" style="color:#f59e0b">star_half</span>
+      <div class="stat-info">
+        <div class="stat-value">{{ avgSessionRating() }}</div>
+        <div class="stat-label">Avg Session Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn" [class.active]="activeTab === 'tutor'" (click)="setTab('tutor')">
+        <span class="material-icons">person</span>
+        Tutor Reviews
+        <span class="tab-count">{{ tutorReviews.length }}</span>
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'session'" (click)="setTab('session')">
+        <span class="material-icons">event_note</span>
+        Session Reviews
+        <span class="tab-count">{{ sessionReviews.length }}</span>
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <span class="material-icons search-icon">search</span>
+      <input class="search-input" type="text" [(ngModel)]="searchQuery"
+        [placeholder]="activeTab === 'tutor' ? 'Search by tutor or student name...' : 'Search by name or module...'" />
+    </div>
+
+    <!-- TUTOR REVIEWS TAB -->
+    @if (activeTab === 'tutor') {
+      @if (loading) {
+        <div class="loading-state"><div class="spinner"></div><p>Loading reviews...</p></div>
+      } @else if (filteredTutorReviews.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">rate_review</span>
+          <p>{{ searchQuery ? 'No results match your search.' : 'No tutor reviews yet.' }}</p>
+        </div>
+      } @else {
+        <div class="reviews-grid">
+          @for (r of filteredTutorReviews; track r.tutor_Review_ID) {
+            <div class="review-card">
+              <div class="review-card-header">
+                <div class="avatar-wrap">
+                  <span class="material-icons avatar-icon">school</span>
+                </div>
+                <div class="review-names">
+                  <div class="review-tutor-name">{{ r.tutorName }}</div>
+                  <div class="review-by">by {{ r.studentName }}</div>
+                </div>
+                <div class="stars-wrap">
+                  @for (filled of getStars(r.tutor_Rating); track $index) {
+                    <span class="material-icons star" [class.filled]="filled">{{ filled ? 'star' : 'star_border' }}</span>
+                  }
+                  <span class="rating-num">{{ r.tutor_Rating }}/5</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- SESSION REVIEWS TAB -->
+    @if (activeTab === 'session') {
+      @if (filteredSessionReviews.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">event_note</span>
+          <p>{{ searchQuery ? 'No results match your search.' : 'No session reviews yet.' }}</p>
+        </div>
+      } @else {
+        <div class="reviews-grid">
+          @for (r of filteredSessionReviews; track r.session_Review_ID) {
+            <div class="review-card">
+              <div class="review-card-header">
+                <div class="avatar-wrap session-avatar">
+                  <span class="material-icons avatar-icon">event_note</span>
+                </div>
+                <div class="review-names">
+                  <div class="review-tutor-name">{{ r.tutorName || 'Unknown Tutor' }}</div>
+                  <div class="review-by">by {{ r.studentName }}</div>
+                  @if (r.moduleCode) {
+                    <span class="badge badge-purple">{{ r.moduleCode }}</span>
+                  }
+                </div>
+                <div class="stars-wrap">
+                  @for (filled of getStars(r.session_Rating); track $index) {
+                    <span class="material-icons star" [class.filled]="filled">{{ filled ? 'star' : 'star_border' }}</span>
+                  }
+                  <span class="rating-num">{{ r.session_Rating }}/5</span>
+                </div>
+              </div>
+              @if (r.session_Description) {
+                <div class="review-description">"{{ r.session_Description }}"</div>
+              }
+              <div class="review-meta">
+                <span class="material-icons">calendar_today</span>
+                {{ formatDate(r.slotDate) }}
+                @if (r.slotTime) { · {{ formatTime(r.slotTime) }} }
+                @if (r.sessionType) { · {{ r.sessionType }} }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>

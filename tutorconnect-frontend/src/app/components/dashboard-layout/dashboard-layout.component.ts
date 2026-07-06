@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet, Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -14,14 +14,24 @@ import { environment } from '../../../environments/environment';
   templateUrl: './dashboard-layout.component.html',
   styleUrl: './dashboard-layout.component.css'
 })
-export class DashboardLayoutComponent implements OnInit {
+export class DashboardLayoutComponent implements OnInit, OnDestroy {
   @ViewChild('contentArea') contentArea!: ElementRef<HTMLDivElement>;
 
   // First-login popups
   showCompleteProfilePopup = false;
   showAwaitingApprovalPopup = false;
 
+  // Mobile sidebar
+  sidebarMobileOpen = false;
+
   private apiUrl = environment.apiUrl;
+  private activityDebounce: ReturnType<typeof setTimeout> | null = null;
+  private readonly activityEvents = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
+  private readonly onActivity = () => {
+    if (this.activityDebounce) return;
+    this.activityDebounce = setTimeout(() => { this.activityDebounce = null; }, 1000);
+    this.authService.resetInactivityTimer();
+  };
 
   constructor(
     private router: Router,
@@ -32,11 +42,14 @@ export class DashboardLayoutComponent implements OnInit {
       if (event instanceof NavigationStart) {
         const isBack = event.navigationTrigger === 'popstate';
         this.animateContent(isBack ? 'slide-from-left' : 'slide-from-right');
+        this.sidebarMobileOpen = false;
       }
     });
   }
 
   ngOnInit() {
+    this.activityEvents.forEach(e => window.addEventListener(e, this.onActivity, { passive: true }));
+    this.loadAfkTimeout();
     const role = this.authService.getCurrentUserRole();
     const userId = this.authService.getCurrentUserId();
     if (!userId) return;
@@ -84,6 +97,26 @@ export class DashboardLayoutComponent implements OnInit {
     this.showCompleteProfilePopup = false;
     this.showAwaitingApprovalPopup = false;
   }
+
+  ngOnDestroy() {
+    this.activityEvents.forEach(e => window.removeEventListener(e, this.onActivity));
+    if (this.activityDebounce) clearTimeout(this.activityDebounce);
+    this.authService.stopInactivityTimer();
+  }
+
+  private loadAfkTimeout() {
+    this.http.get<any[]>(`${this.apiUrl}/BusinessRules`).subscribe({
+      next: (rules) => {
+        const rule = rules.find(r => r.rule_Name === 'session_timeout_minutes');
+        const minutes = rule ? Math.max(1, Number(rule.rule_Value)) : 30;
+        this.authService.startInactivityTimer(minutes);
+      },
+      error: () => { this.authService.startInactivityTimer(30); }
+    });
+  }
+
+  toggleMobileSidebar() { this.sidebarMobileOpen = !this.sidebarMobileOpen; }
+  closeMobileSidebar() { this.sidebarMobileOpen = false; }
 
   private animateContent(cls: string) {
     const el = this.contentArea?.nativeElement;

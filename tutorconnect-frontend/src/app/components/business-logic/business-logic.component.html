@@ -1,0 +1,69 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Business Logic</h1>
+      <p class="page-subtitle">Configure system-wide rules and behaviour</p>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">
+      <span class="material-icons">error_outline</span>
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div><p>Loading settings...</p></div>
+  } @else {
+    <div class="rules-list">
+      @for (rule of rules; track rule.rule_ID) {
+        @let meta = getMeta(rule.rule_Name);
+        <div class="rule-card" [class.rule-dirty]="isDirty(rule)">
+          <div class="rule-icon-wrap">
+            <span class="material-icons rule-icon">{{ meta.icon }}</span>
+          </div>
+          <div class="rule-body">
+            <div class="rule-label">{{ meta.label }}</div>
+            @if (meta.hint) {
+              <p class="rule-hint">{{ meta.hint }}</p>
+            }
+            <div class="rule-control">
+              <div class="rule-input-wrap">
+                <input
+                  type="number"
+                  class="rule-input"
+                  [(ngModel)]="editValues[rule.rule_ID]"
+                  [min]="meta.min"
+                  [max]="meta.max"
+                  step="1"
+                />
+                @if (meta.unit) {
+                  <span class="rule-unit">{{ meta.unit }}</span>
+                }
+              </div>
+              <div class="rule-actions">
+                <button
+                  class="btn btn-primary btn-sm rule-save-btn"
+                  (click)="saveRule(rule)"
+                  [disabled]="saving[rule.rule_ID] || !isDirty(rule)"
+                >
+                  @if (saving[rule.rule_ID]) {
+                    <span class="spinner-sm"></span> Saving...
+                  } @else if (saved[rule.rule_ID]) {
+                    <span class="material-icons">check</span> Saved
+                  } @else {
+                    <span class="material-icons">save</span> Save
+                  }
+                </button>
+              </div>
+            </div>
+            <div class="rule-current">
+              Current value: <strong>{{ rule.rule_Value }} {{ meta.unit }}</strong>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

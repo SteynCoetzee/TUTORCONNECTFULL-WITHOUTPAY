@@ -890,6 +890,12 @@ namespace TutorConnect.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("Sessions_Remaining_Group")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Sessions_Remaining_OneOnOne")
+                        .HasColumnType("int");
+
                     b.Property<int>("Student_ID")
                         .HasColumnType("int");
 

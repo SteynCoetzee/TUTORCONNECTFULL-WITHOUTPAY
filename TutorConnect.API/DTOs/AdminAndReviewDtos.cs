@@ -83,4 +83,10 @@
         public int Student_ID { get; set; }
         public int Testimonial_Category_ID { get; set; }
     }
+
+    // --- BUSINESS RULES ---
+    public class BusinessRuleUpdateDto
+    {
+        public decimal Rule_Value { get; set; }
+    }
 }

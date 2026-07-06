@@ -1101,6 +1101,67 @@ namespace TutorConnect.API.Controllers
             await _context.SaveChangesAsync();
             return Ok("Session reviewed successfully.");
         }
+
+        // GET: api/Reviews/admin/tutor  — ALL tutor reviews across platform (admin only)
+        [HttpGet("admin/tutor")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> GetAllTutorReviews()
+        {
+            var reviews = await _context.Tutor_Reviews.ToListAsync();
+            var userIds = reviews.SelectMany(r => new[] { r.Tutor_ID, r.Student_ID }).Distinct().ToList();
+            var users = await _context.Users
+                .Where(u => userIds.Contains(u.User_ID))
+                .ToDictionaryAsync(u => u.User_ID, u => $"{u.FirstName} {u.LastName}");
+
+            return Ok(reviews.Select(r => new
+            {
+                r.Tutor_Review_ID,
+                r.Tutor_Rating,
+                r.Student_ID,
+                r.Tutor_ID,
+                TutorName   = users.TryGetValue(r.Tutor_ID,   out var tn) ? tn : $"Tutor #{r.Tutor_ID}",
+                StudentName = users.TryGetValue(r.Student_ID, out var sn) ? sn : $"Student #{r.Student_ID}"
+            }));
+        }
+
+        // GET: api/Reviews/admin/session  — ALL session reviews across platform (admin only)
+        [HttpGet("admin/session")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> GetAllSessionReviews()
+        {
+            var reviews = await _context.Session_Reviews.ToListAsync();
+            var slotIds = reviews.Select(r => r.Session_ID).Distinct().ToList();
+            var slots = await _context.Booking_Slots
+                .Where(s => slotIds.Contains(s.Booking_Slot_ID))
+                .ToListAsync();
+            var slotMap = slots.ToDictionary(s => s.Booking_Slot_ID);
+
+            var tutorIds = slots.Select(s => s.Tutor_ID).Distinct().ToList();
+            var studentIds = reviews.Select(r => r.Student_ID).Distinct().ToList();
+            var allUserIds = tutorIds.Concat(studentIds).Distinct().ToList();
+            var users = await _context.Users
+                .Where(u => allUserIds.Contains(u.User_ID))
+                .ToDictionaryAsync(u => u.User_ID, u => $"{u.FirstName} {u.LastName}");
+
+            return Ok(reviews.Select(r =>
+            {
+                slotMap.TryGetValue(r.Session_ID, out var slot);
+                return new
+                {
+                    r.Session_Review_ID,
+                    r.Session_Rating,
+                    r.Session_Description,
+                    r.Student_ID,
+                    r.Session_ID,
+                    SlotDate    = slot != null ? slot.Slot_Date.ToString("yyyy-MM-dd") : "",
+                    SlotTime    = slot != null ? slot.Slot_Time.ToString("HH:mm") : "",
+                    SessionType = slot?.Session_Type ?? "",
+                    ModuleCode  = slot?.Module_Code ?? "",
+                    TutorName   = slot != null && users.TryGetValue(slot.Tutor_ID, out var tn) ? tn : "",
+                    StudentName = users.TryGetValue(r.Student_ID, out var sn) ? sn : $"Student #{r.Student_ID}"
+                };
+            }));
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────

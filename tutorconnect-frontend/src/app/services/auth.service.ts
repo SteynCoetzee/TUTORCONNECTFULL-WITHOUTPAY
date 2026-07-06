@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { DecodedToken } from '../models/models';
 
@@ -10,8 +11,10 @@ import { DecodedToken } from '../models/models';
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/Auth`;
   private tokenKey = 'auth_token';
+  private afkTimer: ReturnType<typeof setTimeout> | null = null;
+  private afkMinutes = 30;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   login(credentials: { email: string; password: string }): Observable<string> {
     return this.http.post<string>(`${this.apiUrl}/login`, credentials).pipe(
@@ -41,7 +44,28 @@ export class AuthService {
   }
 
   logout(): void {
+    this.stopInactivityTimer();
     localStorage.removeItem(this.tokenKey);
+  }
+
+  startInactivityTimer(minutes: number) {
+    this.afkMinutes = minutes;
+    this.resetInactivityTimer();
+  }
+
+  resetInactivityTimer() {
+    this.stopInactivityTimer();
+    this.afkTimer = setTimeout(() => {
+      this.logout();
+      this.router.navigate(['/login'], { queryParams: { reason: 'timeout' } });
+    }, this.afkMinutes * 60 * 1000);
+  }
+
+  stopInactivityTimer() {
+    if (this.afkTimer !== null) {
+      clearTimeout(this.afkTimer);
+      this.afkTimer = null;
+    }
   }
 
   decodeToken(token: string): DecodedToken | null {

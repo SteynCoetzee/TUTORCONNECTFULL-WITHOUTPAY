@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -25,6 +25,11 @@ export class SidebarComponent implements OnInit {
   sections: NavSection[] = [];
   role = '';
   collapsed = false;
+
+  @Input() mobileOpen = false;
+  @Output() mobileClose = new EventEmitter<void>();
+
+  @HostBinding('class.mobile-open') get isMobileOpen() { return this.mobileOpen; }
 
   private studentSections: NavSection[] = [
     {
@@ -130,12 +135,14 @@ export class SidebarComponent implements OnInit {
       heading: 'Reviews',
       items: [
         { label: 'Hours Review', icon: 'timer', route: '/dashboard/log-hours-review' },
+        { label: 'Tutor & Session Reviews', icon: 'rate_review', route: '/dashboard/admin-reviews' },
       ]
     },
     {
       heading: 'System',
       items: [
         { label: 'Audit Log', icon: 'manage_search', route: '/dashboard/audit-log' },
+        { label: 'Business Logic', icon: 'tune', route: '/dashboard/business-logic' },
       ]
     },
   ];

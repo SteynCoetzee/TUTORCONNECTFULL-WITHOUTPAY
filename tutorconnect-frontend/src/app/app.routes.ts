@@ -29,6 +29,8 @@ import { TestimonialsViewerComponent } from './components/testimonials-viewer/te
 import { ModuleDetailComponent } from './components/module-detail/module-detail.component';
 import { ModuleWishlistComponent } from './components/module-wishlist/module-wishlist.component';
 import { AdminAuditComponent } from './components/admin-audit/admin-audit.component';
+import { AdminReviewsComponent } from './components/admin-reviews/admin-reviews.component';
+import { BusinessLogicComponent } from './components/business-logic/business-logic.component';
 
 export const routes: Routes = [
   // Public routes
@@ -70,6 +72,8 @@ export const routes: Routes = [
       { path: 'testimonials', component: AdminTestimonialsComponent },
       { path: 'log-hours-review', component: AdminLogHoursComponent },
       { path: 'audit-log', component: AdminAuditComponent },
+      { path: 'admin-reviews', component: AdminReviewsComponent },
+      { path: 'business-logic', component: BusinessLogicComponent },
     ]
   },
 

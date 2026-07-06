@@ -1,7 +1,10 @@
 <div class="layout">
-  <app-sidebar></app-sidebar>
+  <app-sidebar [mobileOpen]="sidebarMobileOpen" (mobileClose)="closeMobileSidebar()"></app-sidebar>
+  @if (sidebarMobileOpen) {
+    <div class="mobile-backdrop" (click)="closeMobileSidebar()"></div>
+  }
   <div class="layout-main">
-    <app-topnav></app-topnav>
+    <app-topnav (hamburgerClick)="toggleMobileSidebar()"></app-topnav>
     <div class="layout-content" #contentArea>
       <router-outlet></router-outlet>
     </div>

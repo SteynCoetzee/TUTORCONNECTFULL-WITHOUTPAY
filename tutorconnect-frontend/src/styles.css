@@ -199,9 +199,43 @@ select.form-control { cursor: pointer; appearance: none; background-image: url("
 .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
 
 /* ── Responsive ────────────────────────────────────────────────── */
-@media (max-width: 768px) {
+
+/* Table: always scroll horizontally rather than overflow the page */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .page-container { max-width: 100%; }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
-  .page-container { padding: 16px; }
+  .page-container { padding: 12px; }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 16px;
+  }
+  .page-title { font-size: 18px; }
+  .data-table th { padding: 0.55rem 0.75rem; font-size: 0.72rem; }
+  .data-table td { padding: 0.65rem 0.75rem; font-size: 0.85rem; }
+  .card { padding: 14px; }
+  .modal { padding: 18px; }
+  .btn { font-size: 13px; padding: 9px 16px; }
+  .btn-sm { font-size: 12px; padding: 5px 10px; }
+  /* Stack modal footer buttons vertically */
+  .modal-footer { flex-direction: column-reverse; }
+  .modal-footer .btn { width: 100%; justify-content: center; }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .page-container { padding: 10px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+  .section-header { flex-direction: column; align-items: flex-start; }
 }
 
 /* ── Shared Utilities ──────────────────────────────────────────── */

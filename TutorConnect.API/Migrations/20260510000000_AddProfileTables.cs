@@ -1,10 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using TutorConnect.API.Data;
 
 #nullable disable
 
 namespace TutorConnect.API.Migrations
 {
-    /// <inheritdoc />
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20260510000000_AddProfileTables")]
     public partial class AddProfileTables : Migration
     {
         /// <inheritdoc />

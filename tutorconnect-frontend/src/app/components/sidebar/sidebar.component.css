@@ -240,3 +240,21 @@
   border: 5px solid transparent;
   border-right-color: #1a202c;
 }
+
+/* ── Mobile: sidebar is a fixed overlay drawer ───────────────────────────── */
+@media (max-width: 767px) {
+  :host {
+    position: fixed !important;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 500;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  :host.mobile-open {
+    transform: translateX(0);
+    box-shadow: 6px 0 32px rgba(0,0,0,0.45);
+  }
+  /* Never show collapsed state on mobile — always full width */
+  .sidebar { width: var(--sidebar-width) !important; }
+}

@@ -59,47 +59,28 @@
     } @else {
       <div class="card">
         @for (u of awTutors; track u.user_ID) {
-
-          @if (deleteTargetId === u.user_ID) {
-            <div class="pending-approval-row" style="padding:0.85rem 1.5rem;border-top:2px solid #fca5a5;border-bottom:2px solid #fca5a5;background:#fff5f5">
-              <span class="material-icons" style="color:var(--danger)">delete_forever</span>
-              <div style="flex:1">
-                <strong style="color:var(--danger)">Reject {{ u.firstName }} {{ u.lastName }}?</strong>
-                <span style="display:block;font-size:0.78rem;color:var(--text-muted)">Their account will be permanently removed.</span>
-              </div>
-              <div class="tr-confirm-btns">
-                <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
-                <button class="btn btn-danger btn-sm" (click)="deleteUser()">
-                  <span class="material-icons">close</span> Reject
-                </button>
+          <div class="pending-approval-row">
+            <div class="user-cell">
+              <div class="user-avatar">{{ getInitials(u) }}</div>
+              <div>
+                <div class="user-name">{{ u.firstName }} {{ u.lastName }}</div>
+                <div class="user-id">{{ u.email }}</div>
               </div>
             </div>
-
-          } @else {
-            <div class="pending-approval-row">
-              <div class="user-cell">
-                <div class="user-avatar">{{ getInitials(u) }}</div>
-                <div>
-                  <div class="user-name">{{ u.firstName }} {{ u.lastName }}</div>
-                  <div class="user-id">{{ u.email }}</div>
-                </div>
-              </div>
-              <div class="pending-meta">
-                @if (u.phone) { <span class="pending-detail"><span class="material-icons">phone</span>{{ u.phone }}</span> }
-                @if (u.bio) { <span class="pending-detail pending-bio">{{ u.bio }}</span> }
-              </div>
-              <div class="pending-approval-actions">
-                <button class="btn btn-primary btn-sm" (click)="approveUser(u)" [disabled]="approvingId === u.user_ID">
-                  <span class="material-icons">check</span>
-                  {{ approvingId === u.user_ID ? 'Approving...' : 'Approve' }}
-                </button>
-                <button class="btn btn-danger btn-sm" (click)="confirmDelete(u.user_ID)">
-                  <span class="material-icons">close</span> Reject
-                </button>
-              </div>
+            <div class="pending-meta">
+              @if (u.phone) { <span class="pending-detail"><span class="material-icons">phone</span>{{ u.phone }}</span> }
+              @if (u.bio) { <span class="pending-detail pending-bio">{{ u.bio }}</span> }
             </div>
-          }
-
+            <div class="pending-approval-actions">
+              <button class="btn btn-primary btn-sm" (click)="approveUser(u)" [disabled]="approvingId === u.user_ID">
+                <span class="material-icons">check</span>
+                {{ approvingId === u.user_ID ? 'Approving...' : 'Approve' }}
+              </button>
+              <button class="btn btn-danger btn-sm" (click)="confirmDelete(u.user_ID)">
+                <span class="material-icons">close</span> Reject
+              </button>
+            </div>
+          </div>
         }
       </div>
     }
@@ -130,6 +111,7 @@
         <p>No users found matching your filters.</p>
       </div>
     } @else {
+      <div class="table-wrap">
       <table class="data-table">
         <thead>
           <tr>
@@ -143,24 +125,7 @@
         <tbody>
           @for (user of filteredUsers; track user.user_ID) {
 
-            @if (deleteTargetId === user.user_ID) {
-              <tr class="tr-confirm">
-                <td colspan="5">
-                  <div class="tr-confirm-inner">
-                    <span class="material-icons">delete_forever</span>
-                    <div class="tr-confirm-text">
-                      <strong>Delete {{ user.firstName }} {{ user.lastName }}?</strong>
-                      <span>{{ user.email }} — All associated data may be removed. This cannot be undone.</span>
-                    </div>
-                    <div class="tr-confirm-btns">
-                      <button class="btn btn-secondary btn-sm" (click)="cancelDelete()">Cancel</button>
-                      <button class="btn btn-danger btn-sm" (click)="deleteUser()">Delete</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-            } @else if (editingUser?.user_ID === user.user_ID) {
+            @if (editingUser?.user_ID === user.user_ID) {
               <tr class="tr-edit">
                 <td colspan="5">
                   <div class="edit-form-header">
@@ -234,6 +199,11 @@
                 <td>{{ user.phone || '—' }}</td>
                 <td>
                   <div class="action-btns">
+                    @if (user.roleName === 'Student') {
+                      <button class="btn-icon info" title="View student details &amp; modules" (click)="openDetails(user)">
+                        <span class="material-icons">manage_accounts</span>
+                      </button>
+                    }
                     <button class="btn-icon" title="Edit user" (click)="openEdit(user)">
                       <span class="material-icons">edit</span>
                     </button>
@@ -254,6 +224,7 @@
           }
         </tbody>
       </table>
+      </div>
       <div class="table-footer">Showing {{ filteredUsers.length }} of {{ users.length }} users</div>
     }
   </div>
@@ -261,4 +232,180 @@
   } <!-- end activeTab === 'users' -->
 
 </div>
+
+<!-- ─── Delete Confirmation Modal ──────────────────────────────────────────── -->
+@if (deleteTargetId !== null && deleteTargetUser) {
+  <div class="del-backdrop" (click)="cancelDelete()">
+    <div class="del-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+      <div class="del-icon-wrap">
+        <span class="material-icons del-icon">delete_forever</span>
+      </div>
+
+      <h2 class="del-title">Delete Account Permanently?</h2>
+
+      <div class="del-user-card">
+        <div class="del-user-avatar">{{ getInitials(deleteTargetUser) }}</div>
+        <div>
+          <div class="del-user-name">{{ deleteTargetUser.firstName }} {{ deleteTargetUser.lastName }}</div>
+          <div class="del-user-email">{{ deleteTargetUser.email }}</div>
+          <span class="badge" [class]="getRoleBadgeClass(deleteTargetUser.roleName)">{{ deleteTargetUser.roleName }}</span>
+        </div>
+      </div>
+
+      <p class="del-warning-text">
+        Deleting this account will permanently remove the user and all associated data including enrollments, bookings, submissions, and reviews.
+      </p>
+
+      <div class="del-cannot-undo">
+        <span class="material-icons">warning</span>
+        <strong>This action CANNOT be undone.</strong> There is no recovery option.
+      </div>
+
+      <div class="del-actions">
+        <button class="btn btn-secondary del-cancel-btn" (click)="cancelDelete()">
+          <span class="material-icons">arrow_back</span> Cancel, Keep Account
+        </button>
+        <button class="btn btn-danger del-confirm-btn" (click)="deleteUser()">
+          <span class="material-icons">delete_forever</span> Yes, Delete Permanently
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ─── Student Details Modal ──────────────────────────────────────────────── -->
+@if (detailStudent) {
+  <div class="sd-backdrop" (click)="closeDetails()">
+    <div class="sd-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+      <!-- Header -->
+      <div class="sd-header">
+        <div class="sd-avatar">{{ getInitials(detailStudent) }}</div>
+        <div class="sd-header-info">
+          <h2 class="sd-name">{{ detailStudent.firstName }} {{ detailStudent.lastName }}</h2>
+          <div class="sd-email">{{ detailStudent.email }}</div>
+          <div class="sd-meta">
+            <span class="badge badge-success">Student</span>
+            @if (detailStudent.phone) { <span class="sd-phone"><span class="material-icons">phone</span>{{ detailStudent.phone }}</span> }
+          </div>
+        </div>
+        <button class="sd-close-btn" (click)="closeDetails()" title="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <!-- Current Enrollments -->
+      <div class="sd-section">
+        <h3 class="sd-section-title">
+          <span class="material-icons">menu_book</span>
+          Enrolled Modules
+          <span class="sd-count">{{ detailEnrollments.length }}</span>
+        </h3>
+
+        @if (detailLoading) {
+          <div class="sd-loading"><div class="spinner-sm-dark"></div> Loading enrollments...</div>
+        } @else if (detailEnrollments.length === 0) {
+          <div class="sd-empty">Not enrolled in any modules yet.</div>
+        } @else {
+          <div class="sd-enrollments">
+            @for (e of detailEnrollments; track e.enrollment_ID) {
+              <div class="sd-enroll-row">
+                <div class="sd-enroll-info">
+                  <span class="sd-module-code">{{ e.module_Code }}</span>
+                  <span class="sd-module-name">{{ e.module_Name }}</span>
+                </div>
+                <div class="sd-session-badges">
+                  @if (e.can_Book_OneOnOne) {
+                    <span class="sd-session-badge" [class.sd-badge-warn]="e.sessions_Remaining_OneOnOne <= 1">
+                      <span class="material-icons">person</span>
+                      1-on-1: {{ e.sessions_Remaining_OneOnOne }}
+                    </span>
+                  }
+                  @if (e.can_Book_Group) {
+                    <span class="sd-session-badge" [class.sd-badge-warn]="e.sessions_Remaining_Group <= 1">
+                      <span class="material-icons">groups</span>
+                      Group: {{ e.sessions_Remaining_Group }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Add Module -->
+      <div class="sd-section sd-add-section">
+        <h3 class="sd-section-title">
+          <span class="material-icons">add_circle</span>
+          Add Module Enrollment
+        </h3>
+
+        @if (enrollSuccess) {
+          <div class="sd-alert sd-alert-success">
+            <span class="material-icons">check_circle</span> {{ enrollSuccess }}
+          </div>
+        }
+        @if (enrollError) {
+          <div class="sd-alert sd-alert-error">
+            <span class="material-icons">error_outline</span> {{ enrollError }}
+          </div>
+        }
+
+        <div class="sd-add-form">
+          <!-- Module select -->
+          <div class="form-group">
+            <label class="form-label">Module</label>
+            @if (availableModulesToAdd.length === 0) {
+              <p class="sd-all-enrolled">This student is enrolled in all available modules.</p>
+            } @else {
+              <select class="form-control" [(ngModel)]="addModuleCode">
+                <option value="">— Select a module —</option>
+                @for (m of availableModulesToAdd; track m.module_Code) {
+                  <option [value]="m.module_Code">{{ m.module_Code }} — {{ m.module_Name }}</option>
+                }
+              </select>
+            }
+          </div>
+
+          <!-- Session type -->
+          <div class="form-group">
+            <label class="form-label">Session Type <span class="sd-required">(select at least one)</span></label>
+            <div class="sd-type-options">
+              <label class="sd-type-option" [class.sd-type-selected]="addOneOnOne">
+                <input type="checkbox" [(ngModel)]="addOneOnOne" />
+                <span class="material-icons">person</span>
+                <div>
+                  <strong>One on One</strong>
+                  <small>5 sessions added</small>
+                </div>
+              </label>
+              <label class="sd-type-option" [class.sd-type-selected]="addGroup">
+                <input type="checkbox" [(ngModel)]="addGroup" />
+                <span class="material-icons">groups</span>
+                <div>
+                  <strong>Group</strong>
+                  <small>5 sessions added</small>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <button class="btn btn-primary sd-enroll-btn"
+            (click)="enrollModule()"
+            [disabled]="enrolling || !addModuleCode || (!addOneOnOne && !addGroup) || availableModulesToAdd.length === 0">
+            @if (enrolling) {
+              <span class="spinner-sm"></span> Enrolling...
+            } @else {
+              <span class="material-icons">add</span> Enroll Student
+            }
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}
 

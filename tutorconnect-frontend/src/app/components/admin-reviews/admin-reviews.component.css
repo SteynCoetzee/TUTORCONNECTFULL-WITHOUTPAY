@@ -1,0 +1,150 @@
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  box-shadow: var(--shadow);
+}
+
+.stat-icon { font-size: 32px; }
+.stat-value { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 1rem;
+}
+.tab-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer;
+  padding: 0.6rem 1.1rem; font-size: 0.875rem; font-weight: 500;
+  color: var(--text-muted); border-bottom: 2px solid transparent;
+  margin-bottom: -2px; transition: color 0.2s, border-color 0.2s;
+}
+.tab-btn .material-icons { font-size: 17px; }
+.tab-btn:hover { color: var(--primary); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-count {
+  background: var(--primary); color: #fff;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 999px;
+}
+
+/* Search */
+.search-wrap {
+  position: relative;
+  margin-bottom: 1.25rem;
+  max-width: 400px;
+}
+.search-icon {
+  position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%); font-size: 18px;
+  color: var(--text-muted); pointer-events: none;
+}
+.search-input {
+  width: 100%; padding: 0.55rem 0.75rem 0.55rem 40px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 0.875rem; background: var(--body-bg); color: var(--text-dark);
+  outline: none; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--primary); }
+
+/* Grid */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.review-card {
+  background: var(--body-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.review-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.avatar-wrap {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: #ede9fe; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.avatar-wrap.session-avatar { background: #d1fae5; }
+.avatar-icon { font-size: 20px; color: #6366f1; }
+.session-avatar .avatar-icon { color: #10b981; }
+
+.review-names { flex: 1; min-width: 0; }
+.review-tutor-name { font-size: 0.92rem; font-weight: 700; color: var(--text-dark); }
+.review-by { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+
+.stars-wrap {
+  display: flex; align-items: center; gap: 1px;
+  flex-shrink: 0;
+}
+.star { font-size: 16px; color: #d1d5db; }
+.star.filled { color: #f59e0b; }
+.rating-num { font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-left: 4px; }
+
+.review-description {
+  font-size: 0.875rem; color: var(--text-dark);
+  font-style: italic;
+  padding: 0.4rem 0.6rem;
+  background: var(--card-bg);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 6px 6px 0;
+}
+
+.review-meta {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.review-meta .material-icons { font-size: 14px; }
+
+.badge-purple {
+  background: #ede9fe; color: #6d28d9;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 6px;
+  display: inline-block; margin-top: 3px;
+}
+
+/* States */
+.loading-state, .empty-state {
+  padding: 3rem; text-align: center; color: var(--text-muted);
+}
+.empty-state .material-icons { font-size: 3rem; display: block; margin-bottom: 0.75rem; color: var(--border); }
+.spinner { width: 32px; height: 32px; border: 3px solid #e5e7eb; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1024px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 767px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .reviews-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .stat-card { padding: 0.75rem; }
+  .stat-value { font-size: 1.2rem; }
+}

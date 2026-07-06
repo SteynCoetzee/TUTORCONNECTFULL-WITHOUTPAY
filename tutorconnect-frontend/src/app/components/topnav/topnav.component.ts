@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -23,6 +23,8 @@ interface AnnouncementNotif {
   styleUrl: './topnav.component.css'
 })
 export class TopnavComponent implements OnInit {
+  @Output() hamburgerClick = new EventEmitter<void>();
+
   userName = '';
   role = '';
   notifications: Notification[] = [];

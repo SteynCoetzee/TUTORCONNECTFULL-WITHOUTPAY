@@ -3,10 +3,21 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { UserProfile } from '../../models/models';
+import { UserProfile, Module } from '../../models/models';
 import { AuthService } from '../../services/auth.service';
 
 interface Role { id: number; name: string; }
+
+interface EnrollmentView {
+  enrollment_ID: number;
+  module_Code: string;
+  module_Name: string;
+  can_Book_OneOnOne: boolean;
+  can_Book_Group: boolean;
+  sessions_Remaining_OneOnOne: number;
+  sessions_Remaining_Group: number;
+  enrollment_Date: string;
+}
 
 @Component({
   selector: 'app-admin-users',
@@ -27,6 +38,7 @@ export class AdminUsersComponent implements OnInit {
   filterRole = 'All';
   searchQuery = '';
   deleteTargetId: number | null = null;
+  deleteTargetUser: UserProfile | null = null;
 
   approvingId: number | null = null;
 
@@ -48,6 +60,18 @@ export class AdminUsersComponent implements OnInit {
   ];
 
   currentUserId: number | null = null;
+
+  // Student details modal
+  detailStudent: UserProfile | null = null;
+  detailEnrollments: EnrollmentView[] = [];
+  allModules: Module[] = [];
+  detailLoading = false;
+  addModuleCode = '';
+  addOneOnOne = false;
+  addGroup = false;
+  enrolling = false;
+  enrollError = '';
+  enrollSuccess = '';
 
   private apiUrl = environment.apiUrl;
 
@@ -122,8 +146,11 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
-  confirmDelete(id: number) { this.deleteTargetId = id; }
-  cancelDelete() { this.deleteTargetId = null; }
+  confirmDelete(id: number) {
+    this.deleteTargetId = id;
+    this.deleteTargetUser = this.users.find(u => u.user_ID === id) ?? null;
+  }
+  cancelDelete() { this.deleteTargetId = null; this.deleteTargetUser = null; }
 
   deleteUser() {
     if (!this.deleteTargetId) return;
@@ -132,11 +159,13 @@ export class AdminUsersComponent implements OnInit {
       next: () => {
         this.successMessage = 'User deleted successfully.';
         this.deleteTargetId = null;
+        this.deleteTargetUser = null;
         this.loadUsers();
       },
       error: (err: any) => {
         this.errorMessage = typeof err.error === 'string' ? err.error : 'Failed to delete user.';
         this.deleteTargetId = null;
+        this.deleteTargetUser = null;
       }
     });
   }
@@ -177,6 +206,84 @@ export class AdminUsersComponent implements OnInit {
 
   getInitials(user: UserProfile): string {
     return `${user.firstName?.charAt(0) ?? ''}${user.lastName?.charAt(0) ?? ''}`.toUpperCase();
+  }
+
+  // ── Student Details Modal ────────────────────────────────────────────────────
+
+  openDetails(user: UserProfile) {
+    this.detailStudent = user;
+    this.detailEnrollments = [];
+    this.addModuleCode = '';
+    this.addOneOnOne = false;
+    this.addGroup = false;
+    this.enrollError = '';
+    this.enrollSuccess = '';
+    this.detailLoading = true;
+
+    this.http.get<EnrollmentView[]>(`${this.apiUrl}/enrollment/student/${user.user_ID}`).subscribe({
+      next: (data) => {
+        this.detailEnrollments = data;
+        this.detailLoading = false;
+      },
+      error: () => { this.detailLoading = false; }
+    });
+
+    if (!this.allModules.length) {
+      this.http.get<Module[]>(`${this.apiUrl}/Modules`).subscribe({
+        next: (data) => { this.allModules = data; },
+        error: () => {}
+      });
+    }
+  }
+
+  closeDetails() {
+    this.detailStudent = null;
+    this.enrollError = '';
+    this.enrollSuccess = '';
+  }
+
+  get availableModulesToAdd(): Module[] {
+    const enrolled = new Set(this.detailEnrollments.map(e => e.module_Code));
+    return this.allModules.filter(m => !enrolled.has(m.module_Code));
+  }
+
+  enrollModule() {
+    if (!this.detailStudent || !this.addModuleCode) {
+      this.enrollError = 'Please select a module.';
+      return;
+    }
+    if (!this.addOneOnOne && !this.addGroup) {
+      this.enrollError = 'Please select at least one session type (One on One or Group).';
+      return;
+    }
+    this.enrolling = true;
+    this.enrollError = '';
+    this.enrollSuccess = '';
+
+    this.http.post<any>(`${this.apiUrl}/enrollment/enroll`, {
+      student_ID: this.detailStudent.user_ID,
+      module_Code: this.addModuleCode,
+      can_Book_OneOnOne: this.addOneOnOne,
+      can_Book_Group: this.addGroup
+    }).subscribe({
+      next: () => {
+        this.enrolling = false;
+        const mod = this.allModules.find(m => m.module_Code === this.addModuleCode);
+        this.enrollSuccess = `Successfully enrolled in ${mod?.module_Name ?? this.addModuleCode}.`;
+        this.addModuleCode = '';
+        this.addOneOnOne = false;
+        this.addGroup = false;
+        // Reload enrollments
+        this.http.get<EnrollmentView[]>(`${this.apiUrl}/enrollment/student/${this.detailStudent!.user_ID}`).subscribe({
+          next: (data) => { this.detailEnrollments = data; },
+          error: () => {}
+        });
+      },
+      error: (err) => {
+        this.enrolling = false;
+        this.enrollError = typeof err.error === 'string' ? err.error : 'Failed to enroll. The student may already be enrolled.';
+      }
+    });
   }
 
   clearMessages() { this.errorMessage = ''; this.successMessage = ''; }

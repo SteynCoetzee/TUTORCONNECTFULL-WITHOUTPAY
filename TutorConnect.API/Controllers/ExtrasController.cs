@@ -190,4 +190,63 @@ namespace TutorConnect.API.Controllers
             return Ok("Wishlist item removed.");
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // BUSINESS RULES CONTROLLER
+    // ─────────────────────────────────────────────────────────────────────────
+
+    [Route("api/[controller]")]
+    [Authorize]
+    [ApiController]
+    public class BusinessRulesController : ControllerBase
+    {
+        private readonly AppDbContext _context;
+
+        private static readonly List<(string Name, decimal Default, string Description)> _defaults = new()
+        {
+            ("session_timeout_minutes", 30, "Minutes of inactivity before a user is automatically logged out"),
+        };
+
+        public BusinessRulesController(AppDbContext context) { _context = context; }
+
+        // GET: api/BusinessRules
+        [HttpGet]
+        public async Task<ActionResult> GetAll()
+        {
+            await EnsureDefaultsExistAsync();
+            var rules = await _context.Business_Rules.ToListAsync();
+            return Ok(rules.Select(r => new
+            {
+                r.Rule_ID,
+                r.Rule_Name,
+                r.Rule_Value,
+                Description = _defaults.FirstOrDefault(d => d.Name == r.Rule_Name).Description ?? ""
+            }));
+        }
+
+        // PUT: api/BusinessRules/{id}
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, [FromBody] BusinessRuleUpdateDto dto)
+        {
+            var rule = await _context.Business_Rules.FindAsync(id);
+            if (rule == null) return NotFound("Rule not found.");
+            rule.Rule_Value = dto.Rule_Value;
+            await _context.SaveChangesAsync();
+            return Ok(new { rule.Rule_ID, rule.Rule_Name, rule.Rule_Value });
+        }
+
+        private async Task EnsureDefaultsExistAsync()
+        {
+            var existing = await _context.Business_Rules.Select(r => r.Rule_Name).ToListAsync();
+            foreach (var (name, def, _) in _defaults)
+            {
+                if (!existing.Contains(name))
+                {
+                    _context.Business_Rules.Add(new Business_Rule { Rule_Name = name, Rule_Value = def });
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
+    }
 }

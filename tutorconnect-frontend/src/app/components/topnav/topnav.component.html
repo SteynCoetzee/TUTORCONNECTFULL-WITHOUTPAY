@@ -1,4 +1,9 @@
 <header class="topnav">
+  <!-- Mobile hamburger (hidden on desktop) -->
+  <button class="hamburger-btn" (click)="hamburgerClick.emit()" aria-label="Open menu">
+    <span class="material-icons">menu</span>
+  </button>
+
   <!-- Left: quick nav links -->
   <nav class="topnav-links">
     <a routerLink="/dashboard/user-info" routerLinkActive="active-link" class="topnav-link">User Info</a>
@@ -84,7 +89,7 @@
     <!-- Sign Out -->
     <button class="btn signout-btn btn-sm" (click)="signOut()">
       <span class="material-icons" style="font-size:16px">logout</span>
-      Sign Out
+      <span class="signout-label">Sign Out</span>
     </button>
   </div>
 </header>

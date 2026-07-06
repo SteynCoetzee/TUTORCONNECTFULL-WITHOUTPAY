@@ -76,3 +76,20 @@
 .layout-content.slide-from-left {
   animation: dashSlideFromLeft 0.32s cubic-bezier(0.25,0.46,0.45,0.94) both;
 }
+
+/* ── Mobile sidebar backdrop ──────────────────────────────────────────────── */
+.mobile-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 499;
+  animation: backdropFade 0.22s ease;
+}
+@keyframes backdropFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Responsive layout ────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .layout { flex-direction: column; }
+  .layout-main { width: 100%; min-width: 0; }
+  /* Content starts from top (sidebar is floating overlay, not in flow) */
+  .layout-content { overflow: auto; }
+}

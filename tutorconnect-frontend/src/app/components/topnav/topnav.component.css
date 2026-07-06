@@ -181,6 +181,36 @@
 }
 .notif-date { font-size: 11px; color: var(--text-muted); }
 
+/* Hamburger button — hidden on desktop, shown on mobile */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.hamburger-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.hamburger-btn .material-icons { font-size: 26px; display: block; }
+
+/* ── Mobile responsive ───────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .hamburger-btn { display: flex; }
+  .topnav-links { display: none; }
+  .user-name { display: none; }
+  .topnav { padding: 0 12px; gap: 8px; }
+  .notif-dropdown { width: 280px; right: -40px; }
+}
+
+@media (max-width: 400px) {
+  .signout-btn .signout-label { display: none; }
+}
+
 /* Sign out */
 .signout-btn {
   background: transparent !important;
