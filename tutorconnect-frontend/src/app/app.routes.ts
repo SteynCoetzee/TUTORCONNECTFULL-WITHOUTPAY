@@ -31,6 +31,7 @@ import { ModuleWishlistComponent } from './components/module-wishlist/module-wis
 import { AdminAuditComponent } from './components/admin-audit/admin-audit.component';
 import { AdminReviewsComponent } from './components/admin-reviews/admin-reviews.component';
 import { BusinessLogicComponent } from './components/business-logic/business-logic.component';
+import { PaymentResultComponent } from './components/payment-result/payment-result.component';
 
 export const routes: Routes = [
   // Public routes
@@ -74,6 +75,7 @@ export const routes: Routes = [
       { path: 'audit-log', component: AdminAuditComponent },
       { path: 'admin-reviews', component: AdminReviewsComponent },
       { path: 'business-logic', component: BusinessLogicComponent },
+      { path: 'payment-result', component: PaymentResultComponent },
     ]
   },
 

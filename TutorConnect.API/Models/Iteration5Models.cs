@@ -232,6 +232,9 @@ namespace TutorConnect.API.Models
         public string? Bank { get; set; }
         public string? Payment_Reference { get; set; }
 
+        // PayFast: stores JSON of all line items so ITN can process multi-module enrollments
+        public string? Enrollment_Items_Json { get; set; }
+
         // Foreign Keys
         public int Student_ID { get; set; }
         public User? Student { get; set; }

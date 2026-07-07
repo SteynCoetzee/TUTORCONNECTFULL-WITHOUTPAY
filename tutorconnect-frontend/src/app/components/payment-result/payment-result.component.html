@@ -1,0 +1,47 @@
+<div class="result-page">
+
+  <!-- SUCCESS -->
+  <div *ngIf="status === 'success'" class="result-card success">
+    <div class="icon-wrap success-icon">
+      <span class="material-icons">check_circle</span>
+    </div>
+    <h1>Payment Received!</h1>
+    <p class="subtitle">Thank you — your payment was processed by PayFast.</p>
+    <div class="info-box">
+      <span class="material-icons">info</span>
+      <span>Your module enrollment is being confirmed. It may take a moment to reflect.
+        If your modules don't appear immediately, please refresh the page in a minute.</span>
+    </div>
+    <button class="btn-primary" (click)="goToModules()">
+      <span class="material-icons">menu_book</span>
+      View My Modules
+    </button>
+  </div>
+
+  <!-- CANCELLED -->
+  <div *ngIf="status === 'cancel'" class="result-card cancel">
+    <div class="icon-wrap cancel-icon">
+      <span class="material-icons">cancel</span>
+    </div>
+    <h1>Payment Cancelled</h1>
+    <p class="subtitle">You cancelled the payment. No charge was made to your account.</p>
+    <button class="btn-secondary" (click)="goToModules()">
+      <span class="material-icons">arrow_back</span>
+      Back to Modules
+    </button>
+  </div>
+
+  <!-- UNKNOWN -->
+  <div *ngIf="status === 'unknown'" class="result-card unknown">
+    <div class="icon-wrap unknown-icon">
+      <span class="material-icons">help</span>
+    </div>
+    <h1>Checking Payment…</h1>
+    <p class="subtitle">We're not sure what happened. Check your enrolled modules — if payment was successful your enrollment will reflect shortly.</p>
+    <button class="btn-secondary" (click)="goToModules()">
+      <span class="material-icons">menu_book</span>
+      Check My Modules
+    </button>
+  </div>
+
+</div>

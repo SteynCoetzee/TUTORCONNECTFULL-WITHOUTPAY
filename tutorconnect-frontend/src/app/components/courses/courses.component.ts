@@ -257,7 +257,46 @@ export class CoursesComponent implements OnInit {
 
   proceedToPayment() {
     this.showPreConfirmModal = false;
-    this.showPaymentModal = true;
+    this.enrollingAll = true;
+    this.errorMessage = '';
+
+    const payload = {
+      studentId: this.userId,
+      totalAmount: this.paymentTotal,
+      items: this.paymentItems.map(i => ({
+        moduleCode:  i.module_Code,
+        moduleName:  i.module_Name,
+        sessionType: i.sessionType,
+        price:       i.price
+      }))
+    };
+
+    this.http.post<{ payFastUrl: string; formData: Record<string, string> }>(
+      `${this.apiUrl}/PayFast/initiate`, payload
+    ).subscribe({
+      next: (res) => {
+        // Build a hidden POST form and submit it to PayFast
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = res.payFastUrl;
+        for (const [key, value] of Object.entries(res.formData)) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          form.appendChild(input);
+        }
+        document.body.appendChild(form);
+        form.submit();
+      },
+      error: (err) => {
+        this.enrollingAll = false;
+        const msg = err?.error;
+        this.errorMessage = typeof msg === 'string' && msg
+          ? msg
+          : 'Failed to initiate payment. Please try again.';
+      }
+    });
   }
 
   cancelPreConfirm() {
