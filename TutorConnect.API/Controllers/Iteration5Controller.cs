@@ -194,7 +194,8 @@ namespace TutorConnect.API.Controllers
                     File_Path       = fileUrl,
                     File_Type       = ext.TrimStart('.'),
                     File_Size       = file.Length,
-                    Submission_Date = DateTime.UtcNow
+                    Submission_Date = DateTime.UtcNow,
+                    Feedback        = ""
                 });
             }
 
