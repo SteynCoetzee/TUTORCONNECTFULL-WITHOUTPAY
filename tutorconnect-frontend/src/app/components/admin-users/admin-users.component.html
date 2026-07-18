@@ -204,6 +204,9 @@
                         <span class="material-icons">manage_accounts</span>
                       </button>
                     }
+                    <button class="btn-icon teal" title="View payments" (click)="openPayments(user)">
+                      <span class="material-icons">credit_card</span>
+                    </button>
                     <button class="btn-icon" title="Edit user" (click)="openEdit(user)">
                       <span class="material-icons">edit</span>
                     </button>
@@ -269,6 +272,83 @@
         <button class="btn btn-danger del-confirm-btn" (click)="deleteUser()">
           <span class="material-icons">delete_forever</span> Yes, Delete Permanently
         </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ─── Payments Modal ─────────────────────────────────────────────────────── -->
+@if (paymentUser) {
+  <div class="sd-backdrop" (click)="closePayments()">
+    <div class="sd-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+      <div class="sd-header">
+        <div class="sd-avatar">{{ getInitials(paymentUser) }}</div>
+        <div class="sd-header-info">
+          <h2 class="sd-name">{{ paymentUser.firstName }} {{ paymentUser.lastName }}</h2>
+          <div class="sd-email">{{ paymentUser.email }}</div>
+          <div class="sd-meta">
+            <span class="badge" [class]="getRoleBadgeClass(paymentUser.roleName)">{{ paymentUser.roleName }}</span>
+          </div>
+        </div>
+        <button class="sd-close-btn" (click)="closePayments()" title="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="sd-section">
+        <h3 class="sd-section-title">
+          <span class="material-icons">credit_card</span>
+          Payment History
+          <span class="sd-count">{{ payments.length }}</span>
+        </h3>
+
+        @if (paymentsLoading) {
+          <div class="sd-loading"><div class="spinner-sm-dark"></div> Loading payments...</div>
+        } @else if (payments.length === 0) {
+          <div class="sd-empty">No payment records found for this user.</div>
+        } @else {
+          <!-- Summary -->
+          <div class="pay-summary">
+            <div class="pay-summary-item">
+              <span class="pay-summary-label">Total Paid</span>
+              <span class="pay-summary-value green">R{{ totalPaid | number:'1.2-2' }}</span>
+            </div>
+            <div class="pay-summary-item">
+              <span class="pay-summary-label">Transactions</span>
+              <span class="pay-summary-value">{{ payments.length }}</span>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="pay-table-wrap">
+            <table class="pay-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Module</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Reference</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of payments; track p.payment_ID) {
+                  <tr>
+                    <td class="pay-id">{{ p.payment_ID }}</td>
+                    <td>{{ p.payment_Date | date:'dd MMM yyyy' }}</td>
+                    <td>{{ p.module_Code || '—' }}</td>
+                    <td class="pay-amount">R{{ p.amount | number:'1.2-2' }}</td>
+                    <td><span class="badge" [class]="getPaymentStatusClass(p.payment_Status)">{{ p.payment_Status }}</span></td>
+                    <td class="pay-ref">{{ p.payment_Reference || '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
 
     </div>

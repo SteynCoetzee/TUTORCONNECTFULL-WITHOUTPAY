@@ -19,6 +19,16 @@ interface EnrollmentView {
   enrollment_Date: string;
 }
 
+interface PaymentView {
+  payment_ID: number;
+  amount: number;
+  payment_Date: string;
+  payment_Status: string;
+  bank: string;
+  payment_Reference: string;
+  module_Code: string;
+}
+
 @Component({
   selector: 'app-admin-users',
   standalone: true,
@@ -60,6 +70,11 @@ export class AdminUsersComponent implements OnInit {
   ];
 
   currentUserId: number | null = null;
+
+  // Payments modal
+  paymentUser: UserProfile | null = null;
+  payments: PaymentView[] = [];
+  paymentsLoading = false;
 
   // Student details modal
   detailStudent: UserProfile | null = null;
@@ -287,4 +302,31 @@ export class AdminUsersComponent implements OnInit {
   }
 
   clearMessages() { this.errorMessage = ''; this.successMessage = ''; }
+
+  // ── Payments Modal ───────────────────────────────────────────────────────────
+
+  openPayments(user: UserProfile) {
+    this.paymentUser = user;
+    this.payments = [];
+    this.paymentsLoading = true;
+    this.http.get<PaymentView[]>(`${this.apiUrl}/Payments/student/${user.user_ID}`).subscribe({
+      next: (data) => { this.payments = data; this.paymentsLoading = false; },
+      error: () => { this.paymentsLoading = false; }
+    });
+  }
+
+  closePayments() { this.paymentUser = null; }
+
+  getPaymentStatusClass(status: string): string {
+    if (status === 'Paid') return 'badge-success';
+    if (status === 'Pending') return 'badge-orange';
+    if (status === 'Failed') return 'badge-danger';
+    return 'badge-teal';
+  }
+
+  get totalPaid(): number {
+    return this.payments
+      .filter(p => p.payment_Status === 'Paid')
+      .reduce((sum, p) => sum + p.amount, 0);
+  }
 }

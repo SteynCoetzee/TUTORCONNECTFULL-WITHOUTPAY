@@ -322,6 +322,32 @@
 .spinner-sm-dark { width: 14px; height: 14px; border: 2px solid #d1d5db; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Teal icon button (payments) */
+.btn-icon.teal:hover { background: #f0fdfa; color: var(--primary); border-color: #5bbfba; }
+
+/* ── Payments summary strip ─────────────────────────────────────────────── */
+.pay-summary {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  background: var(--body-bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.9rem 1.1rem;
+  margin-bottom: 1rem;
+}
+.pay-summary-item { display: flex; flex-direction: column; gap: 2px; }
+.pay-summary-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+.pay-summary-value { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); }
+.pay-summary-value.green { color: #16a34a; }
+
+/* ── Payments table ─────────────────────────────────────────────────────── */
+.pay-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 10px; }
+.pay-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.pay-table th { padding: 0.6rem 0.9rem; text-align: left; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); background: var(--body-bg); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.pay-table td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.pay-table tr:last-child td { border-bottom: none; }
+.pay-table tr:hover td { background: var(--body-bg); }
+.pay-id { font-size: 0.75rem; color: var(--text-muted); }
+.pay-amount { font-weight: 700; color: var(--text-dark); white-space: nowrap; }
+.pay-ref { font-size: 0.75rem; color: var(--text-muted); word-break: break-all; max-width: 140px; }
+
 /* ── Responsive adjustments ─────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .filters-bar { flex-direction: column; align-items: stretch; gap: 0.75rem; }
