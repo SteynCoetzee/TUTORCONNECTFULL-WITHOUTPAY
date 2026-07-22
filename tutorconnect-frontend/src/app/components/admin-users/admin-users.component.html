@@ -200,14 +200,16 @@
                 <td>
                   <div class="action-btns">
                     @if (user.roleName === 'Student') {
-                      <button class="btn-icon info" title="View student details &amp; modules" (click)="openDetails(user)">
+                      <button class="btn-icon info" title="View enrollments &amp; add modules" (click)="openDetails(user)">
                         <span class="material-icons">manage_accounts</span>
                       </button>
                     }
-                    <button class="btn-icon teal" title="View payments" (click)="openPayments(user)">
-                      <span class="material-icons">credit_card</span>
-                    </button>
-                    <button class="btn-icon" title="Edit user" (click)="openEdit(user)">
+                    @if (user.roleName === 'Student') {
+                      <button class="btn-icon teal" title="View payments" (click)="openPayments(user)">
+                        <span class="material-icons">credit_card</span>
+                      </button>
+                    }
+                    <button class="btn-icon" title="Edit profile" (click)="openEdit(user)">
                       <span class="material-icons">edit</span>
                     </button>
                     @if (user.user_ID !== currentUserId) {
