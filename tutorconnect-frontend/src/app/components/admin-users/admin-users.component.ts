@@ -324,9 +324,11 @@ export class AdminUsersComponent implements OnInit {
     return 'badge-teal';
   }
 
+  get paidPayments(): PaymentView[] {
+    return this.payments.filter(p => p.payment_Status === 'Paid');
+  }
+
   get totalPaid(): number {
-    return this.payments
-      .filter(p => p.payment_Status === 'Paid')
-      .reduce((sum, p) => sum + p.amount, 0);
+    return this.paidPayments.reduce((sum, p) => sum + p.amount, 0);
   }
 }

@@ -301,13 +301,13 @@
         <h3 class="sd-section-title">
           <span class="material-icons">credit_card</span>
           Payment History
-          <span class="sd-count">{{ payments.length }}</span>
+          <span class="sd-count">{{ paidPayments.length }}</span>
         </h3>
 
         @if (paymentsLoading) {
           <div class="sd-loading"><div class="spinner-sm-dark"></div> Loading payments...</div>
-        } @else if (payments.length === 0) {
-          <div class="sd-empty">No payment records found for this user.</div>
+        } @else if (paidPayments.length === 0) {
+          <div class="sd-empty">No successful payments found for this user.</div>
         } @else {
           <!-- Summary -->
           <div class="pay-summary">
@@ -317,7 +317,7 @@
             </div>
             <div class="pay-summary-item">
               <span class="pay-summary-label">Transactions</span>
-              <span class="pay-summary-value">{{ payments.length }}</span>
+              <span class="pay-summary-value">{{ paidPayments.length }}</span>
             </div>
           </div>
 
@@ -330,18 +330,16 @@
                   <th>Date</th>
                   <th>Module</th>
                   <th>Amount</th>
-                  <th>Status</th>
                   <th>Reference</th>
                 </tr>
               </thead>
               <tbody>
-                @for (p of payments; track p.payment_ID) {
+                @for (p of paidPayments; track p.payment_ID) {
                   <tr>
                     <td class="pay-id">{{ p.payment_ID }}</td>
                     <td>{{ p.payment_Date | date:'dd MMM yyyy' }}</td>
                     <td>{{ p.module_Code || '—' }}</td>
                     <td class="pay-amount">R{{ p.amount | number:'1.2-2' }}</td>
-                    <td><span class="badge" [class]="getPaymentStatusClass(p.payment_Status)">{{ p.payment_Status }}</span></td>
                     <td class="pay-ref">{{ p.payment_Reference || '—' }}</td>
                   </tr>
                 }
