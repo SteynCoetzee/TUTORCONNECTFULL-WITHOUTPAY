@@ -142,11 +142,21 @@
                   <td>{{ item.studentName }}</td>
                   <td style="font-size:0.82rem;color:var(--text-muted)">{{ item.date_Submitted | date:'d MMM yyyy' }}</td>
                   <td>
-                    <button class="btn btn-secondary btn-sm" (click)="dismissWishlist(item.wishlist_ID)"
-                            [disabled]="dismissingId === item.wishlist_ID">
-                      @if (dismissingId === item.wishlist_ID) { <span class="spinner-sm"></span> }
-                      Dismiss
-                    </button>
+                    @if (confirmDismissId === item.wishlist_ID) {
+                      <div class="dismiss-confirm">
+                        <span class="dismiss-confirm-text">Are you sure?</span>
+                        <button class="btn btn-danger btn-sm" (click)="dismissWishlist(item.wishlist_ID)"
+                                [disabled]="dismissingId === item.wishlist_ID">
+                          @if (dismissingId === item.wishlist_ID) { <span class="spinner-sm"></span> }
+                          Yes, dismiss
+                        </button>
+                        <button class="btn btn-secondary btn-sm" (click)="confirmDismissId = null">Cancel</button>
+                      </div>
+                    } @else {
+                      <button class="btn btn-secondary btn-sm" (click)="confirmDismissId = item.wishlist_ID">
+                        Dismiss
+                      </button>
+                    }
                   </td>
                 </tr>
               }

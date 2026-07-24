@@ -43,6 +43,7 @@ export class CoursesComponent implements OnInit {
   wishlistItems: { wishlist_ID: number; module_Code: string; module_Name: string; student_ID: number; date_Submitted: string; studentName: string }[] = [];
   wishlistLoading = false;
   dismissingId: number | null = null;
+  confirmDismissId: number | null = null;
 
   // Search
   moduleSearch = '';
@@ -156,6 +157,7 @@ export class CoursesComponent implements OnInit {
   }
 
   dismissWishlist(id: number) {
+    this.confirmDismissId = null;
     this.dismissingId = id;
     this.http.delete(`${this.apiUrl}/ModuleWishlist/${id}`).subscribe({
       next: () => {
